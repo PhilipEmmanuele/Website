@@ -44,10 +44,10 @@
 
     {% if config.extra.profile_small %}
       {% set icon = resize_image(path=config.extra.profile_small, width=48, height=48, op="fill") -%}
-      <link rel="icon" href="{{ icon.url }}" />
+      <link rel="icon" href="{{ icon }}" />
       {% for size in [48,72,96,144,192,256,384,512] -%}
         {% set icon = resize_image(path=config.extra.profile_small, width=size, height=size, op="fill") -%}
-        <link rel="apple-touch-icon" sizes="{{size}}x{{size}}" href="{{ icon.url }}" />
+        <link rel="apple-touch-icon" sizes="{{size}}x{{size}}" href="{{ icon }}" />
       {% endfor %}
     {% endif %}
 
