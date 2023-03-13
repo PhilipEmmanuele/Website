@@ -4,6 +4,8 @@ template = "page.html"
 
 ## Hello, this is a simple dev blog.
 
+![this](profile.jpg)
+
 This is a simple dev blog that I made [for my website](https://bennetthardwick.com).
 It's quite easy to install, just go to the [project page](https://github.com/bennetthardwick/simple-dev-blog-zola-starter) and follow the prompts.
 
