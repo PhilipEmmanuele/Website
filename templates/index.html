@@ -6,7 +6,7 @@
 
 {% block posthead %}
 {% set profile_image = resize_image(path=config.extra.profile_large, width=280, height=373, op="fill") %}
-  <link rel="prefetch" href="{{ profile_image.url }}">
+  <link rel="prefetch" href="{{ profile_image }}">
 
   {% if config.extra.latest_text %}
     {% set blog_path = "blog" %}
@@ -26,7 +26,7 @@
 {% set profile_image = resize_image(path=config.extra.profile_large, width=280, height=373, op="fill") %}
   <div class="profile">
     <div class="profile-container">
-      <img src="{{ profile_image.url }}" alt="profile picture">
+      <img src="{{ profile_image }}" alt="profile picture">
     </div>
   </div>
   <div class="content">
