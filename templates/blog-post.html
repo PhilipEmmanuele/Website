@@ -28,15 +28,6 @@
       "author": {
         "@type": "Person",
         "name": "{{ config.extra.author }}"
-      },
-       "publisher": {
-        "@type": "Organization",
-        "name": "{{ config.extra.author }}"{% if config.extra.icon %},
-        "logo": {
-          "@type": "ImageObject",
-          "url": "{{ get_url(path=config.extra.icon) | safe }}"
-        }
-        {% endif %}
       }
       {% endif %}
     }
