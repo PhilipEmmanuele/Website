@@ -1,13 +1,9 @@
 +++
-title = "Bennett's Rust Journal"
+title = "Synthetic Biology Blog"
 +++
 
-## Hello, this is a simple dev blog.
+## Hello, welcome to my blog.
 
-This is a simple dev blog that I made [for my website](https://bennetthardwick.com).
-It's quite easy to install, just go to the [project page](https://github.com/bennetthardwick/simple-dev-blog-zola-starter) and follow the prompts.
+My name is Philip and I am a biology nerd. Come learn about cutting edge research with me as I write about scientific papers that catch my eye. Feel free to connect with me using the links below.
 
-This template does some fancy stuff like [pre-rendering](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) blog posts and nav links,
-pre-fetching your profile image and adding a bunch of common meta tags.
-
-If you're still making up your mind, feel fee to take a look around by clicking the [about](/about/) and [blog](/blog/) nav links.
+Feel fee to take a look around by clicking the [about](/about/) and [blog](/blog/) nav links.
