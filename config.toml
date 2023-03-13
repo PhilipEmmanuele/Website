@@ -1,5 +1,5 @@
 # The URL the site will be built for
-base_url = "https://philip-emmanuele.com"
+base_url = "https://website-dfe.pages.dev"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -33,8 +33,8 @@ nav = [
 latest_text = "Check out my latest post:"
 
 icon.url = "/icon.png"
-profile_small = "icon.png"
-profile_large = "profile.jpg"
+profile_small = "/icon.png"
+profile_large = "/profile.jpg"
 
 accent = "#05a081"
 accent_light = "#82d0c0"
