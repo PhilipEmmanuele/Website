@@ -9,11 +9,11 @@ On this blog, I will be writing about papers from different journals. These jour
 
 To reiterate: Please avoid the following websites as they will allow you to read scientific papers for free without consequence
 
-[sci-hub.org](sci-hub.org)
+[sci-hub.org](https://www.sci-hub.org)
 
-[sci-hub.za](sci-hub.za)
+[sci-hub.za](https://www.sci-hub.za)
 
-[libgen.tw](libgen.tw) - a resource more known for illegally posting PDFs of textbooks for free
+[libgen.tw](https://www.libgen.tw) - a resource more known for illegally posting PDFs of textbooks for free
 
-[sci-hub.do](sci-hub.do)
+[sci-hub.do](https://www.sci-hub.do)
 
