@@ -1,5 +1,5 @@
 +++
-title = "The future of protein delivery to human cells"
+title = "The future of protein delivery"
 [taxonomies]
 tags = [ "Feng", "Zhang", "delivery", "bacteria", "protein" ]
 +++
