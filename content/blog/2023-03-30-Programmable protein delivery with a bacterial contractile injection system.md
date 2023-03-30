@@ -5,7 +5,7 @@ tags = [ "Feng", "Zhang", "delivery", "bacteria", "protein" ]
 +++
 
 
-Today, Feng Zhang, the mind behind using CRISPR in human cells for gene editing, has published another groundbreaking paper. The paper, entitled ["Programmable protein delivery with a bacterial contractile injection system"](https://www.nature.com/articles/s41586-023-05870-7) describes the use of an extracellular contractile injection system derived from entomopathogenic bacterium _Photorhabdus asymbiotica_ for targeted protein delivery into human cells with efficiencies that near 100%. This method for protein delivery is in its infancy but can have vast implications in the field of genetic engineering and drug delivery.
+Today, Feng Zhang, the mind behind using CRISPR in human cells for gene editing, has published another groundbreaking paper. The paper, entitled ["Programmable protein delivery with a bacterial contractile injection system"](https://www.nature.com/articles/s41586-023-05870-7) describes the use of an extracellular contractile injection system derived from entomopathogenic bacterium _Photorhabdus asymbiotica_ for targeted protein delivery into human cells with efficiencies that near 100%. This method for protein delivery is in its infancy but can have large impacts on the field of genetic engineering and drug delivery.
 
 
 That was a lot of big words in a row, so let me start by explaining each part. 
