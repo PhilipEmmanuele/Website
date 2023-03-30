@@ -1,0 +1,23 @@
++++
+title = "The future of protein delivery to human cells"
+[taxonomies]
+tags = [ "Feng", "Zhang", "delivery", "bacteria", "protein" ]
++++
+
+
+Today, Feng Zhang, the mind behind using CRISPR in human cells for gene editing, has published another groundbreaking paper. The paper, entitled ["Programmable protein delivery with a bacterial contractile injection system"](https://www.nature.com/articles/s41586-023-05870-7) describes the use of an extracellular contractile injection system derived from entomopathogenic bacterium _Photorhabdus asymbiotica_ for targeted protein delivery into human cells with efficiencies that near 100%. This method for protein delivery is in its infancy but can have vast implications in the field of genetic engineering and drug delivery.
+
+
+That was a lot of big words in a row, so let me start by explaining each part. 
+
+
+This story starts with the humble nematode, or roundworm. Some nematodes, specifically of the genus _Heterorhabditis_, have a symbiotic relationship with a bacterium called _Photorhabdus asymbiotica_. This bacterium lives inside of nematodes and injects a toxin into the insects that are infected by the nematode. It uses a extracellular contractile injection system (eCIS) to insert the toxins into the cells of the insect that is infected. This is done by driving a spike through the cellular membrane and then delivering the payload that is within the macromolecular complex. The nematodes then are able to eat the decaying insects. Zhang and his team were interested in using this extracellular complex to deliver non-native payloads into human cells as a drug delivery system or a CRISPR-Cas9 delivery system. 
+
+
+First, they transformed the operon containing the _Photorhabdus_ virulence cassette (PVC), which encodes for the _Photorhabdus's_ eCIS, into _E. coli_. They took these proteins and added them to insect cells to see how many cells died, since the wild type payload is cytotoxic. They used insect cells so that they eliminate the target mechanism of the protein as an experimental variable since the protein complexes target insect cells naturally. They then tested if the protein complex could deliver a non-native payload by replacing the cytotoxin encoding protein with Cre, which induced the expression of GFP when added to insect cells with a lox-GFP plasmid. Then, they hypothesized that these complexes use their tail fibres to recognize binding sites to selectively target cells, similar to bacteriophages, so they used Alpha Fold, an AI that predicts protein structure, to find the tail fibre sequences and attach epitopes that human and mouse cells have receptors for. They added these proteins to human and mouse cells respectively and observed high (80-90%) cytotoxicity in the human cells when the cytotoxic payload was delivered, and relatively high (20-50% of cells) expression rate of GFP when delivering Cre to the lox-GFP plasmid containing cells. Finally, they tested this system _in vivo_ in mice brains and found that the PVCs are active _in vivo_ with high specificity and no immune response, but do not exist for an extended period of time (more than 7 days). 
+
+
+This is a really cool delivery system and great engineering by Zhang and his team. This is one of the first papers that I have read where they used AlphaFold to change specific domains of a protein to fit design specifications. I know that AlphaFold is probably more widely used than I am aware of, but it is so cool to see AI being used for innovative biology and it seems like you don't need to be an expert in protein design to use it effectively. I also am really excited to see this research because it is yet another example where nature has done most of the innovation for us. All we need to do is observe where nature solved a certain problem, and figure out how to engineer the biology to fit our design specifications. This is exactly why it is important to study and conduct whole genome sequencing on as many species, especially bacterial species, as possible. I wonder if there will be any issues with specificity when trying to target two different human cell types that that are closely related, as they can have many of the same receptors. So even though they may bind to that receptors very specifically, the protein actually injects the payload into cells other than the target cell, such as cancer cells vs healthy cells. Nevertheless, this is a very promising method for drug and protein (including genome editing tools) delivery and I am excited to see what Zhang does next.
+
+
+I plan on making another blog post before my quarter starts (next week), so check the blog often to be the first to read the post!
