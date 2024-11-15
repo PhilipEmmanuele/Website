@@ -18,7 +18,7 @@ There are three main parts of your Personal, Relevant Background and Future Goal
 There are also three parts to your research plan statement. The first part is the actual research plan, where you introduce your research, why its important, and outline each specific aim. This is a short research proposal that demonstrates your ability to make a well thought out plan to vigorously investigate a topic. It is a good idea to make your aim 2 not reliant on your first aim, so that if your first aim fails, the plan is not completely done for. The second part is the Intellectual Merit section, where you describe how your project would advance your field. The third part is the Broader Impacts section where you describe how your project would benefit society. Include your references at the bottom and you are on your way to being awarded the NSF GRFP!
 Please be sure to differentiate and label your intellectual merit and broader impact sections in each statement, as without them your application won't be considered. 
 
-As an example of a NSF GRFP research proposal, you can find mine [here](\content/NSFGRFP_proposal.pdf). Pls dont judge my figure haha. 
+As an example of a NSF GRFP research proposal, you can find mine [here](/content/NSFGRFP_proposal.pdf). Pls dont judge my figure haha. 
 
 ### __Note__:
 - Reference letters have a different due date than the application. This year they were due Oct 11 5 pm EST while the application was due Oct 5 pm local time.
