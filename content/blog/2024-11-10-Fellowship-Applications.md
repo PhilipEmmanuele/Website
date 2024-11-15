@@ -44,7 +44,7 @@ For the personal essay, I would keep it direct and short. Many of the successful
 
 In contrast to reference letters, these references are multiple choice surveys that ask the referee to evaluate the applicant. Make sure to ask research figures who will say good things about you and consider you amongst their top students ever. These forms apparently don't take as long to complete as a reference letter, but still make sure to ask your referees early (>1 month before due date) and remind them often!
 
-As an example of a NDSEG research proposal, you can find mine [here](/content/blog/blog_PDFs/NDSEG_proposal.pdf).
+As an example of a NDSEG research proposal, you can find mine [here](/content/blog/NDSEG_proposal.pdf).
 
 ### __Note__:
 - The DoD's way of removing bias is through redacting parts of your application, including removing identifying information from your research proposal and your resume/CV. Don't leave this to the last moment as it can take some time.
