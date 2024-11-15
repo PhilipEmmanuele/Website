@@ -4,7 +4,7 @@ title = "Synthetic Biology Blog"
 
 ## Hello, welcome to my blog.
 
-My name is Philip and I am a biology nerd. Come learn about cutting edge research with me as I write about scientific papers that catch my eye. Connect with me using the links below!
+My name is Philip and I am a biology nerd. Learn about cutting edge biotechnology/synthetic biology research (or anything that catches my eye) and my Ph.D. journey through my blog posts. Connect with me using the links below!
 
 [Twitter](https://www.twitter.com/philemmanuele)
 

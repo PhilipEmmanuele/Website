@@ -6,6 +6,6 @@ template = "page.html"
 
 ![profile pic](/about_pic.JPEG)
 
-Hello! My name is Philip Emmanuele. I am an undergraduate bioengineering student at the University of California, San Diego. I am fascinated at the ways the cells work and want to learn more about cellular mechanisms to enable the engineering of biology. I currently work in the [Biodynamics Lab](https://biodynamics.ucsd.edu) as a research assistant. You can find the list of projects I have worked on in my resume below. In the future, I plan on going to graduate school for a Ph.D. and continuing doing research in synthetic biology. 
+Hello! My name is Philip Emmanuele. I am a Ph.D. student at the University of California, San Diego in the [Biodynamics Lab](https://biodynamics.ucsd.edu). I am fascinated by the ways the cells work and want to learn more about tools that enable the engineering of biology. You can find the list of projects I have worked on in my resume below. In the future, I hope to become a research professor and lead my own research group.
 
-[Resume](/Resume-1-23.pdf)
+[Resume](/CV_11_24.pdf)
