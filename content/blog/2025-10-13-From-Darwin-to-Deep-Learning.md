@@ -1,4 +1,4 @@
-    +++
++++
 title = "From Darwin to Deep Learning"
 [taxonomies]
 tags = [ "AI", "Phylogeny", "Evo 2"]
