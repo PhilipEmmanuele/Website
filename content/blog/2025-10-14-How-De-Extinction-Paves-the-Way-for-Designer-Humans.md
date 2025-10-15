@@ -39,6 +39,7 @@ Imagine designing the perfect dog or cat—one that looks exactly how you want, 
 Designer pets are the perfect initial market for their technology. People will pay a small fortune to personalize, clone, and guarantee the health of a beloved animal. At the same time, this venture serves as a massive case study, allowing Colossal to perfect its technology at scale without endangering human lives. This designer pet period will also lend itself to be another data point in their FDA application for human use; safe for complex mammals. This is similar to what the anti-aging company Loyal is doing. First in dogs, then in humans.</p>
 <p style="text-indent:1.5em">
 Of course, every powerful new technology has a military application. The one I can’t stop thinking about is the designed apex predator. This predator, perhaps a big hyperaggressive Dire Wolf, could track down a scent from miles away, and when the scent is found, attack with ruthlessness. These biological weapons would be used in locations where guerilla warfare makes centralized attacks impossible. They would be fast, smart, and operate with no distractions and little food, with a singular goal in mind. </p>
+<div class="clear"></div>
 
 ## 15-50 years: The Post-Human Era
 <p style="text-indent:1.5em">

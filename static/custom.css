@@ -26,5 +26,21 @@
     margin: 0 auto 1rem;
     width: 100%;
     max-width: 480px;         /* optional */
-  }
+  } 
 }
+/* --- Orphan/overhang fixes (append to bottom of static/custom.css) --- */
+
+/* Balance the first couple paragraphs that wrap beside the float */
+.figure-left + p,
+.figure-left + p + p {
+  text-wrap: balance;
+  hyphens: auto;
+}
+
+/* Optional: slightly narrower float to reduce orphans */
+.figure-left {
+  width: min(300px, 38%); /* tweak if you like (was ~320px/40%) */
+}
+
+/* Optional: a utility to stop wrapping wherever you insert it */
+.clear { clear: both; }
