@@ -33,7 +33,7 @@ Remember all that data? By this point, Colossal will have spent a fortune decodi
 <p style="text-indent:1.5em">
 Imagine designing the perfect dog or cat—one that looks exactly how you want, has zero genetic diseases, and is engineered to be perfectly docile and well-behaved. From there, they will move into more exotic animals: domesticated, kitten-like tigers or tiny lemurs that couldn't survive in the wild. These creatures will be designed for maximum appeal with large eyes, big ears, and customizable sizes.</p>
 <div class="figure-left">
-  <img src="/img/colossaldog.png" alt="designer dog forever puppy" width = "500">
+  <img src="/img/colossaldog.png" alt="designer dog forever puppy" width = "700">
 </div>
 <p style="text-indent:1.5em">
 Designer pets are the perfect initial market for their technology. People will pay a small fortune to personalize, clone, and guarantee the health of a beloved animal. At the same time, this venture serves as a massive case study, allowing Colossal to perfect its technology at scale without endangering human lives. This designer pet period will also lend itself to be another data point in their FDA application for human use; safe for complex mammals. This is similar to what the anti-aging company Loyal is doing. First in dogs, then in humans.</p>
