@@ -20,7 +20,7 @@ To do this, they started with a small dataset of ~2400 bacterial genomes. Typica
 ## Finding the tree of life manifold:
 <p style="text-indent:1.5em">
 Next they wanted to find a curve made by connecting the embeddings on a graph that represented the phylogenetic tree, called the phylogenetic manifold. A manifold is a way of showing how meaning is encoded in the geometric relationships between data points. The authors give some cool examples of this, like how the names for colors or the days of the week form a circular manifold, and the years of the 20th century form a helical one. By finding these manifolds, they can find and quantify relationships between data points.</p>
-![manifold](/img/manifolds.png)
+<img src="/img/manifolds.png" alt="manifold">
 <p style="text-indent:1.5em">
 To see how the relationships on their manifold stacked up against actual phylogenetic distance, they first created a K-nearest neighbors graph. Then, they found the shortest path between each data point along the winding surface of the manifold (the geodesic distance—think of it like finding the quickest route on a hilly map instead of drilling a straight line through the earth) and added up the angular distance (arccosine of cosine similarity). They compared this total angular distance to phylogenetic distance and found that they were highly correlated! The only data points they had trouble correlating were in the Mycoplasmatales order. The authors chalk this up to their many differences from other bacterial species. This correlation is confirmation that there is a phylogenetic manifold hidden inside the model.</p>
 
