@@ -1,0 +1,30 @@
+/* Float an image left and let text wrap around it */
+.figure-left {
+  float: left;
+  margin: 0 1rem 1rem 0;     /* space to the right & bottom */
+  width: min(320px, 40%);    /* responsive cap; tweak to taste */
+}
+
+.figure-left img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;         /* optional */
+}
+
+/* Stop wrapping when a new heading starts */
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+  clear: both;
+}
+
+/* Stack nicely on phones */
+@media (max-width: 768px) {
+  .figure-left {
+    float: none;
+    margin: 0 auto 1rem;
+    width: 100%;
+    max-width: 480px;         /* optional */
+  }
+}
