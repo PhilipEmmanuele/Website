@@ -1,14 +1,14 @@
 +++
 title = "How De-Extinction Paves the Way for Designer Humans"
 [taxonomies]
-tags = [ "Colossus", "De-extinction", "Gene editing"]
+tags = [ "Colossal", "De-extinction", "Gene editing"]
 +++
 
 <p style="text-indent:1.5em">
 I like imagining what ambitious companies plan for themselves and what the private investor pitches are like behind closed doors. Does Elon Musk just want to go to Mars for the sake of humanity, or to control the future nation-planet-state of Mars, competing with Earth for power in the solar system? Does Meta want us to simply play in the metaverse, or for us to upload a la Pantheon and keep us as customers, workers, and citizens? Do these moonshot ideas make it into slide decks? Surely they must have been considered, as founders tend to think big.</p>
 
 <p style="text-indent:1.5em">
-This line of thinking about grand, unstated ambitions brings me to a company I've been following closely: Colossal Biosciences. Colossal Biosciences is a biotechnology company on a mission to bring back extinct animals. One of its most famous pitches is reintroducing the woolly mammoth to Siberia to stomp down the permafrost, keeping that massive source of greenhouse gasses frozen. Since the new US administration came to power and subsequent culture shift, we hear less about the climate change angle and more about “preserving species through de-extinction.” They even got a shoutout from the EPA on X. This sends the worrying message “Go ahead and disregard changing climates killing off endangered species. It's ok, we can just bring back the animals later.”
+This line of thinking about grand, unstated ambitions brings me to a company I've been following closely: Colossal Biosciences. Colossal Biosciences is a biotechnology company on a mission to bring back extinct animals. One of its most famous pitches is reintroducing the woolly mammoth to Siberia to stomp down the permafrost, keeping that massive source of greenhouse gasses frozen. Since the new US administration came to power and subsequent culture shift, we hear less about the climate change angle and more about “preserving species through de-extinction.” They even got a shoutout from the Department of the Interior on X. This sends the worrying message “Go ahead and disregard changing climates killing off endangered species. It's ok, we can just bring back the animals later.”
 </p>
 <p style="text-indent:1.5em">
 But what if de-extinction is just the public-facing mission for a near term business case? After learning more about the company, I’ve devised a hypothesized roadmap for what Colossal might really be building over the next 50 years.</p>
