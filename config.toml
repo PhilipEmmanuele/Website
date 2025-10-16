@@ -33,7 +33,7 @@ nav = [
 
 latest_text = "Check out my latest post:"
 
-icon = "/img/icon.png"
+icon = "img/icon.png"
 profile_small = "img/icon.png"
 profile_large = "img/profile.jpg"
 
