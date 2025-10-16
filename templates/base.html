@@ -45,10 +45,11 @@
 
     {% if config.extra.profile_small %}
       {% set icon = resize_image(path=config.extra.profile_small, width=48, height=48, op="fill") -%}
-      <link rel="icon" href="{{ icon }}" />
+      <link rel="icon" href="{{ get_url(path=config.extra.icon) }}">
+      <link rel="shortcut icon" href="{{ get_url(path=config.extra.icon) }}">
       {% for size in [48,72,96,144,192,256,384,512] -%}
         {% set icon = resize_image(path=config.extra.profile_small, width=size, height=size, op="fill") -%}
-        <link rel="apple-touch-icon" sizes="{{size}}x{{size}}" href="{{ icon }}" />
+        <link rel="apple-touch-icon" href="{{ get_url(path=config.extra.icon) }}">
       {% endfor %}
     {% endif %}
 
@@ -126,7 +127,7 @@
     {% block header %}
       <header>
         <a class="profile-icon" href="/">
-          <img src="{{ icon }}" alt="profile picture">
+          <img src="{{ get_url(path=config.extra.profile_large) }}" alt="Profile">
         </a>
         <nav>
           {% for link in config.extra.nav %}
