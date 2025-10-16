@@ -39,19 +39,27 @@
           }
         }
       {% endif %}
+      .profile-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 12px;   /* soften corners */
+     }
+
     </style>
 
     <meta name="theme-color" content="{{ config.extra.accent }}" />
 
     {% if config.extra.profile_small %}
-      {% set icon = resize_image(path=config.extra.profile_small, width=48, height=48, op="fill") -%}
-      <link rel="icon" href="{{ get_url(path=config.extra.icon) }}">
-      <link rel="shortcut icon" href="{{ get_url(path=config.extra.icon) }}">
-      {% for size in [48,72,96,144,192,256,384,512] -%}
-        {% set icon = resize_image(path=config.extra.profile_small, width=size, height=size, op="fill") -%}
-        <link rel="apple-touch-icon" href="{{ get_url(path=config.extra.icon) }}">
-      {% endfor %}
-    {% endif %}
+  <link rel="icon" href="{{ get_url(path=config.extra.icon) }}">
+  <link rel="shortcut icon" href="{{ get_url(path=config.extra.icon) }}">
+
+  {% for size in [48,72,96,144,192,256,384,512] -%}
+    {# Produce a square icon at each size from profile_small #}
+    {% set touch = resize_image(path=config.extra.profile_small, width=size, height=size, op="fill") -%}
+    <link rel="apple-touch-icon" sizes="{{ size }}x{{ size }}" href="{{ touch }}">
+  {% endfor %}
+{% endif %}
 
     {% if config.extra.gtag %}
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ config.extra.gtag }}"></script>
