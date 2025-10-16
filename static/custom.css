@@ -44,3 +44,12 @@
 
 /* Optional: a utility to stop wrapping wherever you insert it */
 .clear { clear: both; }
+
+/* in custom.css */
+.hero-profile {
+  width: 220px;          /* pick what you like */
+  height: 220px;         /* square */
+  object-fit: cover;     /* clean crop */
+  border-radius: 12px;   /* or 50% for a circle */
+  display: block;        /* avoids inline gaps/collapse */
+}
