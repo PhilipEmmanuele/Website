@@ -1,6 +1,7 @@
 +++
 template = "page.html"
 date = 2024-01-01
+path = "scihub"
 +++
 
 ### A Note on Scihub
