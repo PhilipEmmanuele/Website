@@ -1,5 +1,6 @@
 +++
 title = "Synthetic Biology Blog"
+sort_by = "date"
 +++
 
 ## Hello, welcome to my blog.

@@ -1,0 +1,31 @@
+/* Navigation Buttons */
+#nav-bar {
+    align-items: center;
+}
+
+#nav-bar a {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    color: var(--text);
+}
+
+#nav-bar a:hover {
+    background-color: var(--accent);
+    color: white; /* Assuming accent is dark enough */
+}
+
+#nav-bar a.active {
+    background-color: var(--accent);
+    color: white;
+}
+
+/* Ensure theme toggle aligns well */
+.theme-toggle {
+    margin-left: 0.5rem;
+    padding: 0.5rem;
+}

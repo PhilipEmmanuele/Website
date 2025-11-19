@@ -1,6 +1,7 @@
 +++
-template = "blog.html"
-page_template = "blog-post.html"
+template = "blog/section.html"
+page_template = "blog/page.html"
+transparent = true
 sort_by = "date"
 +++
 

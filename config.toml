@@ -1,5 +1,6 @@
 # The URL the site will be built for
 base_url = "https://www.philip-emmanuele.com"
+theme = "anemone"
 
 # Build options
 compile_sass = true
@@ -23,33 +24,19 @@ highlight_theme = "demain"  # choose any supported theme
 
 # Extra (theme settings, etc.)
 [extra]
-dark_mode = false
+list_pages = true
+toc = true
+display_author = true
 
-nav = [
-  { name = "About", path = "/about/" },
-  { name = "Blog", path = "/blog/" },
-  { name = "SciHub", path = "/scihub/" }
+header_nav = [
+  { url = "/about/", name_en = "About", name_fr = "About" },
+  { url = "/blog/", name_en = "Blog", name_fr = "Blog" },
+  { url = "/scihub/", name_en = "SciHub", name_fr = "SciHub" }
 ]
 
-latest_text = "Check out my latest post:"
+# Keep existing extra settings if they are generic, but Anemone might not use them.
+# For now, I'll comment out the old ones to avoid confusion, or just leave them if they don't conflict.
+# Anemone uses specific keys.
 
-icon = "img/icon.png"
-profile_small = "img/icon.png"
-profile_large = "img/profile.jpg"
+author = "Philip Emmanuele"
 
-accent = "#05a081"
-accent_light = "#82d0c0"
-
-author = "John Doe"
-
-footer_about = """
-A blog by Philip Emmanuele
-"""
-
-footer_page = """
-© 2025, all rights reserved
-"""
-
-not_found_message = """
-This is not the page you're looking for... return back to [safety?](/)
-"""

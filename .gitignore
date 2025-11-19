@@ -1,0 +1,12 @@
+# Zola build output
+public/
+
+# Cache directories
+cache_nuccore/
+
+# Test data
+mock_fastqs/
+out_fastqs/
+
+# Backup directories
+templates_backup/
