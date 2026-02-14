@@ -686,13 +686,14 @@ const ANCESTORS = {
   "Xenarthra":       { parent: "Placentalia",    depth: 12, desc: "Sloths, armadillos" },
   "Laurasiatheria":  { parent: "Boreoeutheria",  depth: 13, desc: "Bats, whales, cats, horses..." },
   "Euarchontoglires":{ parent: "Boreoeutheria",  depth: 13, desc: "Primates, rodents, rabbits" },
+  "Glires":          { parent: "Euarchontoglires", depth: 14, desc: "Rodents & lagomorphs" },
   "Carnivora":       { parent: "Laurasiatheria", depth: 14, desc: "Cats, dogs, bears, seals" },
   "Perissodactyla":  { parent: "Laurasiatheria", depth: 14, desc: "Horses, rhinos, tapirs" },
   "Artiodactyla":    { parent: "Laurasiatheria", depth: 14, desc: "Even-toed ungulates & whales" },
   "Chiroptera":      { parent: "Laurasiatheria", depth: 14, desc: "Bats" },
   "Primates":        { parent: "Euarchontoglires", depth: 14, desc: "Primates" },
-  "Rodentia":        { parent: "Euarchontoglires", depth: 14, desc: "Rodents" },
-  "Lagomorpha":      { parent: "Euarchontoglires", depth: 14, desc: "Rabbits & hares" },
+  "Rodentia":        { parent: "Glires",          depth: 15, desc: "Rodents" },
+  "Lagomorpha":      { parent: "Glires",          depth: 15, desc: "Rabbits & hares" },
   "Hominidae":       { parent: "Primates",       depth: 15, desc: "Great apes" },
   "Cercopithecidae": { parent: "Primates",       depth: 15, desc: "Old World monkeys" },
   "Felidae":         { parent: "Carnivora",      depth: 15, desc: "Cat family" },
@@ -746,7 +747,7 @@ const EXTRA_ALIASES = {
   "odd-toed ungulates":"Perissodactyla","horses":"Perissodactyla",
   "even-toed ungulates":"Artiodactyla","ungulates":"Artiodactyla",
   "bats":"Chiroptera","primates":"Primates","monkeys":"Primates",
-  "rodents":"Rodentia","rabbits":"Lagomorpha","hares":"Lagomorpha",
+  "rodents":"Rodentia","rodents and rabbits":"Glires","glires":"Glires","rabbits":"Lagomorpha","hares":"Lagomorpha",
   "great apes":"Hominidae","apes":"Hominidae",
   "old world monkeys":"Cercopithecidae",
   "cats":"Felidae","felines":"Felidae",
@@ -874,6 +875,65 @@ function getChildrenOf(key) {
 // GAME STATE & FLOW
 // ═══════════════════════════════════════════
 
+const TEMPERATURES = { easy: 0.8, medium: 1.5, expert: 1.5 };
+
+// Precompute all valid pairs with phylogenetic distances
+let ALL_PAIRS = null;
+
+function precomputePairs() {
+  if (ALL_PAIRS) return;
+  ALL_PAIRS = [];
+  for (let i = 0; i < SPECIES.length; i++) {
+    for (let j = i + 1; j < SPECIES.length; j++) {
+      const s1 = SPECIES[i], s2 = SPECIES[j];
+      if (s1.clade === s2.clade) continue; // skip same-family
+      const lca = findLCA(s1, s2);
+      const d1 = ANCESTORS[s1.clade].depth - ANCESTORS[lca].depth;
+      const d2 = ANCESTORS[s2.clade].depth - ANCESTORS[lca].depth;
+      const dist = d1 + d2;
+      ALL_PAIRS.push({ i, j, lca, dist });
+    }
+  }
+}
+
+function pickPair() {
+  precomputePairs();
+  const temp = TEMPERATURES[state.mode] || 1.5;
+
+  // Filter out used pairs
+  let available = ALL_PAIRS.filter(p => {
+    const pk = [SPECIES[p.i].name, SPECIES[p.j].name].sort().join("|");
+    return !state.usedPairs.has(pk);
+  });
+
+  // Reset if exhausted
+  if (available.length === 0) {
+    state.usedPairs.clear();
+    available = ALL_PAIRS;
+  }
+
+  // Compute softmax weights: weight = exp(-distance / temperature)
+  // Use negative distance so closer pairs get higher weight
+  const logits = available.map(p => -p.dist / temp);
+  const maxLogit = Math.max(...logits);
+  const expWeights = logits.map(l => Math.exp(l - maxLogit)); // subtract max for numerical stability
+  const sumWeights = expWeights.reduce((a, b) => a + b, 0);
+
+  // Weighted random sample
+  let r = Math.random() * sumWeights;
+  let chosen = available[available.length - 1];
+  for (let k = 0; k < available.length; k++) {
+    r -= expWeights[k];
+    if (r <= 0) { chosen = available[k]; break; }
+  }
+
+  const sp1 = SPECIES[chosen.i], sp2 = SPECIES[chosen.j];
+  const pk = [sp1.name, sp2.name].sort().join("|");
+  state.usedPairs.add(pk);
+
+  return { sp1, sp2, lca: chosen.lca };
+}
+
 let state = { mode:null, round:1, score:0, streak:0, sp1:null, sp2:null, correctLCA:null, guesses:[], maxGuesses:4, resolved:false, usedPairs:new Set() };
 let selectedGuess = null;
 
@@ -901,20 +961,6 @@ function startGame(mode) {
 function goToModeSelect() {
   document.getElementById("gameScreen").style.display = "none";
   document.getElementById("modeScreen").style.display = "block";
-}
-
-function pickPair() {
-  let att = 0;
-  while (att < 300) {
-    const i = Math.floor(Math.random()*SPECIES.length), j = Math.floor(Math.random()*SPECIES.length);
-    if (i===j) { att++; continue; }
-    const s1=SPECIES[i], s2=SPECIES[j], pk=[s1.name,s2.name].sort().join("|");
-    if (s1.clade===s2.clade || state.usedPairs.has(pk)) { att++; continue; }
-    state.usedPairs.add(pk);
-    return { sp1:s1, sp2:s2, lca:findLCA(s1,s2) };
-  }
-  state.usedPairs.clear();
-  return pickPair();
 }
 
 function startRound() {
