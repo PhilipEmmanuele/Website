@@ -659,9 +659,11 @@ const ANCESTORS = {
   "Protostomia":     { parent: "Bilateria",      depth: 2,  desc: "Protostomes" },
   "Chordata":        { parent: "Deuterostomia",  depth: 3,  desc: "Animals with notochords" },
   "Echinodermata":   { parent: "Deuterostomia",  depth: 3,  desc: "Starfish, sea urchins" },
-  "Arthropoda":      { parent: "Protostomia",    depth: 3,  desc: "Insects, spiders, crabs" },
-  "Mollusca":        { parent: "Protostomia",    depth: 3,  desc: "Snails, octopuses, clams" },
-  "Annelida":        { parent: "Protostomia",    depth: 3,  desc: "Segmented worms" },
+  "Arthropoda":      { parent: "Ecdysozoa",      depth: 4,  desc: "Insects, spiders, crabs" },
+  "Ecdysozoa":       { parent: "Protostomia",    depth: 3,  desc: "Molting animals" },
+  "Spiralia":        { parent: "Protostomia",    depth: 3,  desc: "Mollusks, worms & allies" },
+  "Mollusca":        { parent: "Spiralia",       depth: 4,  desc: "Snails, octopuses, clams" },
+  "Annelida":        { parent: "Spiralia",       depth: 4,  desc: "Segmented worms" },
   "Vertebrata":      { parent: "Chordata",       depth: 4,  desc: "Animals with backbones" },
   "Gnathostomata":   { parent: "Vertebrata",     depth: 5,  desc: "Jawed vertebrates" },
   "Osteichthyes":    { parent: "Gnathostomata",  depth: 6,  desc: "Bony fish & descendants" },
@@ -676,11 +678,12 @@ const ANCESTORS = {
   "Monotremata":     { parent: "Mammalia",       depth: 10, desc: "Egg-laying mammals" },
   "Placentalia":     { parent: "Theria",         depth: 11, desc: "Placental mammals" },
   "Marsupialia":     { parent: "Theria",         depth: 11, desc: "Marsupials" },
-  "Archosauria":     { parent: "Reptilia",       depth: 10, desc: "Birds & crocodilians" },
+  "Archelosauria":   { parent: "Reptilia",       depth: 10, desc: "Turtles & archosaurs" },
   "Lepidosauria":    { parent: "Reptilia",       depth: 10, desc: "Lizards & snakes" },
-  "Testudines":      { parent: "Reptilia",       depth: 10, desc: "Turtles & tortoises" },
-  "Aves":            { parent: "Archosauria",    depth: 11, desc: "Birds" },
-  "Crocodilia":      { parent: "Archosauria",    depth: 11, desc: "Crocodilians" },
+  "Testudines":      { parent: "Archelosauria",  depth: 11, desc: "Turtles & tortoises" },
+  "Archosauria":     { parent: "Archelosauria",  depth: 11, desc: "Birds & crocodilians" },
+  "Aves":            { parent: "Archosauria",    depth: 12, desc: "Birds" },
+  "Crocodilia":      { parent: "Archosauria",    depth: 12, desc: "Crocodilians" },
   "Afrotheria":      { parent: "Placentalia",    depth: 12, desc: "Elephants, manatees, etc." },
   "Boreoeutheria":   { parent: "Placentalia",    depth: 12, desc: "Most N. hemisphere mammals" },
   "Xenarthra":       { parent: "Placentalia",    depth: 12, desc: "Sloths, armadillos" },
@@ -703,16 +706,17 @@ const ANCESTORS = {
   "Cervidae":        { parent: "Artiodactyla",   depth: 15, desc: "Deer family" },
   "Cetacea":         { parent: "Artiodactyla",   depth: 15, desc: "Whales & dolphins" },
   "Suidae":          { parent: "Artiodactyla",   depth: 15, desc: "Pig family" },
-  "Insecta":         { parent: "Arthropoda",     depth: 4,  desc: "Insects" },
-  "Arachnida":       { parent: "Arthropoda",     depth: 4,  desc: "Spiders, scorpions, ticks" },
-  "Crustacea":       { parent: "Arthropoda",     depth: 4,  desc: "Crabs, lobsters, shrimp" },
-  "Cephalopoda":     { parent: "Mollusca",       depth: 4,  desc: "Octopuses, squid" },
-  "Gastropoda":      { parent: "Mollusca",       depth: 4,  desc: "Snails & slugs" },
-  "Bivalvia":        { parent: "Mollusca",       depth: 4,  desc: "Clams, mussels, oysters" },
-  "Hymenoptera":     { parent: "Insecta",        depth: 5,  desc: "Ants, bees, wasps" },
-  "Lepidoptera":     { parent: "Insecta",        depth: 5,  desc: "Butterflies & moths" },
-  "Coleoptera":      { parent: "Insecta",        depth: 5,  desc: "Beetles" },
-  "Diptera":         { parent: "Insecta",        depth: 5,  desc: "Flies & mosquitoes" },
+  "Insecta":         { parent: "Pancrustacea",   depth: 6,  desc: "Insects" },
+  "Arachnida":       { parent: "Arthropoda",     depth: 5,  desc: "Spiders, scorpions, ticks" },
+  "Pancrustacea":    { parent: "Arthropoda",     depth: 5,  desc: "Insects & crustaceans" },
+  "Crustacea":       { parent: "Pancrustacea",   depth: 6,  desc: "Crabs, lobsters, shrimp" },
+  "Cephalopoda":     { parent: "Mollusca",       depth: 5,  desc: "Octopuses, squid" },
+  "Gastropoda":      { parent: "Mollusca",       depth: 5,  desc: "Snails & slugs" },
+  "Bivalvia":        { parent: "Mollusca",       depth: 5,  desc: "Clams, mussels, oysters" },
+  "Hymenoptera":     { parent: "Insecta",        depth: 7,  desc: "Ants, bees, wasps" },
+  "Lepidoptera":     { parent: "Insecta",        depth: 7,  desc: "Butterflies & moths" },
+  "Coleoptera":      { parent: "Insecta",        depth: 7,  desc: "Beetles" },
+  "Diptera":         { parent: "Insecta",        depth: 7,  desc: "Flies & mosquitoes" },
 };
 
 const ALIASES = {};
@@ -726,6 +730,9 @@ const EXTRA_ALIASES = {
   "chordates":"Chordata",
   "starfish":"Echinodermata","sea urchins":"Echinodermata","echinoderms":"Echinodermata",
   "arthropods":"Arthropoda","bugs":"Arthropoda",
+  "ecdysozoans":"Ecdysozoa","ecdysozoa":"Ecdysozoa","molting animals":"Ecdysozoa",
+  "spiralians":"Spiralia","spiralia":"Spiralia","lophotrochozoa":"Spiralia","lophotrochozoans":"Spiralia",
+  "archelosauria":"Archelosauria","archelosaurs":"Archelosauria","turtles and archosaurs":"Archelosauria",
   "mollusks":"Mollusca","molluscs":"Mollusca",
   "worms":"Annelida","segmented worms":"Annelida","annelids":"Annelida",
   "vertebrates":"Vertebrata",
@@ -756,7 +763,7 @@ const EXTRA_ALIASES = {
   "cattle":"Bovidae","cows":"Bovidae","goats":"Bovidae","sheep":"Bovidae","bovids":"Bovidae",
   "deer":"Cervidae","whales":"Cetacea","dolphins":"Cetacea","cetaceans":"Cetacea",
   "pigs":"Suidae",
-  "insects":"Insecta","spiders":"Arachnida","scorpions":"Arachnida","arachnids":"Arachnida",
+  "insects":"Insecta","pancrustacea":"Pancrustacea","insects and crustaceans":"Pancrustacea","spiders":"Arachnida","scorpions":"Arachnida","arachnids":"Arachnida",
   "crabs":"Crustacea","lobsters":"Crustacea","shrimp":"Crustacea","crustaceans":"Crustacea",
   "octopuses":"Cephalopoda","squid":"Cephalopoda","cephalopods":"Cephalopoda",
   "snails":"Gastropoda","slugs":"Gastropoda","gastropods":"Gastropoda",
@@ -875,7 +882,7 @@ function getChildrenOf(key) {
 // GAME STATE & FLOW
 // ═══════════════════════════════════════════
 
-const TEMPERATURES = { easy: 0.8, medium: 1.5, expert: 1.5 };
+const TEMPERATURES = { easy: 3.0, medium: 1.5, expert: 1.5 };
 
 // Precompute all valid pairs with phylogenetic distances
 let ALL_PAIRS = null;
