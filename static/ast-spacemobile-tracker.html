@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AST SpaceMobile — 3D Satellite Tracker</title>
+    <meta name="description"
+        content="Real-time 3D orbital tracker for AST SpaceMobile's satellite constellation including BlueWalker 3 and BlueBird satellites.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/satellite.js@4.0.0/dist/satellite.min.js"></script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        :root {
+            --eva-black: #0a0a14;
+            --eva-dark: #0d0d24;
+            --eva-navy: #000053;
+            --eva-green: #52d053;
+            --eva-green-dim: rgba(82, 208, 83, 0.15);
+            --eva-green-border: rgba(82, 208, 83, 0.25);
+            --eva-orange: #f0903a;
+            --eva-orange-dim: rgba(240, 143, 58, 0.12);
+            --eva-red: #e81900;
+            --eva-blue: #54a2d4;
+            --eva-blue-dim: rgba(84, 162, 212, 0.1);
+            --eva-yellow: #f5c024;
+            --eva-text: #b8c4b8;
+            --eva-text-dim: #4a5a4a;
+            --font-mono: 'JetBrains Mono', monospace;
+            --font-label: 'Barlow Condensed', sans-serif;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--eva-black);
+            color: var(--eva-text);
+            font-family: var(--font-mono)
+        }
+
+        /* ── CRT Scan Lines Overlay ────────────────────── */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.06) 2px,
+                    rgba(0, 0, 0, 0.06) 4px);
+        }
+
+        /* ── Vignette Overlay ──────────────────────────── */
+        #vignette {
+            position: fixed;
+            inset: 0;
+            z-index: 95;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 100%);
+        }
+
+        #canvas-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%
+        }
+
+        /* ── Corner Bracket Mixin ──────────────────────── */
+        .eva-panel {
+            position: relative;
+        }
+
+        .eva-panel::before,
+        .eva-panel::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .eva-panel::before {
+            top: -1px;
+            left: -1px;
+            border-top: 1px solid var(--eva-green);
+            border-left: 1px solid var(--eva-green);
+        }
+
+        .eva-panel::after {
+            top: -1px;
+            right: -1px;
+            border-top: 1px solid var(--eva-green);
+            border-right: 1px solid var(--eva-green);
+        }
+
+        .eva-panel-bottom::before,
+        .eva-panel-bottom::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .eva-panel-bottom::before {
+            bottom: -1px;
+            left: -1px;
+            border-bottom: 1px solid var(--eva-green);
+            border-left: 1px solid var(--eva-green);
+        }
+
+        .eva-panel-bottom::after {
+            bottom: -1px;
+            right: -1px;
+            border-bottom: 1px solid var(--eva-green);
+            border-right: 1px solid var(--eva-green);
+        }
+
+        /* ── Data Refresh Flicker ──────────────────────── */
+        @keyframes data-refresh {
+            0% {
+                opacity: 1;
+            }
+
+            30% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .data-flicker {
+            animation: data-refresh 150ms linear;
+        }
+
+        /* ── Sharp Pulse ───────────────────────────────── */
+        @keyframes sharp-pulse {
+
+            0%,
+            40% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+
+            60%,
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* ── Header ─────────────────────────────────────── */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 56px;
+            background: var(--eva-dark);
+            border-bottom: 1px solid var(--eva-green-border);
+        }
+
+        #header .logo {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 240px;
+        }
+
+        #header .logo .logo-title {
+            font-family: var(--font-label);
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--eva-green);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transform: scaleX(0.88);
+            transform-origin: left;
+        }
+
+        #header .logo .logo-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-family: var(--font-label);
+            font-size: 9px;
+            color: var(--eva-text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transform: scaleX(0.88);
+            transform-origin: left;
+        }
+
+        #header .logo .logo-status .status-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--eva-green);
+            box-shadow: 0 0 4px var(--eva-green);
+            animation: sharp-pulse 2s step-end infinite;
+        }
+
+        #header .stats {
+            display: flex;
+            gap: 0;
+            align-items: stretch;
+            height: 42px;
+        }
+
+        #header .stats .stat-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 18px;
+            border-right: 1px solid var(--eva-green-dim);
+        }
+
+        #header .stats .stat-block:first-child {
+            border-left: 1px solid var(--eva-green-dim);
+        }
+
+        #header .stats .stat-label {
+            font-family: var(--font-label);
+            font-weight: 700;
+            font-size: 9px;
+            color: var(--eva-text-dim);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transform: scaleX(0.88);
+        }
+
+        #header .stats .stat-val {
+            font-family: var(--font-mono);
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--eva-orange);
+        }
+
+        #header .clock {
+            min-width: 200px;
+            text-align: right;
+        }
+
+        #header .clock-box {
+            display: inline-block;
+            border: 1px solid var(--eva-green-dim);
+            padding: 5px 12px;
+            position: relative;
+        }
+
+        /* clock corner brackets */
+        #header .clock-box::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 6px;
+            height: 6px;
+            border-top: 1px solid var(--eva-green);
+            border-left: 1px solid var(--eva-green);
+        }
+
+        #header .clock-box::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            right: -1px;
+            width: 6px;
+            height: 6px;
+            border-top: 1px solid var(--eva-green);
+            border-right: 1px solid var(--eva-green);
+        }
+
+        #header .clock #h-clock {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--eva-green);
+        }
+
+        /* ── Left Sidebar ───────────────────────────────── */
+        #sidebar {
+            position: fixed;
+            top: 64px;
+            left: 8px;
+            bottom: 36px;
+            width: 220px;
+            z-index: 90;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: rgba(13, 13, 36, 0.92);
+            border: 1px solid var(--eva-green-dim);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(82, 208, 83, 0.2) transparent;
+        }
+
+        #sidebar::-webkit-scrollbar {
+            width: 3px
+        }
+
+        #sidebar::-webkit-scrollbar-thumb {
+            background: rgba(82, 208, 83, 0.25);
+        }
+
+        #sidebar .sidebar-title {
+            padding: 12px 14px 8px;
+            font-family: var(--font-label);
+            font-weight: 700;
+            font-size: 10px;
+            color: var(--eva-text-dim);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transform: scaleX(0.88);
+            transform-origin: left;
+            border-bottom: 1px solid var(--eva-green-dim);
+            margin-bottom: 2px;
+        }
+
+        .sat-card {
+            margin: 0;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-left: 2px solid transparent;
+            border-bottom: 1px solid rgba(82, 208, 83, 0.06);
+            transition: all .08s step-end;
+        }
+
+        .sat-card:hover {
+            background: var(--eva-green-dim);
+            border-left-color: var(--eva-text-dim);
+        }
+
+        .sat-card.active {
+            background: rgba(82, 208, 83, 0.08);
+            border-left-color: var(--eva-green);
+        }
+
+        .sat-card.active .sat-name-text {
+            color: var(--eva-green);
+        }
+
+        .sat-card .sat-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+        }
+
+        .sat-card .sat-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            animation: sharp-pulse 2s step-end infinite;
+        }
+
+        .sat-card .sat-name-text {
+            font-family: var(--font-mono);
+            font-weight: 500;
+            font-size: 11px;
+            color: var(--eva-text);
+            text-transform: uppercase;
+        }
+
+        .sat-card .sat-gen {
+            font-family: var(--font-label);
+            font-weight: 600;
+            font-size: 8px;
+            color: var(--eva-text-dim);
+            border: 1px solid var(--eva-text-dim);
+            padding: 0 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-left: auto;
+        }
+
+        .sat-card .sat-telem {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--eva-blue);
+            padding-left: 11px;
+        }
+
+        /* ── Right Detail Panel ─────────────────────────── */
+        #detail-panel {
+            position: fixed;
+            top: 64px;
+            right: -380px;
+            bottom: 36px;
+            width: 340px;
+            z-index: 90;
+            overflow-y: auto;
+            padding: 18px;
+            background: rgba(13, 13, 36, 0.94);
+            border: 1px solid var(--eva-green-dim);
+            transition: right .08s step-end;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(82, 208, 83, 0.2) transparent;
+        }
+
+        #detail-panel::-webkit-scrollbar {
+            width: 3px
+        }
+
+        #detail-panel::-webkit-scrollbar-thumb {
+            background: rgba(82, 208, 83, 0.25);
+        }
+
+        #detail-panel.open {
+            right: 8px
+        }
+
+        #detail-panel .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--eva-text-dim);
+            border-radius: 0;
+            background: transparent;
+            color: var(--eva-text-dim);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .08s;
+        }
+
+        #detail-panel .close-btn:hover {
+            border-color: var(--eva-orange);
+            color: var(--eva-orange)
+        }
+
+        #detail-panel .dp-gen-label {
+            font-family: var(--font-label);
+            font-weight: 700;
+            font-size: 9px;
+            color: var(--eva-orange);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transform: scaleX(0.88);
+            transform-origin: left;
+            margin-bottom: 4px;
+        }
+
+        #detail-panel .dp-name {
+            font-family: var(--font-mono);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--eva-green);
+            margin-bottom: 4px
+        }
+
+        #detail-panel .dp-norad {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            color: var(--eva-text-dim);
+            margin-bottom: 16px
+        }
+
+        #detail-panel .dp-section {
+            margin-bottom: 16px
+        }
+
+        #detail-panel .dp-section-title {
+            font-family: var(--font-label);
+            font-weight: 700;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--eva-text-dim);
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid var(--eva-green-dim);
+            transform: scaleX(0.88);
+            transform-origin: left;
+        }
+
+        #detail-panel .dp-section-title::before {
+            content: '▸ ';
+            color: var(--eva-green);
+        }
+
+        #detail-panel .dp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px
+        }
+
+        #detail-panel .dp-item {
+            padding: 6px 8px;
+            border: 1px solid rgba(82, 208, 83, 0.06);
+        }
+
+        #detail-panel .dp-item .dp-label {
+            font-family: var(--font-label);
+            font-weight: 600;
+            font-size: 9px;
+            color: var(--eva-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+            transform: scaleX(0.88);
+            transform-origin: left;
+        }
+
+        #detail-panel .dp-item .dp-value {
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .dp-value-orange {
+            color: var(--eva-orange);
+        }
+
+        .dp-value-green {
+            color: var(--eva-green);
+        }
+
+        .dp-value-blue {
+            color: var(--eva-blue);
+        }
+
+        .dp-value-text {
+            color: var(--eva-text);
+        }
+
+        #detail-panel .dp-desc {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 300;
+            line-height: 1.8;
+            color: var(--eva-text);
+            margin-bottom: 12px
+        }
+
+        #detail-panel .dp-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px
+        }
+
+        #detail-panel .dp-tag {
+            font-family: var(--font-label);
+            font-weight: 600;
+            font-size: 8px;
+            padding: 2px 8px;
+            border: 1px solid var(--eva-text-dim);
+            color: var(--eva-text-dim);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ── 3D Labels ──────────────────────────────────── */
+        .sat-label {
+            position: fixed;
+            z-index: 80;
+            pointer-events: none;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 0;
+            background: none;
+            border: none;
+            white-space: nowrap;
+            transform: translate(-50%, -150%);
+            opacity: 0;
+            transition: opacity .15s;
+            text-shadow: 0 0 6px rgba(0, 0, 0, 1), 0 0 12px currentColor;
+        }
+
+        .sat-label.visible {
+            opacity: 1
+        }
+
+        /* ── Hover Tooltip ──────────────────────────────── */
+        #tooltip {
+            position: fixed;
+            z-index: 110;
+            pointer-events: none;
+            display: none;
+            background: var(--eva-dark);
+            border: 1px solid var(--eva-orange);
+            padding: 8px 12px;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            min-width: 200px;
+        }
+
+        /* tooltip corner brackets */
+        #tooltip::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            width: 6px;
+            height: 6px;
+            border-top: 1px solid var(--eva-orange);
+            border-left: 1px solid var(--eva-orange);
+        }
+
+        #tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: -1px;
+            width: 6px;
+            height: 6px;
+            border-bottom: 1px solid var(--eva-orange);
+            border-right: 1px solid var(--eva-orange);
+        }
+
+        #tooltip .tt-name {
+            font-weight: 700;
+            font-size: 11px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--eva-orange);
+        }
+
+        #tooltip .tt-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%
+        }
+
+        #tooltip .tt-data-line {
+            font-size: 9px;
+            color: var(--eva-green);
+        }
+
+        /* ── Bottom Status Bar ─────────────────────────── */
+        #status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 28px;
+            background: var(--eva-dark);
+            border-top: 1px solid var(--eva-green-border);
+        }
+
+        #status-bar .status-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--eva-green);
+        }
+
+        #status-bar .status-left .status-pip {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--eva-green);
+            box-shadow: 0 0 4px var(--eva-green);
+            animation: sharp-pulse 2s step-end infinite;
+        }
+
+        #status-bar .status-right {
+            font-family: var(--font-mono);
+            font-size: 9px;
+            color: var(--eva-text-dim);
+        }
+
+        #status-bar .status-right .ctrl-bracket {
+            color: var(--eva-blue);
+        }
+
+        /* ── Responsive ─────────────────────────────────── */
+        @media(max-width:768px) {
+            #sidebar {
+                display: none
+            }
+
+            #detail-panel {
+                width: calc(100% - 16px)
+            }
+
+            #detail-panel.open {
+                right: 8px
+            }
+
+            #header .stats {
+                display: none
+            }
+
+            .sat-label {
+                display: none
+            }
+
+            #status-bar .status-left {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Vignette -->
+    <div id="vignette"></div>
+
+    <!-- Header -->
+    <div id="header">
+        <div class="logo">
+            <div class="logo-title">ASTS CONSTELLATION TRACKING</div>
+            <div class="logo-status">
+                <div class="status-dot"></div>ALL STATIONS NOMINAL
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat-block">
+                <div class="stat-label">VEHICLES</div>
+                <div class="stat-val" id="h-count">—</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">AVG ALTITUDE</div>
+                <div class="stat-val"><span id="h-alt">---</span> KM</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">AVG VELOCITY</div>
+                <div class="stat-val"><span id="h-vel">---</span> KM/S</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">INCLINATION</div>
+                <div class="stat-val" id="h-incl">---°</div>
+            </div>
+        </div>
+        <div class="clock">
+            <div class="clock-box">
+                <span id="h-clock">----.--.-- · --:--:-- UTC</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Sidebar -->
+    <div id="sidebar" class="eva-panel eva-panel-bottom">
+        <div class="sidebar-title">VEHICLE ROSTER</div>
+        <div id="sat-list"></div>
+    </div>
+
+    <!-- Right Detail Panel -->
+    <div id="detail-panel" class="eva-panel eva-panel-bottom">
+        <button class="close-btn" id="dp-close">&times;</button>
+        <div id="dp-content"></div>
+    </div>
+
+    <!-- Tooltip -->
+    <div id="tooltip">
+        <div class="tt-name">
+            <div class="tt-dot" id="tt-dot"></div><span id="tt-name"></span>
+        </div>
+        <div class="tt-data-line">
+            ALT <span id="tt-alt"></span> · VEL <span id="tt-vel"></span>
+        </div>
+        <div class="tt-data-line" style="color: var(--eva-text-dim);">
+            <span id="tt-ll"></span>
+        </div>
+    </div>
+
+    <!-- Bottom Status Bar -->
+    <div id="status-bar">
+        <div class="status-left">
+            <div class="status-pip"></div>
+            <span>TRACKING <span id="sb-count">7</span> VEHICLES · ORBITAL STATUS NOMINAL</span>
+            <span style="margin-left:12px;color:var(--eva-text-dim)">·</span>
+            <span id="data-source" style="color:var(--eva-blue);margin-left:4px">CONNECTING…</span>
+        </div>
+        <div class="status-right">
+            <span class="ctrl-bracket">[</span>DRAG<span class="ctrl-bracket">]</span> ROTATE
+            <span class="ctrl-bracket">[</span>SCROLL<span class="ctrl-bracket">]</span> ZOOM
+            <span class="ctrl-bracket">[</span>CLICK<span class="ctrl-bracket">]</span> SELECT
+        </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div id="canvas-container"></div>
+
+    <!-- 3D Labels Container -->
+    <div id="labels-container"></div>
+
+    <script>
+        /* ================================================================
+           AST SpaceMobile 3D Satellite Tracker
+           ================================================================ */
+
+        // ── Satellite Metadata (enrichment for known satellites) ────────
+        // CelesTrak names → friendly metadata. New satellites auto-discovered
+        // from the API will get default metadata.
+        const SATELLITE_META = {
+            'BLUEWALKER-3': {
+                friendlyName: 'BlueWalker 3',
+                color: '#a78bfa',
+                generation: 'Prototype',
+                launchDate: 'Sept 10, 2022',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueWalker 3 is AST SpaceMobile\'s prototype satellite — the largest-ever commercial communications array deployed in low Earth orbit. It validated the direct-to-cell technology that underpins the entire constellation.',
+                partners: ['AT&T', 'Vodafone', 'Rakuten'],
+            },
+            'SPACEMOBILE-001': {
+                friendlyName: 'BlueBird 1',
+                color: '#38bdf8',
+                generation: 'Block 1',
+                launchDate: 'Sept 12, 2024',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueBird 1 is the first of five Block 1 commercial satellites launched aboard a single SpaceX Falcon 9 rocket. These satellites form the initial commercial constellation for direct-to-cell broadband service.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada'],
+            },
+            'SPACEMOBILE-002': {
+                friendlyName: 'BlueBird 2',
+                color: '#38bdf8',
+                generation: 'Block 1',
+                launchDate: 'Sept 12, 2024',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueBird 2 is the second Block 1 satellite in the AST SpaceMobile constellation, co-launched with BlueBird 1, 3, 4, and 5 to provide initial broadband coverage from space directly to standard mobile phones.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada'],
+            },
+            'SPACEMOBILE-003': {
+                friendlyName: 'BlueBird 3',
+                color: '#38bdf8',
+                generation: 'Block 1',
+                launchDate: 'Sept 12, 2024',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueBird 3 is the third Block 1 satellite, enabling expanded coverage zones and multi-satellite coordination for seamless handoffs in the AST SpaceMobile direct-to-cell network.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada'],
+            },
+            'SPACEMOBILE-004': {
+                friendlyName: 'BlueBird 4',
+                color: '#38bdf8',
+                generation: 'Block 1',
+                launchDate: 'Sept 12, 2024',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueBird 4 is the fourth Block 1 satellite, further densifying the initial constellation and providing redundancy across the orbital plane for continuous service availability.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada'],
+            },
+            'SPACEMOBILE-005': {
+                friendlyName: 'BlueBird 5',
+                color: '#38bdf8',
+                generation: 'Block 1',
+                launchDate: 'Sept 12, 2024',
+                mass: '~1,500 kg',
+                arraySize: '693 sq ft (64 m²)',
+                description: 'BlueBird 5 is the fifth and final Block 1 satellite, completing the initial commercial constellation. Together, the five BlueBirds provide foundational coverage for AST SpaceMobile\'s broadband-from-space service.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada'],
+            },
+            'SPACEMOBILE-006': {
+                friendlyName: 'BlueBird 6',
+                color: '#f472b6',
+                generation: 'Block 2',
+                launchDate: 'Dec 2025',
+                mass: '~6,100 kg',
+                arraySize: '~2,400 sq ft (223 m²)',
+                description: 'BlueBird 6 is AST SpaceMobile\'s first Block 2 next-generation satellite, launched aboard an ISRO LVM3 rocket. At ~6,100 kg with a massive ~2,400 sq ft phased array, it represents a dramatic leap in capability — nearly 3.5× the array area of Block 1.',
+                partners: ['AT&T', 'Verizon', 'Vodafone', 'Rakuten', 'Bell Canada', 'Deutsche Telekom'],
+            },
+        };
+
+        // Colors to cycle through for auto-discovered satellites
+        const AUTO_COLORS = ['#34d399', '#fbbf24', '#f87171', '#818cf8', '#fb923c', '#22d3ee'];
+        let autoColorIdx = 0;
+
+        // ── Live satellite array (populated from API) ──────────────────
+        let SATELLITES = [];
+
+        // ── TLE Fetching from CelesTrak ────────────────────────────────
+        const TLE_REFRESH_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in ms
+        let lastTLEFetch = 0;
+        let tleSource = 'connecting'; // 'live', 'fallback', 'connecting'
+
+        function updateDataSourceStatus() {
+            const el = document.getElementById('data-source');
+            if (!el) return;
+            if (tleSource === 'live') {
+                const ago = Math.round((Date.now() - lastTLEFetch) / 1000);
+                let agoStr;
+                if (ago < 60) agoStr = ago + 'S AGO';
+                else if (ago < 3600) agoStr = Math.floor(ago / 60) + 'M AGO';
+                else agoStr = Math.floor(ago / 3600) + 'H AGO';
+                el.textContent = 'LIVE · CELESTRAK · ' + agoStr;
+                el.style.color = 'var(--eva-green)';
+            } else if (tleSource === 'fallback') {
+                el.textContent = 'FALLBACK TLE DATA';
+                el.style.color = 'var(--eva-orange)';
+            } else {
+                el.textContent = 'CONNECTING…';
+                el.style.color = 'var(--eva-blue)';
+            }
+        }
+
+        function parseTLEText(text) {
+            // Parse CelesTrak TLE format: 3 lines per satellite (name, line1, line2)
+            const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+            const entries = [];
+            for (let i = 0; i + 2 < lines.length; i += 3) {
+                const catName = lines[i].trim();
+                const tle1 = lines[i + 1].trim();
+                const tle2 = lines[i + 2].trim();
+                // Validate TLE format
+                if (tle1.startsWith('1 ') && tle2.startsWith('2 ')) {
+                    entries.push({ catName, tle1, tle2 });
+                }
+            }
+            return entries;
+        }
+
+        function buildSatelliteFromTLE(entry) {
+            const catName = entry.catName;
+            // Skip debris entries
+            if (catName.includes(' DEB') || catName.includes(' R/B')) return null;
+            // Extract NORAD ID from TLE line 1
+            const norad = parseInt(entry.tle1.substring(2, 7).trim());
+            // Find metadata or create defaults
+            const meta = SATELLITE_META[catName];
+            const friendlyName = meta ? meta.friendlyName : catName.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+            const color = meta ? meta.color : AUTO_COLORS[autoColorIdx++ % AUTO_COLORS.length];
+            return {
+                name: friendlyName,
+                catName: catName,
+                norad: norad,
+                color: color,
+                generation: meta ? meta.generation : 'Unknown',
+                launchDate: meta ? meta.launchDate : 'Unknown',
+                mass: meta ? meta.mass : 'Unknown',
+                arraySize: meta ? meta.arraySize : 'Unknown',
+                description: meta ? meta.description : `${friendlyName} is an AST SpaceMobile satellite tracked via NORAD catalog #${norad}.`,
+                partners: meta ? meta.partners : ['AST SpaceMobile'],
+                tle1: entry.tle1,
+                tle2: entry.tle2,
+                satrec: satellite.twoline2satrec(entry.tle1, entry.tle2),
+                live: { alt: 0, vel: 0, lat: 0, lng: 0, pos: null },
+            };
+        }
+
+        async function fetchTLEs() {
+            const urls = [
+                'https://celestrak.org/NORAD/elements/gp.php?NAME=SPACEMOBILE&FORMAT=TLE',
+                'https://celestrak.org/NORAD/elements/gp.php?NAME=BLUEWALKER&FORMAT=TLE',
+            ];
+            const allEntries = [];
+            const seenNORAD = new Set();
+            for (const url of urls) {
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) continue;
+                    const text = await resp.text();
+                    if (text.includes('No GP data found')) continue;
+                    const entries = parseTLEText(text);
+                    for (const e of entries) {
+                        const norad = parseInt(e.tle1.substring(2, 7).trim());
+                        if (!seenNORAD.has(norad)) {
+                            seenNORAD.add(norad);
+                            allEntries.push(e);
+                        }
+                    }
+                } catch (err) {
+                    console.warn('TLE fetch failed for', url, err);
+                }
+            }
+            return allEntries;
+        }
+
+        // Fallback hardcoded TLEs (used if API is unreachable)
+        const FALLBACK_TLES = [
+            { catName: 'BLUEWALKER-3', tle1: '1 53807U 22111AL  26052.73980558  .00008488  00000+0  24226-3 0  9996', tle2: '2 53807  53.2293 215.4081 0006924 167.2896 192.8284 15.36883319192441' },
+            { catName: 'SPACEMOBILE-003', tle1: '1 61045U 24163A   26053.15720814  .00006262  00000+0  29082-3 0  9995', tle2: '2 61045  52.9705 118.5576 0008499 145.4633 214.6915 15.21261209 80268' },
+            { catName: 'SPACEMOBILE-005', tle1: '1 61046U 24163B   26053.20632480  .00021620  00000+0  96864-3 0  9990', tle2: '2 61046  52.9814 118.2103 0012227 134.1967 226.0034 15.21145229 80264' },
+            { catName: 'SPACEMOBILE-001', tle1: '1 61047U 24163C   26052.61363870  .00021339  00000+0  95576-3 0  9995', tle2: '2 61047  52.9773 120.7164 0009579 138.3190 221.8536 15.21187758 80177' },
+            { catName: 'SPACEMOBILE-002', tle1: '1 61048U 24163D   26053.18926154  .00010879  00000+0  49328-3 0  9990', tle2: '2 61048  52.9779 118.0593 0009073 130.8939 229.2843 15.21320006 80265' },
+            { catName: 'SPACEMOBILE-004', tle1: '1 61049U 24163E   26053.17263928  .00008164  00000+0  37567-3 0  9999', tle2: '2 61049  52.9668 117.9611 0010702 162.8345 197.3013 15.21150166 80261' },
+            { catName: 'SPACEMOBILE-006', tle1: '1 67232U 25309A   26052.84301388  .00003453  00000+0  18342-3 0  9994', tle2: '2 67232  52.9949 139.6998 0011892 133.3605 226.8381 15.17908746  9071' },
+        ];
+
+        async function loadSatellites() {
+            let entries = await fetchTLEs();
+            if (entries.length === 0) {
+                console.warn('CelesTrak API unreachable — using fallback TLEs');
+                entries = FALLBACK_TLES;
+                tleSource = 'fallback';
+            } else {
+                tleSource = 'live';
+                lastTLEFetch = Date.now();
+            }
+            autoColorIdx = 0;
+            const sats = [];
+            // Sort entries so known satellites come first (by NORAD ID)
+            entries.sort((a, b) => {
+                const na = parseInt(a.tle1.substring(2, 7).trim());
+                const nb = parseInt(b.tle1.substring(2, 7).trim());
+                return na - nb;
+            });
+            for (const entry of entries) {
+                const sat = buildSatelliteFromTLE(entry);
+                if (sat) sats.push(sat);
+            }
+            return sats;
+        }
+
+        // Update TLEs for existing satellites (refresh without rebuilding the whole scene)
+        async function refreshTLEs() {
+            const entries = await fetchTLEs();
+            if (entries.length === 0) return; // Keep existing data on failure
+            const entryMap = {};
+            entries.forEach(e => {
+                const norad = parseInt(e.tle1.substring(2, 7).trim());
+                entryMap[norad] = e;
+            });
+            let needsRebuild = false;
+            // Check for new satellites
+            const currentNORADs = new Set(SATELLITES.map(s => s.norad));
+            for (const e of entries) {
+                const catName = e.catName;
+                if (catName.includes(' DEB') || catName.includes(' R/B')) continue;
+                const norad = parseInt(e.tle1.substring(2, 7).trim());
+                if (!currentNORADs.has(norad)) {
+                    needsRebuild = true;
+                    break;
+                }
+            }
+            if (needsRebuild) {
+                // New satellite discovered — full rebuild
+                console.log('New satellite detected! Rebuilding tracker...');
+                SATELLITES = await loadSatellites();
+                rebuildScene();
+                return;
+            }
+            // Just update TLEs for existing sats
+            SATELLITES.forEach(s => {
+                const entry = entryMap[s.norad];
+                if (entry) {
+                    s.tle1 = entry.tle1;
+                    s.tle2 = entry.tle2;
+                    s.satrec = satellite.twoline2satrec(entry.tle1, entry.tle2);
+                }
+            });
+            updateOrbits();
+            console.log('TLEs refreshed at', new Date().toISOString());
+            lastTLEFetch = Date.now();
+            tleSource = 'live';
+            updateDataSourceStatus();
+        }
+
+        // ── Constants & Globals ─────────────────────────────────────────
+        const EARTH_RADIUS = 5;
+        const ALT_EXAGGERATION = 2.5;
+        const DEG = Math.PI / 180;
+        let scene, camera, renderer, earthMesh, cloudMesh;
+        let frameCount = 0;
+        let selectedSat = null;
+        let hoveredSat = null;
+        let isUserInteracting = false;
+        let lastInteraction = 0;
+
+        // Camera
+        let camTheta = 0.5, camPhi = 1.0, camRadius = 18;
+        let targetTheta = 0.5, targetPhi = 1.0, targetRadius = 18;
+        let isDragging = false, prevMouse = { x: 0, y: 0 };
+
+        // ── Utility Functions ───────────────────────────────────────────
+        function ll2v(lat, lng, altKm) {
+            const r = EARTH_RADIUS + (altKm / 6371) * EARTH_RADIUS * ALT_EXAGGERATION;
+            const phi = (90 - lat) * DEG;
+            const theta = (lng + 180) * DEG;
+            return new THREE.Vector3(
+                -r * Math.sin(phi) * Math.cos(theta),
+                r * Math.cos(phi),
+                r * Math.sin(phi) * Math.sin(theta)
+            );
+        }
+
+        function propagateSat(s, date) {
+            const posVel = satellite.propagate(s.satrec, date);
+            if (!posVel.position) return false;
+            const gmst = satellite.gstime(date);
+            const geo = satellite.eciToGeodetic(posVel.position, gmst);
+            s.live.lat = satellite.degreesLat(geo.latitude);
+            s.live.lng = satellite.degreesLong(geo.longitude);
+            s.live.alt = geo.height;
+            const v = posVel.velocity;
+            s.live.vel = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            s.live.pos = ll2v(s.live.lat, s.live.lng, s.live.alt);
+            return true;
+        }
+
+        // ── Three.js Scene ──────────────────────────────────────────────
+        function initScene() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            // Lighting
+            const ambient = new THREE.AmbientLight(0x334466, 0.6);
+            scene.add(ambient);
+            const sun = new THREE.DirectionalLight(0xffffff, 1.4);
+            sun.position.set(5, 3, 5);
+            scene.add(sun);
+            const fill = new THREE.DirectionalLight(0x335588, 0.3);
+            fill.position.set(-5, -2, -3);
+            scene.add(fill);
+
+            // Texture loader
+            const loader = new THREE.TextureLoader();
+
+            // Earth
+            const earthGeo = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
+            const earthMat = new THREE.MeshPhongMaterial({
+                map: loader.load('https://unpkg.com/three-globe@2.24.4/example/img/earth-blue-marble.jpg'),
+                bumpMap: loader.load('https://unpkg.com/three-globe@2.24.4/example/img/earth-topology.png'),
+                bumpScale: 0.05,
+                specularMap: loader.load('https://unpkg.com/three-globe@2.24.4/example/img/earth-water.png'),
+                specular: new THREE.Color(0x333333),
+                shininess: 15,
+            });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            scene.add(earthMesh);
+
+            // Clouds
+            const cloudGeo = new THREE.SphereGeometry(EARTH_RADIUS * 1.01, 48, 48);
+            const cloudMat = new THREE.MeshPhongMaterial({
+                map: loader.load('https://unpkg.com/three-globe@2.24.4/example/img/earth-clouds.png'),
+                transparent: true,
+                opacity: 0.35,
+                depthWrite: false,
+            });
+            cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+            scene.add(cloudMesh);
+
+            // Atmosphere glow
+            const atmosGeo = new THREE.SphereGeometry(EARTH_RADIUS * 1.15, 48, 48);
+            const atmosMat = new THREE.ShaderMaterial({
+                vertexShader: `
+      varying vec3 vNormal;
+      void main(){
+        vNormal = normalize(normalMatrix * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+                fragmentShader: `
+      varying vec3 vNormal;
+      void main(){
+        float intensity = pow(0.65 - dot(vNormal, vec3(0.0,0.0,1.0)), 2.0);
+        gl_FragColor = vec4(0.22, 0.74, 0.97, 1.0) * intensity * 1.2;
+      }
+    `,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                depthWrite: false,
+            });
+            scene.add(new THREE.Mesh(atmosGeo, atmosMat));
+
+            // Starfield
+            const starGeo = new THREE.BufferGeometry();
+            const starVerts = [];
+            for (let i = 0; i < 10000; i++) {
+                const r = 200 + Math.random() * 300;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                starVerts.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+            }
+            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVerts, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, sizeAttenuation: true });
+            scene.add(new THREE.Points(starGeo, starMat));
+
+            // Create satellite visual objects
+            createSatelliteObjects();
+
+            // Initial propagation
+            updateOrbits();
+        }
+
+        // ── Satellite 3D Objects ────────────────────────────────────────
+        const satGroups = [];
+        const hitSpheres = [];
+        const orbitLines = [];
+        const labelDivs = [];
+
+        // Load satellite sprite texture once, reuse for all satellites
+        const satSpriteTexture = new THREE.TextureLoader().load('/img/ast-satellite-sprite.png');
+
+        function createSatelliteObjects() {
+            const labelsContainer = document.getElementById('labels-container');
+
+            SATELLITES.forEach((s, i) => {
+                const group = new THREE.Group();
+                const col = new THREE.Color(s.color);
+
+                // Satellite sprite using the loaded texture
+                const spriteMat = new THREE.SpriteMaterial({
+                    map: satSpriteTexture,
+                    color: col,
+                    transparent: true,
+                    opacity: 1.0,
+                    depthWrite: false,
+                    sizeAttenuation: true,
+                });
+                const sprite = new THREE.Sprite(spriteMat);
+                sprite.scale.set(0.55, 0.55, 1);
+                group.add(sprite);
+
+                // Subtle glow halo behind the sprite
+                const glowCanvas = document.createElement('canvas');
+                glowCanvas.width = 64; glowCanvas.height = 64;
+                const ctx = glowCanvas.getContext('2d');
+                const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gradient.addColorStop(0, s.color + 'AA');
+                gradient.addColorStop(0.5, s.color + '33');
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, 64, 64);
+                const glowTex = new THREE.CanvasTexture(glowCanvas);
+                const glowSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                    map: glowTex, color: col, transparent: true, opacity: 0.5,
+                    blending: THREE.AdditiveBlending, depthWrite: false,
+                }));
+                glowSprite.scale.set(0.9, 0.9, 1);
+                group.add(glowSprite);
+
+                scene.add(group);
+                satGroups.push(group);
+
+                // Hit sphere (invisible, for raycasting)
+                const hitGeo = new THREE.SphereGeometry(0.3, 8, 8);
+                const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+                const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+                hitMesh.userData = { satIndex: i };
+                scene.add(hitMesh);
+                hitSpheres.push(hitMesh);
+
+                // Orbit line (placeholder)
+                orbitLines.push(null);
+
+                // Screen-space label div
+                const label = document.createElement('div');
+                label.className = 'sat-label';
+                label.textContent = s.name;
+                labelsContainer.appendChild(label);
+                labelDivs.push(label);
+            });
+        }
+
+        // ── Orbit Line Computation ──────────────────────────────────────
+        function buildOrbitLine(s, index) {
+            if (orbitLines[index]) {
+                scene.remove(orbitLines[index]);
+                orbitLines[index].geometry.dispose();
+                orbitLines[index].material.dispose();
+            }
+
+            const points = [];
+            const now = new Date();
+            const periodMin = (2 * Math.PI) / s.satrec.no; // orbital period in minutes
+            const step = periodMin / 360;
+
+            for (let i = 0; i <= 360; i++) {
+                const t = new Date(now.getTime() + i * step * 60000);
+                const posVel = satellite.propagate(s.satrec, t);
+                if (!posVel.position) continue;
+                const gmst = satellite.gstime(t);
+                const geo = satellite.eciToGeodetic(posVel.position, gmst);
+                const lat = satellite.degreesLat(geo.latitude);
+                const lng = satellite.degreesLong(geo.longitude);
+                const alt = geo.height;
+                points.push(ll2v(lat, lng, alt));
+            }
+
+            const geo = new THREE.BufferGeometry().setFromPoints(points);
+            const col = new THREE.Color(s.color);
+            const mat = new THREE.LineDashedMaterial({
+                color: col,
+                dashSize: 0.15,
+                gapSize: 0.08,
+                transparent: true,
+                opacity: selectedSat === index ? 0.9 : 0.35,
+                depthWrite: false,
+            });
+            const line = new THREE.Line(geo, mat);
+            line.computeLineDistances();
+            scene.add(line);
+            orbitLines[index] = line;
+        }
+
+        function updateOrbits() {
+            SATELLITES.forEach((s, i) => buildOrbitLine(s, i));
+        }
+
+        // ── UI: Sidebar ─────────────────────────────────────────────────
+        function buildSidebar() {
+            const container = document.getElementById('sat-list');
+            const genLabel = (g) => {
+                if (g === 'Prototype') return 'PROTO';
+                if (g === 'Block 1') return 'BLK-1';
+                if (g === 'Block 2') return 'BLK-2';
+                return g.toUpperCase();
+            };
+            SATELLITES.forEach((s, i) => {
+                const card = document.createElement('div');
+                card.className = 'sat-card';
+                card.id = 'sat-card-' + i;
+                card.innerHTML = `
+      <div class="sat-name">
+        <div class="sat-dot" style="background:${s.color};box-shadow:0 0 4px ${s.color}"></div>
+        <span class="sat-name-text">${s.name}</span>
+        <span class="sat-gen">${genLabel(s.generation)}</span>
+      </div>
+      <div class="sat-telem">ALT <span id="sc-alt-${i}">---</span></div>
+    `;
+                card.addEventListener('click', () => selectSatellite(i));
+                card.addEventListener('mouseenter', () => { hoveredSat = i; });
+                card.addEventListener('mouseleave', () => { hoveredSat = null; });
+                container.appendChild(card);
+            });
+        }
+
+        function updateSidebarTelem() {
+            SATELLITES.forEach((s, i) => {
+                const alt = document.getElementById('sc-alt-' + i);
+                if (alt) alt.textContent = s.live.alt.toFixed(1) + ' KM';
+            });
+        }
+
+        // ── UI: Detail Panel ────────────────────────────────────────────
+        function openDetailPanel(idx) {
+            const s = SATELLITES[idx];
+            const panel = document.getElementById('detail-panel');
+            const incl = (s.satrec.inclo * 180 / Math.PI).toFixed(2);
+            const periodMin = ((2 * Math.PI) / s.satrec.no).toFixed(1);
+            const genFull = s.generation === 'Prototype' ? 'PROTOTYPE DEMONSTRATOR' :
+                s.generation === 'Block 1' ? 'BLOCK 1 COMMERCIAL' :
+                    s.generation === 'Block 2' ? 'BLOCK 2 NEXT-GEN' : s.generation.toUpperCase();
+            const catName = s.catName || 'UNKNOWN';
+
+            document.getElementById('dp-content').innerHTML = `
+    <div class="dp-gen-label">${genFull}</div>
+    <div class="dp-name">${s.name}</div>
+    <div class="dp-norad">NORAD ${s.norad} · ${catName}</div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">TELEMETRY FEED</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-label">ALTITUDE</div><div class="dp-value dp-value-orange" id="dp-alt">${s.live.alt.toFixed(1)} KM</div></div>
+        <div class="dp-item"><div class="dp-label">VELOCITY</div><div class="dp-value dp-value-orange" id="dp-vel">${s.live.vel.toFixed(2)} KM/S</div></div>
+        <div class="dp-item"><div class="dp-label">LATITUDE</div><div class="dp-value dp-value-green" id="dp-lat">${s.live.lat.toFixed(2)}°</div></div>
+        <div class="dp-item"><div class="dp-label">LONGITUDE</div><div class="dp-value dp-value-green" id="dp-lng">${s.live.lng.toFixed(2)}°</div></div>
+        <div class="dp-item"><div class="dp-label">INCLINATION</div><div class="dp-value dp-value-blue">${incl}°</div></div>
+        <div class="dp-item"><div class="dp-label">PERIOD</div><div class="dp-value dp-value-blue">${periodMin} MIN</div></div>
+      </div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">VEHICLE SPECIFICATIONS</div>
+      <div class="dp-grid">
+        <div class="dp-item"><div class="dp-label">LAUNCH</div><div class="dp-value dp-value-text">${s.launchDate}</div></div>
+        <div class="dp-item"><div class="dp-label">GENERATION</div><div class="dp-value dp-value-text">${s.generation}</div></div>
+        <div class="dp-item"><div class="dp-label">ARRAY SIZE</div><div class="dp-value dp-value-text">${s.arraySize}</div></div>
+        <div class="dp-item"><div class="dp-label">MASS</div><div class="dp-value dp-value-text">${s.mass}</div></div>
+      </div>
+    </div>
+
+    <div class="dp-section">
+      <div class="dp-section-title">MISSION PROFILE</div>
+      <div class="dp-desc">${s.description}</div>
+      <div class="dp-tags">${s.partners.map(p => `<span class="dp-tag">${p}</span>`).join('')}</div>
+    </div>
+  `;
+
+            panel.classList.add('open');
+        }
+
+        function updateDetailTelem() {
+            if (selectedSat === null) return;
+            const s = SATELLITES[selectedSat];
+            const el = id => document.getElementById(id);
+            const a = el('dp-alt'), v = el('dp-vel'), la = el('dp-lat'), lo = el('dp-lng');
+            if (a) { a.textContent = s.live.alt.toFixed(1) + ' KM'; a.classList.add('data-flicker'); setTimeout(() => a.classList.remove('data-flicker'), 160); }
+            if (v) { v.textContent = s.live.vel.toFixed(2) + ' KM/S'; v.classList.add('data-flicker'); setTimeout(() => v.classList.remove('data-flicker'), 160); }
+            if (la) { la.textContent = s.live.lat.toFixed(2) + '°'; la.classList.add('data-flicker'); setTimeout(() => la.classList.remove('data-flicker'), 160); }
+            if (lo) { lo.textContent = s.live.lng.toFixed(2) + '°'; lo.classList.add('data-flicker'); setTimeout(() => lo.classList.remove('data-flicker'), 160); }
+        }
+
+        function closeDetailPanel() {
+            document.getElementById('detail-panel').classList.remove('open');
+            if (selectedSat !== null) {
+                // Reset highlights
+                orbitLines.forEach((line, i) => {
+                    if (line) line.material.opacity = 0.35;
+                });
+                satGroups.forEach(g => { g.scale.set(1, 1, 1); });
+                document.querySelectorAll('.sat-card').forEach(c => c.classList.remove('active'));
+                selectedSat = null;
+            }
+        }
+
+        document.getElementById('dp-close').addEventListener('click', closeDetailPanel);
+
+        // ── Selection ───────────────────────────────────────────────────
+        function selectSatellite(idx) {
+            if (selectedSat === idx) { closeDetailPanel(); return; }
+            selectedSat = idx;
+
+            // Highlight orbit
+            orbitLines.forEach((line, i) => {
+                if (line) line.material.opacity = i === idx ? 0.9 : 0.08;
+            });
+
+            // Scale marker
+            satGroups.forEach((g, i) => g.scale.set(i === idx ? 1.5 : 1, i === idx ? 1.5 : 1, i === idx ? 1.5 : 1));
+
+            // Sidebar highlight
+            document.querySelectorAll('.sat-card').forEach((c, i) => {
+                c.classList.toggle('active', i === idx);
+            });
+
+            // Scroll sidebar card into view
+            const card = document.getElementById('sat-card-' + idx);
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Snap camera to selected satellite
+            const s = SATELLITES[idx];
+            if (s.live.pos) {
+                const pos = s.live.pos;
+                const r = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
+                targetPhi = Math.acos(pos.y / r);
+                targetTheta = Math.atan2(pos.z, pos.x);
+                targetRadius = Math.max(8, Math.min(40, r + 6));
+                isUserInteracting = true;
+                lastInteraction = Date.now();
+            }
+
+            openDetailPanel(idx);
+        }
+
+        // ── Raycasting ──────────────────────────────────────────────────
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseMove(e) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            // Tooltip
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(hitSpheres);
+            const tooltip = document.getElementById('tooltip');
+
+            if (hits.length > 0 && !isDragging) {
+                const idx = hits[0].object.userData.satIndex;
+                hoveredSat = idx;
+                const s = SATELLITES[idx];
+                document.getElementById('tt-dot').style.background = s.color;
+                document.getElementById('tt-dot').style.boxShadow = '0 0 6px ' + s.color;
+                document.getElementById('tt-name').textContent = s.name;
+                document.getElementById('tt-alt').textContent = s.live.alt.toFixed(1) + ' km';
+                document.getElementById('tt-vel').textContent = s.live.vel.toFixed(2) + ' km/s';
+                document.getElementById('tt-ll').textContent = s.live.lat.toFixed(1) + '° / ' + s.live.lng.toFixed(1) + '°';
+                tooltip.style.display = 'block';
+                tooltip.style.left = (e.clientX + 16) + 'px';
+                tooltip.style.top = (e.clientY - 16) + 'px';
+                document.body.style.cursor = 'pointer';
+            } else {
+                hoveredSat = null;
+                tooltip.style.display = 'none';
+                document.body.style.cursor = isDragging ? 'grabbing' : 'default';
+            }
+        }
+
+        function onClick(e) {
+            if (isDragging) return;
+            raycaster.setFromCamera(mouse, camera);
+            const hits = raycaster.intersectObjects(hitSpheres);
+            if (hits.length > 0) {
+                selectSatellite(hits[0].object.userData.satIndex);
+            }
+        }
+
+        // ── Camera Controls ─────────────────────────────────────────────
+        function onMouseDown(e) {
+            isDragging = true;
+            prevMouse.x = e.clientX;
+            prevMouse.y = e.clientY;
+            isUserInteracting = true;
+            lastInteraction = Date.now();
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+        }
+
+        function onMouseDrag(e) {
+            if (!isDragging) return;
+            const dx = e.clientX - prevMouse.x;
+            const dy = e.clientY - prevMouse.y;
+            targetTheta += dx * 0.005;
+            targetPhi = Math.max(0.15, Math.min(Math.PI - 0.15, targetPhi - dy * 0.005));
+            prevMouse.x = e.clientX;
+            prevMouse.y = e.clientY;
+            lastInteraction = Date.now();
+        }
+
+        function onWheel(e) {
+            targetRadius = Math.max(8, Math.min(40, targetRadius + e.deltaY * 0.01));
+            isUserInteracting = true;
+            lastInteraction = Date.now();
+        }
+
+        // Touch support
+        let touchStart = null;
+        let touchDist = 0;
+
+        function onTouchStart(e) {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                prevMouse.x = e.touches[0].clientX;
+                prevMouse.y = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                touchDist = Math.sqrt(dx * dx + dy * dy);
+            }
+            isUserInteracting = true;
+            lastInteraction = Date.now();
+        }
+
+        function onTouchMove(e) {
+            e.preventDefault();
+            if (e.touches.length === 1 && isDragging) {
+                const dx = e.touches[0].clientX - prevMouse.x;
+                const dy = e.touches[0].clientY - prevMouse.y;
+                targetTheta += dx * 0.005;
+                targetPhi = Math.max(0.15, Math.min(Math.PI - 0.15, targetPhi + dy * 0.005));
+                prevMouse.x = e.touches[0].clientX;
+                prevMouse.y = e.touches[0].clientY;
+            } else if (e.touches.length === 2) {
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                targetRadius = Math.max(8, Math.min(40, targetRadius - (dist - touchDist) * 0.03));
+                touchDist = dist;
+            }
+            lastInteraction = Date.now();
+        }
+
+        function onTouchEnd() {
+            isDragging = false;
+        }
+
+        // ── Event Listeners ─────────────────────────────────────────────
+        const canvas = () => renderer.domElement;
+
+        function setupEvents() {
+            const el = renderer.domElement;
+            el.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
+            window.addEventListener('mousemove', e => { onMouseDrag(e); onMouseMove(e); });
+            el.addEventListener('wheel', onWheel, { passive: true });
+            el.addEventListener('click', onClick);
+            el.addEventListener('touchstart', onTouchStart, { passive: true });
+            el.addEventListener('touchmove', onTouchMove, { passive: false });
+            el.addEventListener('touchend', onTouchEnd);
+            window.addEventListener('resize', onResize);
+        }
+
+        function onResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // ── Update Header ───────────────────────────────────────────────
+        function updateHeader() {
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10);
+            const timeStr = now.toISOString().slice(11, 19);
+            document.getElementById('h-clock').textContent = dateStr + ' · ' + timeStr + ' UTC';
+            document.getElementById('h-count').textContent = SATELLITES.length;
+            const sbCount = document.getElementById('sb-count');
+            if (sbCount) sbCount.textContent = SATELLITES.length;
+
+            let totalAlt = 0, totalVel = 0, totalIncl = 0, count = 0;
+            SATELLITES.forEach(s => {
+                if (s.live.alt > 0) {
+                    totalAlt += s.live.alt;
+                    totalVel += s.live.vel;
+                    totalIncl += (s.satrec.inclo * 180 / Math.PI);
+                    count++;
+                }
+            });
+            if (count > 0) {
+                document.getElementById('h-alt').textContent = (totalAlt / count).toFixed(1);
+                document.getElementById('h-vel').textContent = (totalVel / count).toFixed(2);
+                document.getElementById('h-incl').textContent = (totalIncl / count).toFixed(1) + '°';
+            }
+            updateDataSourceStatus();
+        }
+
+        // ── Screen-space Labels ─────────────────────────────────────────
+        function updateLabels() {
+            const w2 = window.innerWidth / 2;
+            const h2 = window.innerHeight / 2;
+            SATELLITES.forEach((s, i) => {
+                const label = labelDivs[i];
+                if (!s.live.pos) { label.classList.remove('visible'); return; }
+
+                const projected = s.live.pos.clone().project(camera);
+                if (projected.z > 1) { label.classList.remove('visible'); return; }
+
+                const x = projected.x * w2 + w2;
+                const y = -(projected.y * h2) + h2;
+                label.style.left = x + 'px';
+                label.style.top = y + 'px';
+                label.classList.add('visible');
+            });
+        }
+
+        // ── Animation Loop ──────────────────────────────────────────────
+        let lastOrbitUpdate = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            frameCount++;
+
+            // Auto-rotate when idle
+            const now = Date.now();
+            if (now - lastInteraction > 4000) {
+                isUserInteracting = false;
+                targetTheta += 0.001;
+            }
+
+            // Smooth camera lerp
+            camTheta += (targetTheta - camTheta) * 0.08;
+            camPhi += (targetPhi - camPhi) * 0.08;
+            camRadius += (targetRadius - camRadius) * 0.08;
+
+            camera.position.x = camRadius * Math.sin(camPhi) * Math.cos(camTheta);
+            camera.position.y = camRadius * Math.cos(camPhi);
+            camera.position.z = camRadius * Math.sin(camPhi) * Math.sin(camTheta);
+            camera.lookAt(0, 0, 0);
+
+            // Rotate clouds
+            if (cloudMesh) cloudMesh.rotation.y += 0.0001;
+
+            // Propagate every ~30 frames (~0.5s)
+            if (frameCount % 30 === 0) {
+                const date = new Date();
+                SATELLITES.forEach((s, i) => {
+                    if (propagateSat(s, date) && s.live.pos) {
+                        satGroups[i].position.copy(s.live.pos);
+                        hitSpheres[i].position.copy(s.live.pos);
+                    }
+                });
+                updateSidebarTelem();
+                updateDetailTelem();
+                updateHeader();
+            }
+
+            // Rebuild orbits every ~60s
+            if (now - lastOrbitUpdate > 60000) {
+                updateOrbits();
+                lastOrbitUpdate = now;
+            }
+
+            // Subtle pulsing scale on satellite sprites
+            const pulse = 1.0 + 0.06 * Math.sin(now * 0.003);
+            satGroups.forEach((g, i) => {
+                const baseScale = (selectedSat === i) ? 1.5 : 1.0;
+                const s = baseScale * pulse;
+                g.scale.set(s, s, s);
+                // Pulse glow halo opacity
+                if (g.children[1]) g.children[1].material.opacity = 0.3 + 0.2 * Math.sin(now * 0.003);
+            });
+
+            updateLabels();
+            renderer.render(scene, camera);
+        }
+
+        // ── Rebuild Scene (for when new satellites are discovered) ───────
+        function rebuildScene() {
+            // Remove old satellite objects
+            satGroups.forEach(g => scene.remove(g));
+            hitSpheres.forEach(h => scene.remove(h));
+            orbitLines.forEach(l => { if (l) { scene.remove(l); l.geometry.dispose(); l.material.dispose(); } });
+            labelDivs.forEach(l => l.remove());
+            satGroups.length = 0;
+            hitSpheres.length = 0;
+            orbitLines.length = 0;
+            labelDivs.length = 0;
+
+            // Rebuild
+            createSatelliteObjects();
+            updateOrbits();
+
+            // Clear sidebar and rebuild
+            document.getElementById('sat-list').innerHTML = '';
+            buildSidebar();
+
+            // Reset selection
+            selectedSat = null;
+            document.getElementById('detail-panel').classList.remove('open');
+
+            // Initial propagation
+            const date = new Date();
+            SATELLITES.forEach((s, i) => {
+                if (propagateSat(s, date) && s.live.pos) {
+                    satGroups[i].position.copy(s.live.pos);
+                    hitSpheres[i].position.copy(s.live.pos);
+                }
+            });
+            updateHeader();
+            updateSidebarTelem();
+        }
+
+        // ── Init ────────────────────────────────────────────────────────
+        async function init() {
+            // Fetch live TLE data from CelesTrak
+            SATELLITES = await loadSatellites();
+            document.getElementById('h-count').textContent = SATELLITES.length;
+
+            initScene();
+            buildSidebar();
+            setupEvents();
+
+            // Initial propagation
+            const date = new Date();
+            SATELLITES.forEach((s, i) => {
+                if (propagateSat(s, date) && s.live.pos) {
+                    satGroups[i].position.copy(s.live.pos);
+                    hitSpheres[i].position.copy(s.live.pos);
+                }
+            });
+            updateHeader();
+            updateSidebarTelem();
+
+            lastOrbitUpdate = Date.now();
+            lastTLEFetch = Date.now();
+
+            // Schedule periodic TLE refresh (every 2 hours)
+            setInterval(() => {
+                refreshTLEs();
+            }, TLE_REFRESH_INTERVAL);
+
+            animate();
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
