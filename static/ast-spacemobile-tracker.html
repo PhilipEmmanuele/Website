@@ -1094,6 +1094,7 @@
         const ALT_EXAGGERATION = 2.5;
         const DEG = Math.PI / 180;
         let scene, camera, renderer, earthMesh, cloudMesh;
+        let nightMesh, sunLight, terminatorRing;
         let frameCount = 0;
         let selectedSat = null;
         let hoveredSat = null;
@@ -1115,6 +1116,40 @@
                 r * Math.cos(phi),
                 r * Math.sin(phi) * Math.sin(theta)
             );
+        }
+
+        // ── Sun Position (for day/night terminator) ─────────────────────
+        function getSunDirection() {
+            const now = new Date();
+            // Days since J2000.0 epoch (Jan 1 2000 12:00 UTC)
+            const JD = 2440587.5 + now.getTime() / 86400000;
+            const n = JD - 2451545.0;
+            // Mean longitude and mean anomaly of the sun (degrees)
+            const L = (280.460 + 0.9856474 * n) % 360;
+            const g = ((357.528 + 0.9856003 * n) % 360) * DEG;
+            // Ecliptic longitude (degrees)
+            const lambda = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g)) * DEG;
+            // Obliquity of the ecliptic
+            const epsilon = 23.439 * DEG;
+            // Right ascension and declination
+            const sinLam = Math.sin(lambda);
+            const cosLam = Math.cos(lambda);
+            const decl = Math.asin(Math.sin(epsilon) * sinLam);
+            let ra = Math.atan2(Math.cos(epsilon) * sinLam, cosLam);
+            // Greenwich Mean Sidereal Time (radians)
+            const UTh = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600;
+            const GMST = ((6.697375 + 0.0657098242 * n + UTh) % 24) * (Math.PI / 12);
+            // Subsolar point: hour angle -> longitude, declination -> latitude
+            const subLng = ((ra - GMST) * 180 / Math.PI + 360) % 360;
+            const subLat = decl * 180 / Math.PI;
+            // Convert to Three.js direction vector using same coordinate system as ll2v
+            const phi = (90 - subLat) * DEG;
+            const theta = (subLng + 180) * DEG;
+            return new THREE.Vector3(
+                -Math.sin(phi) * Math.cos(theta),
+                Math.cos(phi),
+                Math.sin(phi) * Math.sin(theta)
+            ).normalize();
         }
 
         function propagateSat(s, date) {
@@ -1140,12 +1175,13 @@
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-            // Lighting
+            // Lighting — sun synced to real solar position
             const ambient = new THREE.AmbientLight(0x334466, 0.6);
             scene.add(ambient);
-            const sun = new THREE.DirectionalLight(0xffffff, 1.4);
-            sun.position.set(5, 3, 5);
-            scene.add(sun);
+            const initSunDir = getSunDirection();
+            sunLight = new THREE.DirectionalLight(0xffffff, 1.4);
+            sunLight.position.copy(initSunDir.clone().multiplyScalar(50));
+            scene.add(sunLight);
             const fill = new THREE.DirectionalLight(0x335588, 0.3);
             fill.position.set(-5, -2, -3);
             scene.add(fill);
@@ -1200,6 +1236,58 @@
                 depthWrite: false,
             });
             scene.add(new THREE.Mesh(atmosGeo, atmosMat));
+
+            // ── Night-side shadow overlay ─────────────────────────────────
+            const nightGeo = new THREE.SphereGeometry(EARTH_RADIUS * 1.005, 64, 64);
+            const nightMat = new THREE.ShaderMaterial({
+                uniforms: {
+                    sunDirection: { value: initSunDir.clone() },
+                },
+                vertexShader: `
+                    varying vec3 vWorldNormal;
+                    void main() {
+                        vWorldNormal = normalize((modelMatrix * vec4(normal, 0.0)).xyz);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    uniform vec3 sunDirection;
+                    varying vec3 vWorldNormal;
+                    void main() {
+                        float dotSun = dot(vWorldNormal, sunDirection);
+                        // Smooth twilight band: fully dark below -0.1, fully transparent above 0.1
+                        float shadow = 1.0 - smoothstep(-0.12, 0.12, dotSun);
+                        gl_FragColor = vec4(0.0, 0.0, 0.04, shadow * 0.42);
+                    }
+                `,
+                transparent: true,
+                depthWrite: false,
+                side: THREE.FrontSide,
+            });
+            nightMesh = new THREE.Mesh(nightGeo, nightMat);
+            scene.add(nightMesh);
+
+            // ── Glowing green terminator ring ────────────────────────────
+            const terminatorPoints = [];
+            const TERM_SEGMENTS = 256;
+            for (let i = 0; i <= TERM_SEGMENTS; i++) {
+                const angle = (i / TERM_SEGMENTS) * Math.PI * 2;
+                terminatorPoints.push(new THREE.Vector3(Math.cos(angle), Math.sin(angle), 0));
+            }
+            const terminatorGeo = new THREE.BufferGeometry().setFromPoints(terminatorPoints);
+            const terminatorMat = new THREE.LineBasicMaterial({
+                color: 0x52d053,
+                transparent: true,
+                opacity: 0.45,
+                depthWrite: false,
+                linewidth: 1,
+            });
+            terminatorRing = new THREE.Line(terminatorGeo, terminatorMat);
+            terminatorRing.scale.set(EARTH_RADIUS * 1.006, EARTH_RADIUS * 1.006, EARTH_RADIUS * 1.006);
+            scene.add(terminatorRing);
+
+            // Orient terminator ring to current sun position
+            updateTerminator(initSunDir);
 
             // Starfield
             const starGeo = new THREE.BufferGeometry();
@@ -1467,13 +1555,17 @@
             const card = document.getElementById('sat-card-' + idx);
             if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-            // Snap camera to selected satellite
+            // Snap camera to selected satellite (shortest angular path)
             const s = SATELLITES[idx];
             if (s.live.pos) {
                 const pos = s.live.pos;
                 const r = Math.sqrt(pos.x * pos.x + pos.y * pos.y + pos.z * pos.z);
                 targetPhi = Math.acos(pos.y / r);
-                targetTheta = Math.atan2(pos.z, pos.x);
+                let newTheta = Math.atan2(pos.z, pos.x);
+                // Normalize to shortest angular path from current camera angle
+                let dTheta = newTheta - camTheta;
+                dTheta = dTheta - Math.round(dTheta / (2 * Math.PI)) * 2 * Math.PI;
+                targetTheta = camTheta + dTheta;
                 targetRadius = Math.max(8, Math.min(40, r + 6));
                 isUserInteracting = true;
                 lastInteraction = Date.now();
@@ -1664,8 +1756,18 @@
             });
         }
 
+        // ── Terminator Orientation Helper ──────────────────────────────
+        function updateTerminator(sunDir) {
+            // Orient the terminator ring so it sits on the great circle
+            // perpendicular to the sun direction (the day/night boundary)
+            const up = new THREE.Vector3(0, 0, 1);
+            const quat = new THREE.Quaternion().setFromUnitVectors(up, sunDir);
+            terminatorRing.quaternion.copy(quat);
+        }
+
         // ── Animation Loop ──────────────────────────────────────────────
         let lastOrbitUpdate = 0;
+        let lastSunUpdate = 0;
 
         function animate() {
             requestAnimationFrame(animate);
@@ -1676,6 +1778,18 @@
             if (now - lastInteraction > 4000) {
                 isUserInteracting = false;
                 targetTheta += 0.001;
+            }
+
+            // Update sun position / day-night terminator every ~2 seconds
+            if (now - lastSunUpdate > 2000) {
+                const sunDir = getSunDirection();
+                // Update night overlay
+                if (nightMesh) nightMesh.material.uniforms.sunDirection.value.copy(sunDir);
+                // Sync directional light
+                if (sunLight) sunLight.position.copy(sunDir.clone().multiplyScalar(50));
+                // Orient terminator ring
+                if (terminatorRing) updateTerminator(sunDir);
+                lastSunUpdate = now;
             }
 
             // Smooth camera lerp
