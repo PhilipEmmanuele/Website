@@ -10,4 +10,4 @@ Hello! My name is Philip Emmanuele. I am a Ph.D. student at the University of Ca
 
 [CV](/CV_11_25.pdf)
 
-![profile pic](/about_pic.jpg)
+![profile pic](/img/tennis_profile.jpg)
