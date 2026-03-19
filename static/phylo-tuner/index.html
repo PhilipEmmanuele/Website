@@ -583,6 +583,7 @@
         for (const o of shown) {
           const opt = document.createElement("option");
           opt.value = o.idx; opt.textContent = o.label;
+          opt.style.color = colorForSpecies(o.idx);
           sel.appendChild(opt);
         }
       }
@@ -690,7 +691,7 @@
         card.innerHTML = `
           <div class="rank-badge">${rank + 1}</div>
           <div class="species-info">
-            <div class="species-name" title="${name}">${name}</div>
+            <div class="species-name" style="color:${colorForSpecies(idx)}" title="${name}">${name}</div>
             <div class="species-sim-row">
               <div class="species-sim-bar"><div class="species-sim-fill" style="width:${simPct.toFixed(1)}%"></div></div>
               <div class="species-sim-pct">${simLabel}</div>
@@ -872,32 +873,46 @@
       threeRenderer.setSize(W, H);
     }
 
-    // Raycasting for hover & click
-    const _raycaster = new THREE.Raycaster();
-    _raycaster.params.Points.threshold = 0.04;
-    const _mouse = new THREE.Vector2();
+    // Screen-space hit detection for hover & click.
+    // Projects each point to pixels and finds the nearest one within HIT_RADIUS.
+    // This matches exactly what you see regardless of camera distance.
+    const HIT_RADIUS = 6; // pixels
+    const _proj = new THREE.Vector3();
+    let hoveredIdx = -1;
 
-    function getMouseNDC(e) {
+    function getClosestScreenPoint(clientX, clientY) {
       const rect = threeRenderer.domElement.getBoundingClientRect();
-      _mouse.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
-      _mouse.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+      const mx = clientX - rect.left;
+      const my = clientY - rect.top;
+      const W = rect.width, H = rect.height;
+      const N = scatterPositions.length / 3;
+      const maxD2 = HIT_RADIUS * HIT_RADIUS;
+      // Among all points within HIT_RADIUS px, pick the one with the smallest
+      // NDC z (closest to camera) — that's the one visually on top.
+      let bestIdx = -1, bestZ = Infinity;
+      for (let i = 0; i < N; i++) {
+        _proj.set(scatterPositions[i*3], scatterPositions[i*3+1], scatterPositions[i*3+2]);
+        _proj.project(threeCamera);
+        if (_proj.z > 1) continue; // behind camera
+        const sx = (_proj.x + 1) / 2 * W;
+        const sy = (1 - _proj.y) / 2 * H;
+        const d2 = (sx - mx) ** 2 + (sy - my) ** 2;
+        if (d2 < maxD2 && _proj.z < bestZ) { bestZ = _proj.z; bestIdx = i; }
+      }
+      return bestIdx;
     }
 
     function onThreeMouseMove(e) {
-      getMouseNDC(e);
-      _raycaster.setFromCamera(_mouse, threeCamera);
-      const hits = _raycaster.intersectObject(threePoints);
-      const tip  = document.getElementById("tooltip");
-
-      if (hits.length > 0) {
-        const idx = hits[0].index;
-        const t   = DATA.taxonomy[idx];
-        const name = t.species || DATA.species_ids[idx];
+      hoveredIdx = getClosestScreenPoint(e.clientX, e.clientY);
+      const tip = document.getElementById("tooltip");
+      if (hoveredIdx >= 0) {
+        const t    = DATA.taxonomy[hoveredIdx];
+        const name = t.species || DATA.species_ids[hoveredIdx];
         tip.style.display = "block";
         tip.style.left    = (e.clientX + 14) + "px";
         tip.style.top     = (e.clientY - 10) + "px";
         tip.innerHTML = `
-          <div class="t-name">${name}</div>
+          <div class="t-name" style="color:${colorForSpecies(hoveredIdx)}">${name}</div>
           <div class="t-row">Class: ${t.class  || "—"}</div>
           <div class="t-row">Order: ${t.order  || "—"}</div>
           <div class="t-row">Family: ${t.family || "—"}</div>`;
@@ -909,15 +924,10 @@
     }
 
     function onThreeClick(e) {
-      getMouseNDC(e);
-      _raycaster.setFromCamera(_mouse, threeCamera);
-      const hits = _raycaster.intersectObject(threePoints);
-      if (hits.length > 0) {
-        const idx = hits[0].index;
-        currentVec = [...DATA.coords[idx]];
-        setSliderValues(currentVec);
-        update();
-      }
+      if (hoveredIdx < 0) return;
+      currentVec = [...DATA.coords[hoveredIdx]];
+      setSliderValues(currentVec);
+      update();
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
