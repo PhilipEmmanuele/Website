@@ -619,7 +619,7 @@
     let scatterScale;        // {cx,cy,cz,scale} normalisation
 
     const POINT_SIZE    = 4.0;
-    const MARKER_RADIUS = 0.035;
+    const MARKER_RADIUS = 0.018;   // base radius — scaled by camera distance each frame
 
     function initThree() {
       const container = document.getElementById("three-container");
@@ -744,6 +744,16 @@
     function animate() {
       requestAnimationFrame(animate);
       threeControls.update();
+
+      // Scale markers proportionally to camera distance so they stay
+      // visually consistent at any zoom level.  dist/3 = 1 at the default
+      // camera position (z=3), so the geometry radius is used as-is there.
+      if (markerMesh && highlightMesh) {
+        const s = threeCamera.position.length() / 3.0;
+        markerMesh.scale.setScalar(s);
+        highlightMesh.scale.setScalar(s);
+      }
+
       threeRenderer.render(threeScene, threeCamera);
     }
 
