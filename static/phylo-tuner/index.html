@@ -725,6 +725,7 @@
     let highlightMesh;       // gold sphere  — nearest species
     let scatterPositions;    // Float32Array [N*3] for updateHighlight lookups
     let scatterScale;        // {cx,cy,cz,scale} normalisation
+    const _mouseNDC = new THREE.Vector2(0, 0); // cursor in NDC, updated on mousemove
 
     const POINT_SIZE    = 4.0;
     const MARKER_RADIUS = 0.018;   // base radius — scaled by camera distance each frame
@@ -748,6 +749,9 @@
       threeControls.dampingFactor = 0.08;
       threeControls.minDistance   = 0.5;
       threeControls.maxDistance   = 10;
+      threeControls.enableZoom    = false; // handled manually for cursor-targeted zoom
+
+      threeRenderer.domElement.addEventListener("wheel", onThreeWheel, { passive: false });
 
       buildPointCloud();
 
@@ -903,6 +907,10 @@
     }
 
     function onThreeMouseMove(e) {
+      const rect = threeRenderer.domElement.getBoundingClientRect();
+      _mouseNDC.x =  ((e.clientX - rect.left) / rect.width)  * 2 - 1;
+      _mouseNDC.y = -((e.clientY - rect.top)  / rect.height) * 2 + 1;
+
       hoveredIdx = getClosestScreenPoint(e.clientX, e.clientY);
       const tip = document.getElementById("tooltip");
       if (hoveredIdx >= 0) {
@@ -921,6 +929,33 @@
         tip.style.display = "none";
         threeRenderer.domElement.style.cursor = "";
       }
+    }
+
+    const _zoomRay = new THREE.Raycaster();
+    const _zoomVec = new THREE.Vector3();
+
+    function onThreeWheel(e) {
+      e.preventDefault();
+
+      const distToTarget = threeCamera.position.distanceTo(threeControls.target);
+
+      // Cast ray through cursor and move camera along it — zooms in the direction
+      // the cursor is pointing rather than straight toward the origin.
+      // Target is never moved so orbit/pan always revolves around the data centre.
+      _zoomRay.setFromCamera(_mouseNDC, threeCamera);
+      const moveAmount = distToTarget * 0.04;
+      const sign = e.deltaY > 0 ? -1 : 1; // scroll up = zoom in
+      threeCamera.position.addScaledVector(_zoomRay.ray.direction, sign * moveAmount);
+
+      // Clamp camera distance from orbit target
+      const newDist = threeCamera.position.distanceTo(threeControls.target);
+      if (newDist < threeControls.minDistance || newDist > threeControls.maxDistance) {
+        const clamped = Math.max(threeControls.minDistance, Math.min(threeControls.maxDistance, newDist));
+        const axis = threeCamera.position.clone().sub(threeControls.target).normalize();
+        threeCamera.position.copy(threeControls.target).addScaledVector(axis, clamped);
+      }
+
+      threeControls.update();
     }
 
     function onThreeClick(e) {
