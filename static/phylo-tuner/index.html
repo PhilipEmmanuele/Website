@@ -120,7 +120,7 @@
 
     .species-card {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 8px;
       padding: 6px 8px;
       border-radius: var(--radius);
@@ -146,6 +146,7 @@
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      margin-top: 1px;
     }
 
     .top1 .rank-badge { background: var(--gold); color: #111; }
@@ -162,14 +163,91 @@
 
     .top1 .species-name { color: var(--gold); }
 
-    .species-taxon {
-      font-size: 0.66rem;
+    .species-sim-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 4px;
+    }
+
+    .species-sim-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .species-sim-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .top1 .species-sim-fill { background: var(--gold); }
+
+    .species-sim-pct {
+      font-size: 0.61rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      font-family: monospace;
+      flex-shrink: 0;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .species-taxon {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.25s ease, margin-top 0.15s ease;
+      margin-top: 0;
+    }
+
+    .species-taxon.open {
+      max-height: 160px;
+      margin-top: 6px;
+    }
+
+    .taxon-row {
+      display: flex;
+      gap: 6px;
+      line-height: 1.6;
+    }
+
+    .taxon-rank {
+      color: var(--text-muted);
+      opacity: 0.55;
+      flex-shrink: 0;
+      width: 42px;
+      text-transform: uppercase;
+      font-size: 0.55rem;
+      letter-spacing: 0.05em;
+      padding-top: 1px;
+    }
+
+    .taxon-val {
+      font-size: 0.63rem;
+      color: var(--text-muted);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    .expand-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.6rem;
+      padding: 2px 2px;
+      line-height: 1;
+      flex-shrink: 0;
+      align-self: flex-start;
+      margin-top: 3px;
+      transition: color 0.15s, transform 0.2s;
+    }
+
+    .expand-btn:hover { color: var(--text); }
+    .expand-btn.open { transform: rotate(90deg); }
 
     /* Legend — bottom right */
     .overlay-br {
@@ -584,26 +662,55 @@
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // Results overlay
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    let expandedIdx = -1;
+    let currentTop5 = [];
+
+    function refreshResults() {
+      updateResults(currentTop5);
+    }
+
     function updateResults(top5) {
       const list = document.getElementById("results-list");
       list.innerHTML = "";
-      top5.forEach(({ idx }, rank) => {
+      top5.forEach(({ idx, dist }, rank) => {
         const t = DATA.taxonomy[idx];
         const name = t.species || DATA.species_ids[idx];
-        const taxonStr = [t.class, t.order].filter(Boolean).join(" › ");
+        const simPct = Math.max(0, (1 - dist) * 100);
+        const simLabel = simPct.toFixed(1) + "%";
+        const isOpen = idx === expandedIdx;
+
+        const RANKS = ['domain','phylum','class','order','family','genus'];
+        const taxonHtml = RANKS
+          .filter(r => t[r])
+          .map(r => `<div class="taxon-row"><span class="taxon-rank">${r}</span><span class="taxon-val">${t[r]}</span></div>`)
+          .join('');
+
         const card = document.createElement("div");
         card.className = "species-card" + (rank === 0 ? " top1" : "");
         card.innerHTML = `
           <div class="rank-badge">${rank + 1}</div>
           <div class="species-info">
             <div class="species-name" title="${name}">${name}</div>
-            <div class="species-taxon" title="${taxonStr}">${taxonStr || "—"}</div>
-          </div>`;
+            <div class="species-sim-row">
+              <div class="species-sim-bar"><div class="species-sim-fill" style="width:${simPct.toFixed(1)}%"></div></div>
+              <div class="species-sim-pct">${simLabel}</div>
+            </div>
+            <div class="species-taxon${isOpen ? ' open' : ''}">${taxonHtml || "—"}</div>
+          </div>
+          <button class="expand-btn${isOpen ? ' open' : ''}" title="Show phylogeny">&#9658;</button>`;
+
+        card.querySelector(".expand-btn").addEventListener("click", e => {
+          e.stopPropagation();
+          expandedIdx = (expandedIdx === idx) ? -1 : idx;
+          refreshResults();
+        });
+
         card.addEventListener("click", () => {
           currentVec = [...DATA.coords[idx]];
           setSliderValues(currentVec);
           update();
         });
+
         list.appendChild(card);
       });
     }
@@ -818,7 +925,8 @@
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function update() {
       const ranked = cosineDistTo(currentVec);
-      updateResults(ranked.slice(0, 5));
+      currentTop5 = ranked.slice(0, 5);
+      updateResults(currentTop5);
       updateMarker();
       updateHighlight(ranked[0].idx);
     }
