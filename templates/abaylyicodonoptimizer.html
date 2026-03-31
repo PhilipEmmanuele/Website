@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block content %}
+<article class="post">
+    <header class="post-header">
+        <h1>{{ page.title }}</h1>
+    </header>
+
+    <div class="post-content">
+        {{ page.content | safe }}
+
+        <div style="margin-top: 2rem;">
+
+            <!-- Input -->
+            <div style="margin-bottom: 1rem;">
+                <label style="display: block; font-weight: bold; margin-bottom: 0.4rem;">Amino acid sequence (single-letter codes, FASTA accepted)</label>
+                <textarea id="aa-input" rows="6" spellcheck="false"
+                    placeholder="Paste amino acid sequence here, e.g. MSKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTLTYGVQCFSRYPDHMKQHDFFKSAMPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIMADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHMVLLEFVTAAGITLGMDELYK"
+                    style="width: 100%; font-family: monospace; padding: 0.6rem; border: 1px solid var(--accent); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); resize: vertical; box-sizing: border-box;"></textarea>
+                <div id="aa-count" style="font-size: 0.85em; color: var(--text-secondary); margin-top: 0.25rem;">0 amino acids</div>
+            </div>
+
+            <!-- Controls -->
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                <button id="optimize-btn"
+                    style="padding: 0.5rem 1.4rem; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem;">
+                    Optimize
+                </button>
+
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="checkbox" id="add-stop" checked> Add stop codon
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                    <input type="checkbox" id="fasta-output"> Output as FASTA
+                </label>
+
+                <label style="display: flex; align-items: center; gap: 0.4rem;">
+                    Line width:
+                    <select id="line-width" style="padding: 0.2rem 0.4rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--accent);">
+                        <option value="60">60</option>
+                        <option value="80" selected>80</option>
+                        <option value="0">None</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- Warning/error area -->
+            <div id="warn-area" style="display: none; color: #f0a000; margin-bottom: 0.75rem; font-size: 0.9em;"></div>
+            <div id="error-area" style="display: none; color: #ff6b6b; margin-bottom: 0.75rem; font-size: 0.9em;"></div>
+
+            <!-- Output -->
+            <div style="margin-bottom: 0.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                    <label style="font-weight: bold;">Optimized DNA sequence</label>
+                    <button id="copy-btn"
+                        style="padding: 0.35rem 0.9rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--accent); border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                        Copy to clipboard
+                    </button>
+                </div>
+                <textarea id="dna-output" rows="8" readonly spellcheck="false"
+                    style="width: 100%; font-family: monospace; padding: 0.6rem; border: 1px solid var(--accent); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); resize: vertical; box-sizing: border-box;"></textarea>
+            </div>
+
+            <!-- Stats -->
+            <div id="stats-area" style="display: none; font-size: 0.88em; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 0.4rem;">
+                <span id="stat-aa"></span>
+                <span id="stat-nt"></span>
+                <span id="stat-gc"></span>
+            </div>
+
+        </div><!-- end tool container -->
+    </div>
+</article>
+
+<script>
+// ============================================================
+// Codon table derived from ADP1-ISx genome (3286 CDS features)
+// Computed from actual codon counts in annotated coding sequences
+// ============================================================
+
+const OPTIMAL_CODONS = {
+  A: "GCA",  // Ala  — 40.5% (GCA > GCT 24.7% > GCC 18.6% > GCG 16.1%)
+  R: "CGT",  // Arg  — 52.9% (CGT > CGC 18.7% > CGA 12.5% > AGA 8.8%)
+  N: "AAT",  // Asn  — 74.7% (AAT > AAC 25.3%)
+  D: "GAT",  // Asp  — 79.1% (GAT > GAC 20.9%)
+  C: "TGT",  // Cys  — 72.5% (TGT > TGC 27.5%)
+  E: "GAA",  // Glu  — 74.3% (GAA > GAG 25.7%)
+  Q: "CAA",  // Gln  — 58.4% (CAA > CAG 41.6%)
+  G: "GGT",  // Gly  — 47.4% (GGT > GGC 23.3% > GGA 19.0% > GGG 10.3%)
+  H: "CAT",  // His  — 78.8% (CAT > CAC 21.2%)
+  I: "ATT",  // Ile  — 67.8% (ATT > ATC 23.4% > ATA 8.8%)
+  L: "TTA",  // Leu  — 29.6% (TTA > TTG 21.0% > CTT 16.9% > CTG 16.0%)
+  K: "AAA",  // Lys  — 77.1% (AAA > AAG 22.9%)
+  M: "ATG",  // Met  — 100% (only codon)
+  F: "TTT",  // Phe  — 80.6% (TTT > TTC 19.4%)
+  P: "CCA",  // Pro  — 42.2% (CCA > CCT 34.2% > CCG 13.3% > CCC 10.2%)
+  S: "AGT",  // Ser  — 24.5% (AGT > TCA 23.1% > TCT 22.5% > AGC 13.7%)
+  T: "ACA",  // Thr  — 31.2% (ACA > ACC 27.7% > ACT 25.7% > ACG 15.4%)
+  W: "TGG",  // Trp  — 100% (only codon)
+  Y: "TAT",  // Tyr  — 78.6% (TAT > TAC 21.4%)
+  V: "GTT",  // Val  — 30.9% (GTT > GTG 26.0% > GTA 24.7% > GTC 18.5%)
+  "*": "TAA", // Stop — 73.4% (TAA > TGA 15.6% > TAG 10.9%)
+};
+
+// Full frequency distributions (for future CAI / weighted selection)
+const CODON_FREQUENCIES = {
+  A: { GCA: 0.405, GCT: 0.247, GCC: 0.186, GCG: 0.161 },
+  R: { CGT: 0.529, CGC: 0.187, CGA: 0.125, AGA: 0.088, CGG: 0.053, AGG: 0.018 },
+  N: { AAT: 0.747, AAC: 0.253 },
+  D: { GAT: 0.791, GAC: 0.209 },
+  C: { TGT: 0.725, TGC: 0.275 },
+  E: { GAA: 0.743, GAG: 0.257 },
+  Q: { CAA: 0.584, CAG: 0.416 },
+  G: { GGT: 0.474, GGC: 0.233, GGA: 0.190, GGG: 0.103 },
+  H: { CAT: 0.788, CAC: 0.212 },
+  I: { ATT: 0.678, ATC: 0.234, ATA: 0.088 },
+  L: { TTA: 0.296, TTG: 0.210, CTT: 0.169, CTG: 0.160, CTA: 0.082, CTC: 0.082 },
+  K: { AAA: 0.771, AAG: 0.229 },
+  M: { ATG: 1.000 },
+  F: { TTT: 0.806, TTC: 0.194 },
+  P: { CCA: 0.422, CCT: 0.342, CCG: 0.133, CCC: 0.102 },
+  S: { AGT: 0.245, TCA: 0.231, TCT: 0.225, AGC: 0.137, TCG: 0.106, TCC: 0.056 },
+  T: { ACA: 0.312, ACC: 0.277, ACT: 0.257, ACG: 0.154 },
+  W: { TGG: 1.000 },
+  Y: { TAT: 0.786, TAC: 0.214 },
+  V: { GTT: 0.309, GTG: 0.260, GTA: 0.247, GTC: 0.185 },
+  "*": { TAA: 0.734, TGA: 0.156, TAG: 0.109 },
+};
+
+// ============================================================
+// Core logic
+// ============================================================
+
+function stripFastaHeader(text) {
+  return text.replace(/^>.*$/gm, '');
+}
+
+function cleanAA(text) {
+  return text
+    .toUpperCase()
+    .replace(/\s+/g, '')
+    .replace(/[^ARNDCEQGHILKMFPSTWYV*]/g, '');
+}
+
+function gcContent(dna) {
+  const gc = (dna.match(/[GC]/gi) || []).length;
+  return dna.length > 0 ? (gc / dna.length * 100).toFixed(1) : '0.0';
+}
+
+function wrapLines(seq, width) {
+  if (!width) return seq;
+  const lines = [];
+  for (let i = 0; i < seq.length; i += width) {
+    lines.push(seq.slice(i, i + width));
+  }
+  return lines.join('\n');
+}
+
+function optimizeSequence(aaRaw, { addStop, fastaOutput, lineWidth }) {
+  const stripped = stripFastaHeader(aaRaw);
+  const cleaned = cleanAA(stripped);
+
+  // Detect unknown residues from original (non-whitespace) chars
+  const rawChars = stripped.toUpperCase().replace(/\s+/g, '');
+  const invalid = [...new Set(rawChars.split('').filter(c => !OPTIMAL_CODONS[c] && c !== '*'))];
+
+  if (!cleaned) {
+    return { dna: '', errors: ['Input is empty. Paste an amino acid sequence above.'], warnings: [] };
+  }
+
+  const codons = [];
+  for (const aa of cleaned) {
+    if (aa === '*') continue; // skip explicit stop — we handle it below
+    codons.push(OPTIMAL_CODONS[aa]);
+  }
+
+  if (addStop && !cleaned.endsWith('*')) {
+    codons.push(OPTIMAL_CODONS['*']);
+  } else if (cleaned.endsWith('*')) {
+    codons.push(OPTIMAL_CODONS['*']);
+  }
+
+  let dna = codons.join('');
+
+  if (lineWidth) dna = wrapLines(dna, lineWidth);
+  if (fastaOutput) dna = '>optimized_abaylyi_ADP1-ISx\n' + dna;
+
+  const warnings = invalid.length > 0
+    ? [`Unknown residue(s) ignored: ${invalid.join(', ')}`]
+    : [];
+
+  return { dna, errors: [], warnings };
+}
+
+// ============================================================
+// UI wiring
+// ============================================================
+
+const aaInput    = document.getElementById('aa-input');
+const dnaOutput  = document.getElementById('dna-output');
+const aaCountEl  = document.getElementById('aa-count');
+const warnArea   = document.getElementById('warn-area');
+const errorArea  = document.getElementById('error-area');
+const statsArea  = document.getElementById('stats-area');
+const statAA     = document.getElementById('stat-aa');
+const statNT     = document.getElementById('stat-nt');
+const statGC     = document.getElementById('stat-gc');
+
+function updateAACount() {
+  const cleaned = cleanAA(stripFastaHeader(aaInput.value));
+  const n = cleaned.replace(/\*/g, '').length;
+  aaCountEl.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
+}
+
+aaInput.addEventListener('input', updateAACount);
+
+document.getElementById('optimize-btn').addEventListener('click', () => {
+  const raw = aaInput.value;
+  const addStop   = document.getElementById('add-stop').checked;
+  const fastaOut  = document.getElementById('fasta-output').checked;
+  const lineWidth = parseInt(document.getElementById('line-width').value, 10);
+
+  warnArea.style.display  = 'none';
+  errorArea.style.display = 'none';
+  statsArea.style.display = 'none';
+
+  const { dna, errors, warnings } = optimizeSequence(raw, {
+    addStop,
+    fastaOutput: fastaOut,
+    lineWidth,
+  });
+
+  if (errors.length) {
+    errorArea.textContent   = errors.join(' ');
+    errorArea.style.display = 'block';
+    dnaOutput.value = '';
+    return;
+  }
+
+  if (warnings.length) {
+    warnArea.textContent   = warnings.join(' ');
+    warnArea.style.display = 'block';
+  }
+
+  dnaOutput.value = dna;
+
+  // Stats (on raw DNA without FASTA header or newlines)
+  const rawDNA = dna.replace(/^>.*\n/, '').replace(/\n/g, '');
+  const aaCount = cleanAA(stripFastaHeader(raw)).replace(/\*/g, '').length;
+  statAA.textContent = aaCount + ' aa';
+  statNT.textContent = rawDNA.length + ' nt';
+  statGC.textContent = 'GC ' + gcContent(rawDNA) + '%';
+  statsArea.style.display = 'flex';
+});
+
+document.getElementById('copy-btn').addEventListener('click', () => {
+  const text = dnaOutput.value;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1500);
+  }).catch(() => {
+    // Fallback for browsers that block clipboard API
+    dnaOutput.select();
+    document.execCommand('copy');
+  });
+});
+
+// Allow Enter in input to trigger optimize
+aaInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.ctrlKey) {
+    document.getElementById('optimize-btn').click();
+  }
+});
+</script>
+{% endblock %}
