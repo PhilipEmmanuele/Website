@@ -2,278 +2,1082 @@
 
 {% block content %}
 <article class="post">
-    <header class="post-header">
-        <h1>{{ page.title }}</h1>
-    </header>
+  <header class="post-header">
+    <h1>{{ page.title }}</h1>
+  </header>
 
-    <div class="post-content">
-        {{ page.content | safe }}
+  <div class="post-content">
+    {{ page.content | safe }}
 
-        <div style="margin-top: 2rem;">
+    <style>
+      .opt-tool {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+      }
 
-            <!-- Input -->
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-weight: bold; margin-bottom: 0.4rem;">Amino acid sequence (single-letter codes, FASTA accepted)</label>
-                <textarea id="aa-input" rows="6" spellcheck="false"
-                    placeholder="Paste amino acid sequence here, e.g. MSKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTLTYGVQCFSRYPDHMKQHDFFKSAMPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIMADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHMVLLEFVTAAGITLGMDELYK"
-                    style="width: 100%; font-family: monospace; padding: 0.6rem; border: 1px solid var(--accent); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); resize: vertical; box-sizing: border-box;"></textarea>
-                <div id="aa-count" style="font-size: 0.85em; color: var(--text-secondary); margin-top: 0.25rem;">0 amino acids</div>
-            </div>
+      .opt-section {
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 1rem 1.1rem 0.9rem;
+        background: var(--bg);
+      }
 
-            <!-- Controls -->
-            <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-                <button id="optimize-btn"
-                    style="padding: 0.5rem 1.4rem; background: var(--accent); color: var(--bg-primary); border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1rem;">
-                    Optimize
-                </button>
+      .opt-section-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--text-light);
+        margin-bottom: 0.55rem;
+      }
 
-                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
-                    <input type="checkbox" id="add-stop" checked> Add stop codon
-                </label>
+      /* Textareas */
+      #aa-input,
+      #dna-output {
+        width: 100%;
+        font-family: var(--mono-font);
+        font-size: 0.85rem;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--bg-light);
+        color: var(--text);
+        resize: vertical;
+        box-sizing: border-box;
+        line-height: 1.6;
+        transition: outline 0.1s;
+      }
 
-                <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
-                    <input type="checkbox" id="fasta-output"> Output as FASTA
-                </label>
+      #aa-input:focus {
+        outline: 2px solid var(--accent);
+        outline-offset: -1px;
+      }
 
-                <label style="display: flex; align-items: center; gap: 0.4rem;">
-                    Line width:
-                    <select id="line-width" style="padding: 0.2rem 0.4rem; border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--accent);">
-                        <option value="60">60</option>
-                        <option value="80" selected>80</option>
-                        <option value="0">None</option>
-                    </select>
-                </label>
-            </div>
+      #dna-output {
+        color: var(--text);
+      }
 
-            <!-- Warning/error area -->
-            <div id="warn-area" style="display: none; color: #f0a000; margin-bottom: 0.75rem; font-size: 0.9em;"></div>
-            <div id="error-area" style="display: none; color: #ff6b6b; margin-bottom: 0.75rem; font-size: 0.9em;"></div>
+      .opt-counter {
+        font-size: 0.78rem;
+        color: var(--text-light);
+        margin-top: 0.3rem;
+      }
 
-            <!-- Output -->
-            <div style="margin-bottom: 0.5rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                    <label style="font-weight: bold;">Optimized DNA sequence</label>
-                    <button id="copy-btn"
-                        style="padding: 0.35rem 0.9rem; background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--accent); border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
-                        Copy to clipboard
-                    </button>
-                </div>
-                <textarea id="dna-output" rows="8" readonly spellcheck="false"
-                    style="width: 100%; font-family: monospace; padding: 0.6rem; border: 1px solid var(--accent); border-radius: 4px; background: var(--bg-secondary); color: var(--text-primary); resize: vertical; box-sizing: border-box;"></textarea>
-            </div>
+      /* Settings: two-column panel */
+      .opt-settings {
+        display: flex;
+        gap: 0;
+        padding: 0;
+      }
 
-            <!-- Stats -->
-            <div id="stats-area" style="display: none; font-size: 0.88em; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 0.4rem;">
-                <span id="stat-aa"></span>
-                <span id="stat-nt"></span>
-                <span id="stat-gc"></span>
-            </div>
+      .opt-settings-group {
+        flex: 1;
+        min-width: 180px;
+        padding: 0.85rem 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
 
-        </div><!-- end tool container -->
-    </div>
+      .opt-settings-divider {
+        width: 1px;
+        background: var(--border);
+        margin: 0.5rem 0;
+        flex-shrink: 0;
+      }
+
+      @media (max-width: 520px) {
+        .opt-settings {
+          flex-direction: column;
+        }
+
+        .opt-settings-divider {
+          width: 100%;
+          height: 1px;
+          margin: 0;
+        }
+      }
+
+      .opt-group-label {
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.1rem;
+      }
+
+      /* Checkboxes */
+      .opt-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        font-size: 0.88rem;
+        color: var(--text);
+        user-select: none;
+        line-height: 1.3;
+      }
+
+      .opt-toggle input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+        cursor: pointer;
+        accent-color: var(--accent);
+        margin: 0;
+      }
+
+      .opt-toggle--disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+
+      /* Line width select */
+      .opt-select-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.88rem;
+        color: var(--text);
+      }
+
+      .opt-select {
+        padding: 0.18rem 0.4rem;
+        border-radius: 4px;
+        background: var(--bg-light);
+        color: var(--text);
+        border: 1px solid var(--border);
+        font-size: 0.85rem;
+        font-family: inherit;
+      }
+
+      /* Primary action */
+      .opt-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        flex-wrap: wrap;
+      }
+
+      .opt-btn-primary {
+        padding: 0.55rem 2rem;
+        background: var(--accent);
+        color: var(--bg);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 700;
+        font-size: 0.97rem;
+        letter-spacing: 0.03em;
+        transition: opacity 0.15s;
+        font-family: inherit;
+      }
+
+      .opt-btn-primary:hover {
+        opacity: 0.82;
+      }
+
+      .opt-shortcut {
+        font-size: 0.78rem;
+        color: var(--text-light);
+      }
+
+      /* Messages */
+      .opt-message {
+        padding: 0.55rem 0.85rem;
+        border-radius: 4px;
+        font-size: 0.87rem;
+        border-left: 3px solid;
+        line-height: 1.4;
+      }
+
+      .opt-message--warn {
+        color: #a06000;
+        background: rgba(160, 96, 0, 0.07);
+        border-color: #a06000;
+      }
+
+      .opt-message--success {
+        color: #2e7d47;
+        background: rgba(46, 125, 71, 0.07);
+        border-color: #2e7d47;
+      }
+
+      .opt-message--error {
+        color: #b53535;
+        background: rgba(181, 53, 53, 0.07);
+        border-color: #b53535;
+      }
+
+      /* Output header */
+      .opt-output-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 0.55rem;
+      }
+
+      .opt-output-header .opt-section-label {
+        margin-bottom: 0;
+      }
+
+      .opt-btn-secondary {
+        padding: 0.28rem 0.85rem;
+        background: transparent;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        font-family: inherit;
+        transition: border-color 0.15s, color 0.15s;
+      }
+
+      .opt-btn-secondary:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* Stats pills */
+      .opt-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        align-items: center;
+      }
+
+      .opt-stat {
+        font-size: 0.76rem;
+        padding: 0.15rem 0.5rem;
+        background: var(--bg-light);
+        border-radius: 3px;
+        color: var(--text-light);
+        font-family: var(--mono-font);
+        border: 1px solid var(--border);
+      }
+
+      /* Flags panel */
+      .opt-flags {
+        border: 1px solid rgba(160, 96, 0, 0.4);
+        border-radius: 6px;
+        background: var(--bg);
+        overflow: hidden;
+      }
+
+      .opt-flags-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 1rem;
+        background: rgba(160, 96, 0, 0.05);
+        border-bottom: 1px solid rgba(160, 96, 0, 0.25);
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .opt-flags-title {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: #a06000;
+      }
+
+      .opt-btn-fix {
+        padding: 0.28rem 0.8rem;
+        background: #a06000;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.83rem;
+        font-weight: 600;
+        font-family: inherit;
+        transition: opacity 0.15s;
+      }
+
+      .opt-btn-fix:hover {
+        opacity: 0.82;
+      }
+
+      .opt-flags-list {
+        padding: 0.55rem 1rem 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+      }
+
+      .opt-flag-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.55rem;
+        font-size: 0.83rem;
+        padding: 0.1rem 0;
+      }
+
+      .opt-flag-badge {
+        display: inline-block;
+        min-width: 8.5em;
+        padding: 0.05em 0.45em;
+        border-radius: 3px;
+        font-weight: 700;
+        font-size: 0.88em;
+        flex-shrink: 0;
+      }
+
+      .opt-flag-detail {
+        color: var(--text-light);
+      }
+
+      .opt-flag-seq {
+        font-family: var(--mono-font);
+        color: var(--text);
+      }
+
+      .opt-flag-unfixable {
+        color: var(--text-light);
+        font-size: 0.88em;
+        font-style: italic;
+      }
+    </style>
+
+    <div class="opt-tool">
+
+      <!-- Input -->
+      <section class="opt-section">
+        <div class="opt-section-label">Amino acid sequence &mdash; single-letter codes, FASTA accepted</div>
+        <textarea id="aa-input" rows="6" spellcheck="false"
+          placeholder="Paste sequence here, e.g. MSKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTLTYGVQCFSRYPDHMKQHDFFKSAMPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIMADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHMVLLEFVTAAGITLGMDELYK"></textarea>
+        <div id="aa-count" class="opt-counter">0 amino acids</div>
+      </section>
+
+      <!-- Settings -->
+      <section class="opt-section opt-settings">
+        <div class="opt-settings-group">
+          <div class="opt-group-label">Output format</div>
+          <label class="opt-toggle">
+            <input type="checkbox" id="add-stop" checked>
+            <span>Add stop codon</span>
+          </label>
+          <label class="opt-toggle">
+            <input type="checkbox" id="fasta-output">
+            <span>FASTA format</span>
+          </label>
+          <div class="opt-select-row">
+            <span>Line width</span>
+            <select id="line-width" class="opt-select">
+              <option value="60">60 nt</option>
+              <option value="80" selected>80 nt</option>
+              <option value="0">None</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="opt-settings-divider"></div>
+
+        <div class="opt-settings-group">
+          <div class="opt-group-label">Algorithm</div>
+          <label class="opt-toggle"
+            title="Sample codons proportionally to native A. baylyi frequency instead of always picking the most-used codon. Produces different output each run.">
+            <input type="checkbox" id="stochastic">
+            <span>Stochastic selection</span>
+          </label>
+          <label id="smooth-gc-label" class="opt-toggle opt-toggle--disabled"
+            title="During stochastic sampling, bias codon choice to keep local GC content (30 nt window) within 30–50%, matching native A. baylyi GC of 40.3%.">
+            <input type="checkbox" id="smooth-gc" disabled>
+            <span>Smooth local GC (30–50%)</span>
+          </label>
+          <label class="opt-toggle"
+            title="After optimization, scan for homopolymer runs ≥7 nt, common restriction enzyme sites, and direct repeats ≥12 nt.">
+            <input type="checkbox" id="screen-motifs" checked>
+            <span>Screen for problem sequences</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Run -->
+      <div class="opt-actions">
+        <button id="optimize-btn" class="opt-btn-primary">Optimize</button>
+        <span class="opt-shortcut">or Ctrl+Enter</span>
+      </div>
+
+      <!-- Messages -->
+      <div id="warn-area" class="opt-message opt-message--warn" style="display:none;"></div>
+      <div id="error-area" class="opt-message opt-message--error" style="display:none;"></div>
+
+      <!-- Output (hidden until first run) -->
+      <section class="opt-section" id="output-section" style="display:none;">
+        <div class="opt-output-header">
+          <div class="opt-section-label">Optimized DNA sequence</div>
+          <div id="stats-area" class="opt-stats"></div>
+          <button id="copy-btn" class="opt-btn-secondary">Copy to clipboard</button>
+        </div>
+        <textarea id="dna-output" rows="8" readonly spellcheck="false"></textarea>
+      </section>
+
+      <!-- Flags -->
+      <div id="flags-panel" class="opt-flags" style="display:none;">
+        <div class="opt-flags-header">
+          <span id="flags-title" class="opt-flags-title"></span>
+          <button id="fix-flags-btn" class="opt-btn-fix">Fix all flags</button>
+        </div>
+        <div id="flags-list" class="opt-flags-list"></div>
+      </div>
+
+    </div><!-- end opt-tool -->
+  </div>
 </article>
 
 <script>
-// ============================================================
-// Codon table derived from ADP1-ISx genome (3286 CDS features)
-// Computed from actual codon counts in annotated coding sequences
-// ============================================================
+  // ============================================================
+  // Codon table derived from ADP1-ISx genome (3286 CDS features)
+  // Computed from actual codon counts in annotated coding sequences
+  // ============================================================
 
-const OPTIMAL_CODONS = {
-  A: "GCA",  // Ala  — 40.5% (GCA > GCT 24.7% > GCC 18.6% > GCG 16.1%)
-  R: "CGT",  // Arg  — 52.9% (CGT > CGC 18.7% > CGA 12.5% > AGA 8.8%)
-  N: "AAT",  // Asn  — 74.7% (AAT > AAC 25.3%)
-  D: "GAT",  // Asp  — 79.1% (GAT > GAC 20.9%)
-  C: "TGT",  // Cys  — 72.5% (TGT > TGC 27.5%)
-  E: "GAA",  // Glu  — 74.3% (GAA > GAG 25.7%)
-  Q: "CAA",  // Gln  — 58.4% (CAA > CAG 41.6%)
-  G: "GGT",  // Gly  — 47.4% (GGT > GGC 23.3% > GGA 19.0% > GGG 10.3%)
-  H: "CAT",  // His  — 78.8% (CAT > CAC 21.2%)
-  I: "ATT",  // Ile  — 67.8% (ATT > ATC 23.4% > ATA 8.8%)
-  L: "TTA",  // Leu  — 29.6% (TTA > TTG 21.0% > CTT 16.9% > CTG 16.0%)
-  K: "AAA",  // Lys  — 77.1% (AAA > AAG 22.9%)
-  M: "ATG",  // Met  — 100% (only codon)
-  F: "TTT",  // Phe  — 80.6% (TTT > TTC 19.4%)
-  P: "CCA",  // Pro  — 42.2% (CCA > CCT 34.2% > CCG 13.3% > CCC 10.2%)
-  S: "AGT",  // Ser  — 24.5% (AGT > TCA 23.1% > TCT 22.5% > AGC 13.7%)
-  T: "ACA",  // Thr  — 31.2% (ACA > ACC 27.7% > ACT 25.7% > ACG 15.4%)
-  W: "TGG",  // Trp  — 100% (only codon)
-  Y: "TAT",  // Tyr  — 78.6% (TAT > TAC 21.4%)
-  V: "GTT",  // Val  — 30.9% (GTT > GTG 26.0% > GTA 24.7% > GTC 18.5%)
-  "*": "TAA", // Stop — 73.4% (TAA > TGA 15.6% > TAG 10.9%)
-};
+  const OPTIMAL_CODONS = {
+    A: "GCA",  // Ala  — 40.5% (GCA > GCT 24.7% > GCC 18.6% > GCG 16.1%)
+    R: "CGT",  // Arg  — 52.9% (CGT > CGC 18.7% > CGA 12.5% > AGA 8.8%)
+    N: "AAT",  // Asn  — 74.7% (AAT > AAC 25.3%)
+    D: "GAT",  // Asp  — 79.1% (GAT > GAC 20.9%)
+    C: "TGT",  // Cys  — 72.5% (TGT > TGC 27.5%)
+    E: "GAA",  // Glu  — 74.3% (GAA > GAG 25.7%)
+    Q: "CAA",  // Gln  — 58.4% (CAA > CAG 41.6%)
+    G: "GGT",  // Gly  — 47.4% (GGT > GGC 23.3% > GGA 19.0% > GGG 10.3%)
+    H: "CAT",  // His  — 78.8% (CAT > CAC 21.2%)
+    I: "ATT",  // Ile  — 67.8% (ATT > ATC 23.4% > ATA 8.8%)
+    L: "TTA",  // Leu  — 29.6% (TTA > TTG 21.0% > CTT 16.9% > CTG 16.0%)
+    K: "AAA",  // Lys  — 77.1% (AAA > AAG 22.9%)
+    M: "ATG",  // Met  — 100% (only codon)
+    F: "TTT",  // Phe  — 80.6% (TTT > TTC 19.4%)
+    P: "CCA",  // Pro  — 42.2% (CCA > CCT 34.2% > CCG 13.3% > CCC 10.2%)
+    S: "AGT",  // Ser  — 24.5% (AGT > TCA 23.1% > TCT 22.5% > AGC 13.7%)
+    T: "ACA",  // Thr  — 31.2% (ACA > ACC 27.7% > ACT 25.7% > ACG 15.4%)
+    W: "TGG",  // Trp  — 100% (only codon)
+    Y: "TAT",  // Tyr  — 78.6% (TAT > TAC 21.4%)
+    V: "GTT",  // Val  — 30.9% (GTT > GTG 26.0% > GTA 24.7% > GTC 18.5%)
+    "*": "TAA", // Stop — 73.4% (TAA > TGA 15.6% > TAG 10.9%)
+  };
 
-// Full frequency distributions (for future CAI / weighted selection)
-const CODON_FREQUENCIES = {
-  A: { GCA: 0.405, GCT: 0.247, GCC: 0.186, GCG: 0.161 },
-  R: { CGT: 0.529, CGC: 0.187, CGA: 0.125, AGA: 0.088, CGG: 0.053, AGG: 0.018 },
-  N: { AAT: 0.747, AAC: 0.253 },
-  D: { GAT: 0.791, GAC: 0.209 },
-  C: { TGT: 0.725, TGC: 0.275 },
-  E: { GAA: 0.743, GAG: 0.257 },
-  Q: { CAA: 0.584, CAG: 0.416 },
-  G: { GGT: 0.474, GGC: 0.233, GGA: 0.190, GGG: 0.103 },
-  H: { CAT: 0.788, CAC: 0.212 },
-  I: { ATT: 0.678, ATC: 0.234, ATA: 0.088 },
-  L: { TTA: 0.296, TTG: 0.210, CTT: 0.169, CTG: 0.160, CTA: 0.082, CTC: 0.082 },
-  K: { AAA: 0.771, AAG: 0.229 },
-  M: { ATG: 1.000 },
-  F: { TTT: 0.806, TTC: 0.194 },
-  P: { CCA: 0.422, CCT: 0.342, CCG: 0.133, CCC: 0.102 },
-  S: { AGT: 0.245, TCA: 0.231, TCT: 0.225, AGC: 0.137, TCG: 0.106, TCC: 0.056 },
-  T: { ACA: 0.312, ACC: 0.277, ACT: 0.257, ACG: 0.154 },
-  W: { TGG: 1.000 },
-  Y: { TAT: 0.786, TAC: 0.214 },
-  V: { GTT: 0.309, GTG: 0.260, GTA: 0.247, GTC: 0.185 },
-  "*": { TAA: 0.734, TGA: 0.156, TAG: 0.109 },
-};
+  const CODON_FREQUENCIES = {
+    A: { GCA: 0.405, GCT: 0.247, GCC: 0.186, GCG: 0.161 },
+    R: { CGT: 0.529, CGC: 0.187, CGA: 0.125, AGA: 0.088, CGG: 0.053, AGG: 0.018 },
+    N: { AAT: 0.747, AAC: 0.253 },
+    D: { GAT: 0.791, GAC: 0.209 },
+    C: { TGT: 0.725, TGC: 0.275 },
+    E: { GAA: 0.743, GAG: 0.257 },
+    Q: { CAA: 0.584, CAG: 0.416 },
+    G: { GGT: 0.474, GGC: 0.233, GGA: 0.190, GGG: 0.103 },
+    H: { CAT: 0.788, CAC: 0.212 },
+    I: { ATT: 0.678, ATC: 0.234, ATA: 0.088 },
+    L: { TTA: 0.296, TTG: 0.210, CTT: 0.169, CTG: 0.160, CTA: 0.082, CTC: 0.082 },
+    K: { AAA: 0.771, AAG: 0.229 },
+    M: { ATG: 1.000 },
+    F: { TTT: 0.806, TTC: 0.194 },
+    P: { CCA: 0.422, CCT: 0.342, CCG: 0.133, CCC: 0.102 },
+    S: { AGT: 0.245, TCA: 0.231, TCT: 0.225, AGC: 0.137, TCG: 0.106, TCC: 0.056 },
+    T: { ACA: 0.312, ACC: 0.277, ACT: 0.257, ACG: 0.154 },
+    W: { TGG: 1.000 },
+    Y: { TAT: 0.786, TAC: 0.214 },
+    V: { GTT: 0.309, GTG: 0.260, GTA: 0.247, GTC: 0.185 },
+    "*": { TAA: 0.734, TGA: 0.156, TAG: 0.109 },
+  };
 
-// ============================================================
-// Core logic
-// ============================================================
+  // Restriction enzyme recognition sequences to avoid.
+  // BsaI is non-palindromic, so we check both forward and reverse complement.
+  const RESTRICTION_SITES = {
+    'BsaI': 'GGTCTC',
+    'BsaI-rc': 'GAGACC',
+  };
 
-function stripFastaHeader(text) {
-  return text.replace(/^>.*$/gm, '');
-}
+  // CAI thresholds tried in order (stochastic mode only).
+  const CAI_TIERS = [0.85, 0.75, 0.70, 0.65, 0.60];
+  const CAI_ATTEMPTS_PER_TIER = 50;
 
-function cleanAA(text) {
-  return text
-    .toUpperCase()
-    .replace(/\s+/g, '')
-    .replace(/[^ARNDCEQGHILKMFPSTWYV*]/g, '');
-}
+  // ============================================================
+  // Utility
+  // ============================================================
 
-function gcContent(dna) {
-  const gc = (dna.match(/[GC]/gi) || []).length;
-  return dna.length > 0 ? (gc / dna.length * 100).toFixed(1) : '0.0';
-}
-
-function wrapLines(seq, width) {
-  if (!width) return seq;
-  const lines = [];
-  for (let i = 0; i < seq.length; i += width) {
-    lines.push(seq.slice(i, i + width));
-  }
-  return lines.join('\n');
-}
-
-function optimizeSequence(aaRaw, { addStop, fastaOutput, lineWidth }) {
-  const stripped = stripFastaHeader(aaRaw);
-  const cleaned = cleanAA(stripped);
-
-  // Detect unknown residues from original (non-whitespace) chars
-  const rawChars = stripped.toUpperCase().replace(/\s+/g, '');
-  const invalid = [...new Set(rawChars.split('').filter(c => !OPTIMAL_CODONS[c] && c !== '*'))];
-
-  if (!cleaned) {
-    return { dna: '', errors: ['Input is empty. Paste an amino acid sequence above.'], warnings: [] };
+  function stripFastaHeader(text) {
+    return text.replace(/^>.*$/gm, '');
   }
 
-  const codons = [];
-  for (const aa of cleaned) {
-    if (aa === '*') continue; // skip explicit stop — we handle it below
-    codons.push(OPTIMAL_CODONS[aa]);
+  function cleanAA(text) {
+    return text
+      .toUpperCase()
+      .replace(/\s+/g, '')
+      .replace(/[^ARNDCEQGHILKMFPSTWYV*]/g, '');
   }
 
-  if (addStop && !cleaned.endsWith('*')) {
-    codons.push(OPTIMAL_CODONS['*']);
-  } else if (cleaned.endsWith('*')) {
-    codons.push(OPTIMAL_CODONS['*']);
+  function gcContent(dna) {
+    const gc = (dna.match(/[GC]/gi) || []).length;
+    return dna.length > 0 ? (gc / dna.length * 100).toFixed(1) : '0.0';
   }
 
-  let dna = codons.join('');
+  function wrapLines(seq, width) {
+    if (!width) return seq;
+    const lines = [];
+    for (let i = 0; i < seq.length; i += width) lines.push(seq.slice(i, i + width));
+    return lines.join('\n');
+  }
 
-  if (lineWidth) dna = wrapLines(dna, lineWidth);
-  if (fastaOutput) dna = '>optimized_abaylyi_ADP1-ISx\n' + dna;
+  function codonListToRawDNA(codonList) {
+    return codonList.map(c => c.codon).join('');
+  }
 
-  const warnings = invalid.length > 0
-    ? [`Unknown residue(s) ignored: ${invalid.join(', ')}`]
-    : [];
+  function formatDNA(rawDNA, { fastaOutput, lineWidth }) {
+    let out = rawDNA;
+    if (lineWidth) out = wrapLines(out, lineWidth);
+    if (fastaOutput) out = '>optimized_abaylyi_ADP1-ISx\n' + out;
+    return out;
+  }
 
-  return { dna, errors: [], warnings };
-}
+  // ============================================================
+  // Tier 1: Weighted-random codon sampling
+  // ============================================================
 
-// ============================================================
-// UI wiring
-// ============================================================
+  function sampleWeighted(entries) {
+    // entries: [[codon, freq], ...] sorted by freq descending, sum ≈ 1
+    let r = Math.random();
+    for (const [codon, freq] of entries) {
+      r -= freq;
+      if (r <= 0) return codon;
+    }
+    return entries[entries.length - 1][0]; // floating-point safety
+  }
 
-const aaInput    = document.getElementById('aa-input');
-const dnaOutput  = document.getElementById('dna-output');
-const aaCountEl  = document.getElementById('aa-count');
-const warnArea   = document.getElementById('warn-area');
-const errorArea  = document.getElementById('error-area');
-const statsArea  = document.getElementById('stats-area');
-const statAA     = document.getElementById('stat-aa');
-const statNT     = document.getElementById('stat-nt');
-const statGC     = document.getElementById('stat-gc');
+  // ============================================================
+  // Tier 2: GC-smoothed codon selection
+  // ============================================================
 
-function updateAACount() {
-  const cleaned = cleanAA(stripFastaHeader(aaInput.value));
-  const n = cleaned.replace(/\*/g, '').length;
-  aaCountEl.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
-}
+  function sortedEntries(aa) {
+    return Object.entries(CODON_FREQUENCIES[aa]).sort(([, a], [, b]) => b - a);
+  }
 
-aaInput.addEventListener('input', updateAACount);
+  function selectCodon(aa, stochastic, smoothGC, currentDNA) {
+    if (!stochastic) return OPTIMAL_CODONS[aa];
 
-document.getElementById('optimize-btn').addEventListener('click', () => {
-  const raw = aaInput.value;
-  const addStop   = document.getElementById('add-stop').checked;
-  const fastaOut  = document.getElementById('fasta-output').checked;
-  const lineWidth = parseInt(document.getElementById('line-width').value, 10);
+    const entries = sortedEntries(aa);
+    if (!smoothGC) return sampleWeighted(entries);
 
-  warnArea.style.display  = 'none';
-  errorArea.style.display = 'none';
-  statsArea.style.display = 'none';
+    // GC-smoothed: bias toward codons that keep local 30-nt window within 30-50%.
+    const GC_WIN = 30;
+    const GC_MIN = 0.30;
+    const GC_MAX = 0.50;
+    const GC_TGT = 0.40;
 
-  const { dna, errors, warnings } = optimizeSequence(raw, {
-    addStop,
-    fastaOutput: fastaOut,
-    lineWidth,
+    const recent = currentDNA.slice(-GC_WIN);
+
+    const inRange = [];
+    let bestCodon = entries[0][0];
+    let bestDiff = Infinity;
+
+    for (const [codon, freq] of entries) {
+      const win = (recent + codon).slice(-GC_WIN);
+      const gc = (win.match(/[GC]/g) || []).length / win.length;
+      const diff = Math.abs(gc - GC_TGT);
+      if (gc >= GC_MIN && gc <= GC_MAX) inRange.push([codon, freq]);
+      if (diff < bestDiff) { bestDiff = diff; bestCodon = codon; }
+    }
+
+    const pool = inRange.length > 0 ? inRange : [[bestCodon, 1.0]];
+    return sampleWeighted(pool);
+  }
+
+  // ============================================================
+  // Core: build codon list
+  // ============================================================
+
+  function buildCodonList(aaRaw, { addStop, stochastic, smoothGC }) {
+    const stripped = stripFastaHeader(aaRaw);
+    const cleaned = cleanAA(stripped);
+
+    const rawChars = stripped.toUpperCase().replace(/\s+/g, '');
+    const invalid = [...new Set(rawChars.split('').filter(c => !OPTIMAL_CODONS[c] && c !== '*'))];
+
+    if (!cleaned) {
+      return { codonList: [], errors: ['Input is empty. Paste an amino acid sequence above.'], warnings: [] };
+    }
+
+    const codonList = [];
+    let currentDNA = '';
+
+    for (const aa of cleaned) {
+      if (aa === '*') continue;
+      const codon = selectCodon(aa, stochastic, smoothGC, currentDNA);
+      codonList.push({ aa, codon });
+      currentDNA += codon;
+    }
+
+    if (addStop || cleaned.endsWith('*')) {
+      codonList.push({ aa: '*', codon: OPTIMAL_CODONS['*'] });
+    }
+
+    const warnings = invalid.length > 0
+      ? [`Unknown residue(s) ignored: ${invalid.join(', ')}`]
+      : [];
+
+    return { codonList, errors: [], warnings };
+  }
+
+  // ============================================================
+  // Stats: CAI and GC window
+  // ============================================================
+
+  function calcCAI(codonList) {
+    let logSum = 0, n = 0;
+    for (const { aa, codon } of codonList) {
+      if (aa === '*' || !CODON_FREQUENCIES[aa]) continue;
+      const freqs = CODON_FREQUENCIES[aa];
+      const wi = freqs[codon] || 0;
+      const wmax = Math.max(...Object.values(freqs));
+      if (wi > 0) { logSum += Math.log(wi / wmax); n++; }
+    }
+    return n > 0 ? Math.exp(logSum / n) : 0;
+  }
+
+  function calcGCWindowStats(dna) {
+    const WIN = 30;
+    if (!dna || dna.length === 0) return null;
+    const step = Math.min(dna.length, WIN);
+    let minGC = 100, maxGC = 0;
+    for (let i = 0; i <= dna.length - step; i++) {
+      const win = dna.slice(i, i + step);
+      const gc = (win.match(/[GC]/g) || []).length / step * 100;
+      if (gc < minGC) minGC = gc;
+      if (gc > maxGC) maxGC = gc;
+    }
+    return { min: minGC.toFixed(1), max: maxGC.toFixed(1) };
+  }
+
+  // ============================================================
+  // CAI-gated stochastic optimization
+  // ============================================================
+
+  function buildBestCodonList(aaRaw, opts) {
+    // Parse input once to catch errors and compute invariant warnings.
+    const stripped = stripFastaHeader(aaRaw);
+    const cleaned = cleanAA(stripped);
+    const rawChars = stripped.toUpperCase().replace(/\s+/g, '');
+    const invalid = [...new Set(rawChars.split('').filter(c => !OPTIMAL_CODONS[c] && c !== '*'))];
+
+    if (!cleaned) {
+      return { codonList: [], errors: ['Input is empty. Paste an amino acid sequence above.'], warnings: [], tier: null, cai: 0 };
+    }
+
+    const warnings = invalid.length > 0 ? [`Unknown residue(s) ignored: ${invalid.join(', ')}`] : [];
+
+    // Deterministic mode: generate once — CAI is deterministic, no retries needed.
+    if (!opts.stochastic) {
+      const { codonList } = buildCodonList(aaRaw, opts);
+      return { codonList, errors: [], warnings, tier: null, cai: calcCAI(codonList) };
+    }
+
+    // Stochastic mode: inner generator avoids re-parsing on every attempt.
+    function generate() {
+      const codonList = [];
+      let currentDNA = '';
+      for (const aa of cleaned) {
+        if (aa === '*') continue;
+        const codon = selectCodon(aa, true, opts.smoothGC, currentDNA);
+        codonList.push({ aa, codon });
+        currentDNA += codon;
+      }
+      if (opts.addStop || cleaned.endsWith('*')) {
+        codonList.push({ aa: '*', codon: OPTIMAL_CODONS['*'] });
+      }
+      return codonList;
+    }
+
+    let bestCodonList = null;
+    let bestCAI = -1;
+
+    for (const threshold of CAI_TIERS) {
+      for (let i = 0; i < CAI_ATTEMPTS_PER_TIER; i++) {
+        const codonList = generate();
+        const cai = calcCAI(codonList);
+        if (cai > bestCAI) { bestCAI = cai; bestCodonList = codonList; }
+        if (cai >= threshold) {
+          return { codonList, errors: [], warnings, tier: threshold, cai };
+        }
+      }
+    }
+
+    // Could not meet any tier — return the best found anyway.
+    return { codonList: bestCodonList, errors: [], warnings, tier: null, cai: bestCAI };
+  }
+
+  // ============================================================
+  // Tier 3: Flag detection
+  // ============================================================
+
+  function findHomopolymers(dna) {
+    const flags = [];
+    for (const base of ['A', 'T', 'G', 'C']) {
+      const re = new RegExp(`${base}{7,}`, 'g');
+      let m;
+      while ((m = re.exec(dna)) !== null) {
+        flags.push({ type: 'homopolymer', pos: m.index, len: m[0].length, base, seq: m[0] });
+      }
+    }
+    return flags;
+  }
+
+  function findRestrictionSites(dna) {
+    const flags = [];
+    for (const [name, site] of Object.entries(RESTRICTION_SITES)) {
+      const displayName = name.replace(/-rc$/, '');
+      let idx = dna.indexOf(site);
+      while (idx !== -1) {
+        flags.push({ type: 'restriction', pos: idx, len: site.length, name: displayName, seq: site });
+        idx = dna.indexOf(site, idx + 1);
+      }
+    }
+    return flags;
+  }
+
+  function findDirectRepeats(dna, minLen = 12) {
+    const flags = [];
+    if (dna.length < minLen * 2) return flags;
+
+    const kmerMap = new Map();
+    for (let i = 0; i <= dna.length - minLen; i++) {
+      const k = dna.slice(i, i + minLen);
+      if (!kmerMap.has(k)) kmerMap.set(k, []);
+      kmerMap.get(k).push(i);
+    }
+
+    const reportedPairs = new Set();
+    for (const positions of kmerMap.values()) {
+      if (positions.length < 2) continue;
+      for (let pi = 0; pi < positions.length - 1; pi++) {
+        const i = positions[pi];
+        const j = positions[pi + 1];
+        if (j - i < minLen) continue;
+
+        const pairKey = `${i}:${j}`;
+        if (reportedPairs.has(pairKey)) continue;
+        reportedPairs.add(pairKey);
+
+        let ext = minLen;
+        while (i + ext < j && j + ext < dna.length && dna[i + ext] === dna[j + ext]) ext++;
+
+        flags.push({ type: 'repeat', pos: i, pos2: j, len: ext, seq: dna.slice(i, i + ext) });
+      }
+    }
+
+    flags.sort((a, b) => b.len - a.len);
+    const deduped = [];
+    for (const f of flags) {
+      const subsumed = deduped.some(g =>
+        g.pos <= f.pos && g.pos + g.len >= f.pos + f.len &&
+        g.pos2 <= f.pos2 && g.pos2 + g.len >= f.pos2 + f.len
+      );
+      if (!subsumed) deduped.push(f);
+    }
+    return deduped;
+  }
+
+  function findAllFlags(dna) {
+    return [
+      ...findHomopolymers(dna),
+      ...findRestrictionSites(dna),
+      ...findDirectRepeats(dna),
+    ].sort((a, b) => a.pos - b.pos);
+  }
+
+  // ============================================================
+  // Tier 3: Flag fixing
+  // ============================================================
+
+  function isFlagResolved(flag, dna) {
+    if (flag.type === 'homopolymer') {
+      return !new RegExp(`${flag.base}{7,}`).test(dna);
+    }
+    if (flag.type === 'restriction') {
+      return !dna.includes(flag.seq);
+    }
+    if (flag.type === 'repeat') {
+      const first = dna.indexOf(flag.seq);
+      return first === -1 || dna.indexOf(flag.seq, first + 1) === -1;
+    }
+    return true;
+  }
+
+  function tryFixFlag(flag, codonList) {
+    const ranges = [];
+    if (flag.type === 'repeat' && flag.pos2 !== undefined) {
+      ranges.push([Math.floor(flag.pos2 / 3), Math.floor((flag.pos2 + flag.len - 1) / 3)]);
+    }
+    ranges.push([Math.floor(flag.pos / 3), Math.floor((flag.pos + flag.len - 1) / 3)]);
+
+    for (const [start, end] of ranges) {
+      for (let ci = start; ci <= Math.min(end, codonList.length - 1); ci++) {
+        const { aa, codon: cur } = codonList[ci];
+        if (!CODON_FREQUENCIES[aa]) continue;
+
+        const alts = Object.entries(CODON_FREQUENCIES[aa])
+          .sort(([, a], [, b]) => b - a)
+          .map(([c]) => c)
+          .filter(c => c !== cur);
+
+        for (const alt of alts) {
+          const newList = codonList.map((item, idx) =>
+            idx === ci ? { aa, codon: alt } : item
+          );
+          if (isFlagResolved(flag, codonListToRawDNA(newList))) return newList;
+        }
+      }
+    }
+    return null;
+  }
+
+  function fixAllFlags(codonList) {
+    let current = codonList.slice();
+    const flags = findAllFlags(codonListToRawDNA(current));
+    const unfixed = [];
+
+    for (const flag of flags) {
+      const result = tryFixFlag(flag, current);
+      if (result) {
+        current = result;
+      } else {
+        unfixed.push(flag);
+      }
+    }
+
+    return { codonList: current, unfixed };
+  }
+
+  // ============================================================
+  // UI: render flags
+  // ============================================================
+
+  const FLAG_COLORS = {
+    homopolymer: { fg: '#c04040', bg: 'rgba(192,64,64,0.1)' },
+    restriction: { fg: '#a06000', bg: 'rgba(160,96,0,0.1)' },
+    repeat: { fg: '#3b7abf', bg: 'rgba(59,122,191,0.1)' },
+  };
+
+  const FLAG_LABELS = {
+    homopolymer: 'Homopolymer',
+    restriction: 'Restriction site',
+    repeat: 'Direct repeat',
+  };
+
+  function flagToHTML(f, isUnfixable) {
+    const c = FLAG_COLORS[f.type] || { fg: 'var(--text-light)', bg: 'transparent' };
+    const label = FLAG_LABELS[f.type] || f.type;
+    const badgeStyle = `background:${c.bg};color:${c.fg};`;
+
+    let detail = '';
+    if (f.type === 'homopolymer') {
+      detail = `pos ${f.pos + 1}–${f.pos + f.len} &nbsp;<span class="opt-flag-seq">${f.seq}</span>`;
+    } else if (f.type === 'restriction') {
+      detail = `pos ${f.pos + 1}–${f.pos + f.len} &nbsp; ${f.name} &nbsp;<span class="opt-flag-seq">${f.seq}</span>`;
+    } else if (f.type === 'repeat') {
+      const seq = f.seq.length > 30 ? f.seq.slice(0, 30) + '…' : f.seq;
+      detail = `pos ${f.pos + 1}–${f.pos + f.len} = pos ${f.pos2 + 1}–${f.pos2 + f.len} &nbsp;<span class="opt-flag-seq">${seq}</span>`;
+    }
+
+    const unfixNote = isUnfixable
+      ? ' <span class="opt-flag-unfixable">(no synonymous fix)</span>'
+      : '';
+
+    return `<div class="opt-flag-row">
+      <span class="opt-flag-badge" style="${badgeStyle}">${label}</span>
+      <span class="opt-flag-detail">${detail}${unfixNote}</span>
+    </div>`;
+  }
+
+  function renderFlags(flags, unfixed = []) {
+    const panel = document.getElementById('flags-panel');
+    const title = document.getElementById('flags-title');
+    const items = document.getElementById('flags-list');
+
+    if (!flags || flags.length === 0) {
+      panel.style.display = 'none';
+      return;
+    }
+
+    const n = flags.length;
+    title.textContent = `${n} problem sequence${n !== 1 ? 's' : ''} detected`;
+
+    const unfixedKeys = new Set(unfixed.map(f => `${f.type}:${f.pos}`));
+    items.innerHTML = flags.map(f => flagToHTML(f, unfixedKeys.has(`${f.type}:${f.pos}`))).join('');
+
+    panel.style.display = 'block';
+  }
+
+  // ============================================================
+  // UI: render stats
+  // ============================================================
+
+  function renderStats(codonList, rawDNA) {
+    const statsArea = document.getElementById('stats-area');
+    const aaCount = codonList.filter(c => c.aa !== '*').length;
+    const cai = calcCAI(codonList);
+    const gcWin = calcGCWindowStats(rawDNA);
+
+    const pill = (text, title) =>
+      `<span class="opt-stat"${title ? ` title="${title}"` : ''}>${text}</span>`;
+
+    let html = pill(`${aaCount} aa`)
+      + pill(`${rawDNA.length} nt`)
+      + pill(`GC ${gcContent(rawDNA)}%`);
+
+    if (gcWin) {
+      html += pill(`local GC ${gcWin.min}–${gcWin.max}%`, 'Min and max GC% across all 30 nt sliding windows');
+    }
+
+    html += pill(`CAI ${cai.toFixed(3)}`, 'Codon Adaptation Index: 1.0 = all codons are the most-used for A. baylyi');
+
+    statsArea.innerHTML = html;
+  }
+
+  // ============================================================
+  // Application state
+  // ============================================================
+
+  let _state = {
+    codonList: [],
+    formatOpts: { fastaOutput: false, lineWidth: 80 },
+    screen: true,
+  };
+
+  function getFormatOpts() {
+    return {
+      fastaOutput: document.getElementById('fasta-output').checked,
+      lineWidth: parseInt(document.getElementById('line-width').value, 10),
+    };
+  }
+
+  function applyResult(codonList, screen) {
+    _state.codonList = codonList;
+    _state.formatOpts = getFormatOpts();
+    _state.screen = screen;
+
+    const rawDNA = codonListToRawDNA(codonList);
+    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts);
+    document.getElementById('output-section').style.display = '';
+
+    renderStats(codonList, rawDNA);
+
+    if (screen) {
+      const flags = findAllFlags(rawDNA);
+      renderFlags(flags);
+    } else {
+      document.getElementById('flags-panel').style.display = 'none';
+    }
+  }
+
+  // ============================================================
+  // UI wiring
+  // ============================================================
+
+  const aaInput = document.getElementById('aa-input');
+
+  function updateAACount() {
+    const cleaned = cleanAA(stripFastaHeader(aaInput.value));
+    const n = cleaned.replace(/\*/g, '').length;
+    aaInput.nextElementSibling.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
+  }
+  aaInput.addEventListener('input', updateAACount);
+
+  document.getElementById('stochastic').addEventListener('change', function () {
+    const smoothEl = document.getElementById('smooth-gc');
+    const smoothLabel = document.getElementById('smooth-gc-label');
+    smoothEl.disabled = !this.checked;
+    smoothLabel.classList.toggle('opt-toggle--disabled', !this.checked);
+    if (!this.checked) smoothEl.checked = false;
   });
 
-  if (errors.length) {
-    errorArea.textContent   = errors.join(' ');
-    errorArea.style.display = 'block';
-    dnaOutput.value = '';
-    return;
-  }
+  document.getElementById('optimize-btn').addEventListener('click', () => {
+    const raw = aaInput.value;
+    const addStop = document.getElementById('add-stop').checked;
+    const stochastic = document.getElementById('stochastic').checked;
+    const smoothGC = document.getElementById('smooth-gc').checked;
+    const screen = document.getElementById('screen-motifs').checked;
 
-  if (warnings.length) {
-    warnArea.textContent   = warnings.join(' ');
-    warnArea.style.display = 'block';
-  }
+    const warnEl = document.getElementById('warn-area');
+    const errEl = document.getElementById('error-area');
+    warnEl.style.display = 'none';
+    errEl.style.display = 'none';
+    document.getElementById('flags-panel').style.display = 'none';
 
-  dnaOutput.value = dna;
+    const { codonList, errors, warnings, tier, cai } = buildBestCodonList(raw, { addStop, stochastic, smoothGC });
 
-  // Stats (on raw DNA without FASTA header or newlines)
-  const rawDNA = dna.replace(/^>.*\n/, '').replace(/\n/g, '');
-  const aaCount = cleanAA(stripFastaHeader(raw)).replace(/\*/g, '').length;
-  statAA.textContent = aaCount + ' aa';
-  statNT.textContent = rawDNA.length + ' nt';
-  statGC.textContent = 'GC ' + gcContent(rawDNA) + '%';
-  statsArea.style.display = 'flex';
-});
+    if (errors.length) {
+      errEl.textContent = errors.join(' ');
+      errEl.style.display = 'block';
+      document.getElementById('dna-output').value = '';
+      document.getElementById('output-section').style.display = 'none';
+      return;
+    }
 
-document.getElementById('copy-btn').addEventListener('click', () => {
-  const text = dnaOutput.value;
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copy-btn');
-    const orig = btn.textContent;
-    btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = orig; }, 1500);
-  }).catch(() => {
-    // Fallback for browsers that block clipboard API
-    dnaOutput.select();
-    document.execCommand('copy');
+    const msgs = [...warnings];
+    if (stochastic) {
+      if (tier === null) {
+        msgs.push(`CAI note: best sequence found (${cai.toFixed(3)}) is below all thresholds after ${CAI_TIERS.length * CAI_ATTEMPTS_PER_TIER} attempts.`);
+      } else if (tier < CAI_TIERS[0]) {
+        msgs.push(`CAI note: could not reach ${CAI_TIERS[0]} after ${CAI_ATTEMPTS_PER_TIER} attempts — best sequence meets the ${tier.toFixed(2)} tier (CAI ${cai.toFixed(3)}).`);
+      }
+    }
+
+    if (msgs.length) {
+      warnEl.textContent = msgs.join(' ');
+      warnEl.style.display = 'block';
+    }
+
+    applyResult(codonList, screen);
   });
-});
 
-// Allow Enter in input to trigger optimize
-aaInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && e.ctrlKey) {
-    document.getElementById('optimize-btn').click();
-  }
-});
+  document.getElementById('fix-flags-btn').addEventListener('click', () => {
+    if (!_state.codonList.length) return;
+
+    const { codonList, unfixed } = fixAllFlags(_state.codonList);
+    _state.codonList = codonList;
+
+    const rawDNA = codonListToRawDNA(codonList);
+    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts);
+
+    renderStats(codonList, rawDNA);
+
+    const remaining = findAllFlags(rawDNA);
+    if (remaining.length === 0) {
+      document.getElementById('flags-panel').style.display = 'none';
+      const warnEl = document.getElementById('warn-area');
+      warnEl.className = 'opt-message opt-message--success';
+      warnEl.textContent = 'All flags resolved.';
+      warnEl.style.display = 'block';
+      setTimeout(() => {
+        warnEl.style.display = 'none';
+        warnEl.className = 'opt-message opt-message--warn';
+      }, 3000);
+    } else {
+      renderFlags(remaining, unfixed);
+    }
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', () => {
+    const text = document.getElementById('dna-output').value;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    }).catch(() => {
+      document.getElementById('dna-output').select();
+      document.execCommand('copy');
+    });
+  });
+
+  aaInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && e.ctrlKey) document.getElementById('optimize-btn').click();
+  });
 </script>
 {% endblock %}
