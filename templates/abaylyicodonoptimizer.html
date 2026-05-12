@@ -36,6 +36,7 @@
       /* Textareas */
       #aa-input,
       #dna-output {
+        display: block;
         width: 100%;
         font-family: var(--mono-font);
         font-size: 0.85rem;
@@ -134,25 +135,6 @@
         opacity: 0.4;
         cursor: not-allowed;
         pointer-events: none;
-      }
-
-      /* Line width select */
-      .opt-select-row {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.88rem;
-        color: var(--text);
-      }
-
-      .opt-select {
-        padding: 0.18rem 0.4rem;
-        border-radius: 4px;
-        background: var(--bg-light);
-        color: var(--text);
-        border: 1px solid var(--border);
-        font-size: 0.85rem;
-        font-family: inherit;
       }
 
       /* Primary action */
@@ -343,16 +325,112 @@
         font-size: 0.88em;
         font-style: italic;
       }
+
+      /* Temperature slider */
+      .opt-slider-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .opt-slider-label {
+        font-size: 0.88rem;
+        color: var(--text);
+      }
+
+      .opt-slider-track {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .opt-slider-end-label {
+        font-size: 0.7rem;
+        color: var(--text-light);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      #temperature {
+        flex: 1;
+        accent-color: var(--accent);
+        cursor: pointer;
+        min-width: 0;
+      }
+
+      .opt-slider-val {
+        font-size: 0.78rem;
+        font-family: var(--mono-font);
+        color: var(--text-light);
+        min-width: 5.5ch;
+      }
+
+      /* Input mode radio toggle */
+      .opt-input-label {
+        font-size: 0.69rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.3rem;
+      }
+
+      .opt-mode-toggle {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--border);
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 0.6rem;
+      }
+
+      .opt-mode-option {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.45rem 1rem;
+        font-size: 0.88rem;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--text-light);
+        background: var(--bg-light);
+        opacity: 0.45;
+        user-select: none;
+        transition: background 0.12s, color 0.12s, opacity 0.12s, font-weight 0.12s;
+        border-right: 1px solid var(--border);
+      }
+
+      .opt-mode-option:last-child {
+        border-right: none;
+      }
+
+      .opt-mode-option:has(input:checked) {
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 700;
+        opacity: 1;
+      }
+
+      .opt-mode-option input[type="radio"] {
+        display: none;
+      }
     </style>
 
     <div class="opt-tool">
 
       <!-- Input -->
       <section class="opt-section">
-        <div class="opt-section-label">Amino acid sequence &mdash; single-letter codes, FASTA accepted</div>
+        <div class="opt-input-label">Input</div>
+        <div><div class="opt-mode-toggle">
+          <label class="opt-mode-option"><input type="radio" name="input-mode" value="dna" checked>DNA / RNA</label>
+          <label class="opt-mode-option"><input type="radio" name="input-mode" value="aa">Amino acids</label>
+        </div></div>
+        <div id="input-label" class="opt-section-label">DNA / RNA sequence &mdash; FASTA accepted, U converted to T</div>
         <textarea id="aa-input" rows="6" spellcheck="false"
-          placeholder="Paste sequence here, e.g. MSKGEELFTGVVPILVELDGDVNGHKFSVSGEGEGDATYGKLTLKFICTTGKLPVPWPTLVTTLTYGVQCFSRYPDHMKQHDFFKSAMPEGYVQERTIFFKDDGNYKTRAEVKFEGDTLVNRIELKGIDFKEDGNILGHKLEYNYNSHNVYIMADKQKNGIKVNFKIRHNIEDGSVQLADHYQQNTPIGDGPVLLPDNHYLSTQSALSKDPNEKRDHMVLLEFVTAAGITLGMDELYK"></textarea>
-        <div id="aa-count" class="opt-counter">0 amino acids</div>
+          placeholder="Paste DNA or RNA here, e.g. ATGTTTGTTTTTCTTGTTTTATTGCCACTAGTCTCTAGTCAGTGTGTT&#x2026; (SARS-CoV-2 spike)"></textarea>
+        <div id="aa-count" class="opt-counter">0 nt (0 codons)</div>
       </section>
 
       <!-- Settings -->
@@ -367,25 +445,21 @@
             <input type="checkbox" id="fasta-output">
             <span>FASTA format</span>
           </label>
-          <div class="opt-select-row">
-            <span>Line width</span>
-            <select id="line-width" class="opt-select">
-              <option value="60">60 nt</option>
-              <option value="80" selected>80 nt</option>
-              <option value="0">None</option>
-            </select>
-          </div>
         </div>
 
         <div class="opt-settings-divider"></div>
 
         <div class="opt-settings-group">
           <div class="opt-group-label">Algorithm</div>
-          <label class="opt-toggle"
-            title="Sample codons proportionally to native A. baylyi frequency instead of always picking the most-used codon. Produces different output each run.">
-            <input type="checkbox" id="stochastic">
-            <span>Stochastic selection</span>
-          </label>
+          <div class="opt-slider-row">
+            <span class="opt-slider-label">Randomness</span>
+            <div class="opt-slider-track">
+              <span class="opt-slider-end-label">Deterministic</span>
+              <input type="range" id="temperature" min="0" max="100" value="0" step="1">
+              <span class="opt-slider-end-label">Proportional</span>
+            </div>
+            <span id="temperature-val" class="opt-slider-val">T = 0.00</span>
+          </div>
           <label id="smooth-gc-label" class="opt-toggle opt-toggle--disabled"
             title="During stochastic sampling, bias codon choice to keep local GC content (30 nt window) within 30–50%, matching native A. baylyi GC of 40.3%.">
             <input type="checkbox" id="smooth-gc" disabled>
@@ -486,6 +560,26 @@
     "*": { TAA: 0.734, TGA: 0.156, TAG: 0.109 },
   };
 
+  // Standard genetic code for translating DNA/RNA input.
+  const GENETIC_CODE = {
+    TTT: 'F', TTC: 'F', TTA: 'L', TTG: 'L',
+    CTT: 'L', CTC: 'L', CTA: 'L', CTG: 'L',
+    ATT: 'I', ATC: 'I', ATA: 'I', ATG: 'M',
+    GTT: 'V', GTC: 'V', GTA: 'V', GTG: 'V',
+    TCT: 'S', TCC: 'S', TCA: 'S', TCG: 'S',
+    CCT: 'P', CCC: 'P', CCA: 'P', CCG: 'P',
+    ACT: 'T', ACC: 'T', ACA: 'T', ACG: 'T',
+    GCT: 'A', GCC: 'A', GCA: 'A', GCG: 'A',
+    TAT: 'Y', TAC: 'Y', TAA: '*', TAG: '*',
+    CAT: 'H', CAC: 'H', CAA: 'Q', CAG: 'Q',
+    AAT: 'N', AAC: 'N', AAA: 'K', AAG: 'K',
+    GAT: 'D', GAC: 'D', GAA: 'E', GAG: 'E',
+    TGT: 'C', TGC: 'C', TGA: '*', TGG: 'W',
+    CGT: 'R', CGC: 'R', CGA: 'R', CGG: 'R',
+    AGT: 'S', AGC: 'S', AGA: 'R', AGG: 'R',
+    GGT: 'G', GGC: 'G', GGA: 'G', GGG: 'G',
+  };
+
   // Restriction enzyme recognition sequences to avoid.
   // BsaI is non-palindromic, so we check both forward and reverse complement.
   const RESTRICTION_SITES = {
@@ -524,44 +618,87 @@
     return lines.join('\n');
   }
 
+  function cleanNucleotides(text) {
+    return text.toUpperCase().replace(/U/g, 'T').replace(/[^ATGC]/g, '');
+  }
+
+  function translateDNA(raw) {
+    const stripped = stripFastaHeader(raw);
+    const nt = cleanNucleotides(stripped);
+
+    if (nt.length === 0) {
+      return { aa: '', warnings: [], errors: ['Input is empty. Paste a DNA or RNA sequence above.'] };
+    }
+
+    const warnings = [];
+    const remainder = nt.length % 3;
+    const usable = remainder ? nt.slice(0, -remainder) : nt;
+    if (remainder) {
+      warnings.push(`${remainder} trailing nucleotide${remainder > 1 ? 's' : ''} ignored (incomplete codon).`);
+    }
+
+    let aa = '';
+    for (let i = 0; i < usable.length; i += 3) {
+      const codon = usable.slice(i, i + 3);
+      const residue = GENETIC_CODE[codon];
+      if (!residue) {
+        warnings.push(`Unknown codon ${codon} at position ${i + 1} — skipped.`);
+        continue;
+      }
+      aa += residue;
+      if (residue === '*') break;
+    }
+
+    return { aa, warnings, errors: [] };
+  }
+
   function codonListToRawDNA(codonList) {
     return codonList.map(c => c.codon).join('');
   }
 
-  function formatDNA(rawDNA, { fastaOutput, lineWidth }) {
+  function formatDNA(rawDNA, { fastaOutput, lineWidth }, geneN) {
     let out = rawDNA;
     if (lineWidth) out = wrapLines(out, lineWidth);
-    if (fastaOutput) out = '>optimized_abaylyi_ADP1-ISx\n' + out;
+    if (fastaOutput) out = `>gene_${geneN}_codon_optimized_ADP1_ISx\n` + out;
     return out;
   }
 
   // ============================================================
-  // Tier 1: Weighted-random codon sampling
-  // ============================================================
-
-  function sampleWeighted(entries) {
-    // entries: [[codon, freq], ...] sorted by freq descending, sum ≈ 1
-    let r = Math.random();
-    for (const [codon, freq] of entries) {
-      r -= freq;
-      if (r <= 0) return codon;
-    }
-    return entries[entries.length - 1][0]; // floating-point safety
-  }
-
-  // ============================================================
-  // Tier 2: GC-smoothed codon selection
+  // Tier 1: Codon sampling
   // ============================================================
 
   function sortedEntries(aa) {
     return Object.entries(CODON_FREQUENCIES[aa]).sort(([, a], [, b]) => b - a);
   }
 
-  function selectCodon(aa, stochastic, smoothGC, currentDNA) {
-    if (!stochastic) return OPTIMAL_CODONS[aa];
+  // Sample from entries using explicit probability weights (need not sum to 1).
+  function sampleFrom(entries) {
+    const total = entries.reduce((s, [, p]) => s + p, 0);
+    let r = Math.random() * total;
+    for (const [codon, p] of entries) {
+      r -= p;
+      if (r <= 0) return codon;
+    }
+    return entries[entries.length - 1][0];
+  }
 
+  // Build interpolated probabilities: p_i = (1-T)*[i==argmax] + T*native_freq_i
+  function interpolatedEntries(entries, T) {
+    return entries.map(([codon, freq], i) => [codon, (1 - T) * (i === 0 ? 1 : 0) + T * freq]);
+  }
+
+  // ============================================================
+  // Tier 2: GC-smoothed codon selection
+  // ============================================================
+
+  function selectCodon(aa, T, smoothGC, currentDNA) {
     const entries = sortedEntries(aa);
-    if (!smoothGC) return sampleWeighted(entries);
+
+    if (T === 0) return entries[0][0];
+
+    const weighted = interpolatedEntries(entries, T);
+
+    if (!smoothGC) return sampleFrom(weighted);
 
     // GC-smoothed: bias toward codons that keep local 30-nt window within 30-50%.
     const GC_WIN = 30;
@@ -572,26 +709,26 @@
     const recent = currentDNA.slice(-GC_WIN);
 
     const inRange = [];
-    let bestCodon = entries[0][0];
+    let bestCodon = weighted[0][0];
     let bestDiff = Infinity;
 
-    for (const [codon, freq] of entries) {
+    for (const [codon, p] of weighted) {
       const win = (recent + codon).slice(-GC_WIN);
       const gc = (win.match(/[GC]/g) || []).length / win.length;
       const diff = Math.abs(gc - GC_TGT);
-      if (gc >= GC_MIN && gc <= GC_MAX) inRange.push([codon, freq]);
+      if (gc >= GC_MIN && gc <= GC_MAX) inRange.push([codon, p]);
       if (diff < bestDiff) { bestDiff = diff; bestCodon = codon; }
     }
 
     const pool = inRange.length > 0 ? inRange : [[bestCodon, 1.0]];
-    return sampleWeighted(pool);
+    return sampleFrom(pool);
   }
 
   // ============================================================
   // Core: build codon list
   // ============================================================
 
-  function buildCodonList(aaRaw, { addStop, stochastic, smoothGC }) {
+  function buildCodonList(aaRaw, { addStop, temperature, smoothGC }) {
     const stripped = stripFastaHeader(aaRaw);
     const cleaned = cleanAA(stripped);
 
@@ -607,7 +744,7 @@
 
     for (const aa of cleaned) {
       if (aa === '*') continue;
-      const codon = selectCodon(aa, stochastic, smoothGC, currentDNA);
+      const codon = selectCodon(aa, temperature, smoothGC, currentDNA);
       codonList.push({ aa, codon });
       currentDNA += codon;
     }
@@ -670,8 +807,8 @@
 
     const warnings = invalid.length > 0 ? [`Unknown residue(s) ignored: ${invalid.join(', ')}`] : [];
 
-    // Deterministic mode: generate once — CAI is deterministic, no retries needed.
-    if (!opts.stochastic) {
+    // Low/zero temperature: deterministic or near-deterministic — no retries needed.
+    if (opts.temperature <= 0.2) {
       const { codonList } = buildCodonList(aaRaw, opts);
       return { codonList, errors: [], warnings, tier: null, cai: calcCAI(codonList) };
     }
@@ -682,7 +819,7 @@
       let currentDNA = '';
       for (const aa of cleaned) {
         if (aa === '*') continue;
-        const codon = selectCodon(aa, true, opts.smoothGC, currentDNA);
+        const codon = selectCodon(aa, opts.temperature, opts.smoothGC, currentDNA);
         codonList.push({ aa, codon });
         currentDNA += codon;
       }
@@ -946,12 +1083,13 @@
     codonList: [],
     formatOpts: { fastaOutput: false, lineWidth: 80 },
     screen: true,
+    geneN: 0,
   };
 
   function getFormatOpts() {
     return {
       fastaOutput: document.getElementById('fasta-output').checked,
-      lineWidth: parseInt(document.getElementById('line-width').value, 10),
+      lineWidth: 60,
     };
   }
 
@@ -961,7 +1099,7 @@
     _state.screen = screen;
 
     const rawDNA = codonListToRawDNA(codonList);
-    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts);
+    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts, _state.geneN);
     document.getElementById('output-section').style.display = '';
 
     renderStats(codonList, rawDNA);
@@ -980,25 +1118,56 @@
 
   const aaInput = document.getElementById('aa-input');
 
+  function getInputMode() {
+    return document.querySelector('input[name="input-mode"]:checked').value;
+  }
+
   function updateAACount() {
-    const cleaned = cleanAA(stripFastaHeader(aaInput.value));
-    const n = cleaned.replace(/\*/g, '').length;
-    aaInput.nextElementSibling.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
+    const counter = document.getElementById('aa-count');
+    if (getInputMode() === 'dna') {
+      const nt = cleanNucleotides(stripFastaHeader(aaInput.value));
+      const codons = Math.floor(nt.length / 3);
+      counter.textContent = `${nt.length} nt (${codons} codon${codons !== 1 ? 's' : ''})`;
+    } else {
+      const n = cleanAA(stripFastaHeader(aaInput.value)).replace(/\*/g, '').length;
+      counter.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
+    }
   }
   aaInput.addEventListener('input', updateAACount);
 
-  document.getElementById('stochastic').addEventListener('change', function () {
-    const smoothEl = document.getElementById('smooth-gc');
-    const smoothLabel = document.getElementById('smooth-gc-label');
-    smoothEl.disabled = !this.checked;
-    smoothLabel.classList.toggle('opt-toggle--disabled', !this.checked);
-    if (!this.checked) smoothEl.checked = false;
+  document.querySelectorAll('input[name="input-mode"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const isDna = radio.value === 'dna';
+      document.getElementById('input-label').textContent = isDna
+        ? 'DNA / RNA sequence — FASTA accepted, U converted to T'
+        : 'Amino acid sequence — single-letter codes, FASTA accepted';
+      aaInput.placeholder = isDna
+        ? 'Paste DNA or RNA here, e.g. ATGTTTGTTTTTCTTGTTTTATTGCCACTAGTCTCTAGTCAGTGTGTT… (SARS-CoV-2 spike)'
+        : 'Paste AA sequence here, e.g. HAEGTFTSDVSSYLEGQAAKEFIAWLVKGR (GLP-1)';
+      updateAACount();
+    });
   });
 
+  const tempSlider = document.getElementById('temperature');
+  const tempVal = document.getElementById('temperature-val');
+
+  function updateTempUI() {
+    const T = tempSlider.value / 100;
+    tempVal.textContent = `T = ${T.toFixed(2)}`;
+    const smoothEl = document.getElementById('smooth-gc');
+    const smoothLabel = document.getElementById('smooth-gc-label');
+    const isStochastic = T > 0;
+    smoothEl.disabled = !isStochastic;
+    smoothLabel.classList.toggle('opt-toggle--disabled', !isStochastic);
+    if (!isStochastic) smoothEl.checked = false;
+  }
+
+  tempSlider.addEventListener('input', updateTempUI);
+
   document.getElementById('optimize-btn').addEventListener('click', () => {
-    const raw = aaInput.value;
+    let raw = aaInput.value;
     const addStop = document.getElementById('add-stop').checked;
-    const stochastic = document.getElementById('stochastic').checked;
+    const temperature = tempSlider.value / 100;
     const smoothGC = document.getElementById('smooth-gc').checked;
     const screen = document.getElementById('screen-motifs').checked;
 
@@ -1008,7 +1177,19 @@
     errEl.style.display = 'none';
     document.getElementById('flags-panel').style.display = 'none';
 
-    const { codonList, errors, warnings, tier, cai } = buildBestCodonList(raw, { addStop, stochastic, smoothGC });
+    const extraWarnings = [];
+    if (getInputMode() === 'dna') {
+      const { aa, warnings: tw, errors: te } = translateDNA(raw);
+      if (te.length) {
+        errEl.textContent = te.join(' ');
+        errEl.style.display = 'block';
+        return;
+      }
+      extraWarnings.push(...tw);
+      raw = aa;
+    }
+
+    const { codonList, errors, warnings, tier, cai } = buildBestCodonList(raw, { addStop, temperature, smoothGC });
 
     if (errors.length) {
       errEl.textContent = errors.join(' ');
@@ -1018,8 +1199,8 @@
       return;
     }
 
-    const msgs = [...warnings];
-    if (stochastic) {
+    const msgs = [...extraWarnings, ...warnings];
+    if (temperature > 0.2) {
       if (tier === null) {
         msgs.push(`CAI note: best sequence found (${cai.toFixed(3)}) is below all thresholds after ${CAI_TIERS.length * CAI_ATTEMPTS_PER_TIER} attempts.`);
       } else if (tier < CAI_TIERS[0]) {
@@ -1032,6 +1213,7 @@
       warnEl.style.display = 'block';
     }
 
+    _state.geneN++;
     applyResult(codonList, screen);
   });
 
@@ -1042,7 +1224,7 @@
     _state.codonList = codonList;
 
     const rawDNA = codonListToRawDNA(codonList);
-    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts);
+    document.getElementById('dna-output').value = formatDNA(rawDNA, _state.formatOpts, _state.geneN);
 
     renderStats(codonList, rawDNA);
 
