@@ -438,7 +438,7 @@
         <div class="opt-settings-group">
           <div class="opt-group-label">Output format</div>
           <label class="opt-toggle">
-            <input type="checkbox" id="add-stop" checked>
+            <input type="checkbox" id="add-stop">
             <span>Add stop codon</span>
           </label>
           <label class="opt-toggle">
@@ -1127,7 +1127,12 @@
     if (getInputMode() === 'dna') {
       const nt = cleanNucleotides(stripFastaHeader(aaInput.value));
       const codons = Math.floor(nt.length / 3);
-      counter.textContent = `${nt.length} nt (${codons} codon${codons !== 1 ? 's' : ''})`;
+      const rem = nt.length % 3;
+      if (rem > 0 && nt.length > 0) {
+        counter.innerHTML = `${nt.length} nt (${codons} codon${codons !== 1 ? 's' : ''}) &mdash; <span style="color:#a06000">not a multiple of 3 — ${rem} trailing nt will be ignored</span>`;
+      } else {
+        counter.textContent = `${nt.length} nt (${codons} codon${codons !== 1 ? 's' : ''})`;
+      }
     } else {
       const n = cleanAA(stripFastaHeader(aaInput.value)).replace(/\*/g, '').length;
       counter.textContent = n + ' amino acid' + (n !== 1 ? 's' : '');
