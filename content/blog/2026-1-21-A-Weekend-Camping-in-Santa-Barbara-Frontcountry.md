@@ -3,6 +3,9 @@ title = "A Weekend Camping in Santa Barbara Frontcountry"
 date = 2026-01-21
 [taxonomies]
 tags = ["camping", "hiking", "travel", "Santa Barbara", "rocket launch"]
+
+[extra]
+hidden = true
 +++
 
 &nbsp;&nbsp;&nbsp;&nbsp;

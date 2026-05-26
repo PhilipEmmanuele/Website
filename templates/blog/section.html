@@ -1,0 +1,17 @@
+{# templates/blog/section.html #}
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-section">
+    <h1>{{ section.title }}</h1>
+    {{ section.content | safe }}
+
+    <ul class="content-list">
+        {% for page in section.pages %}
+            {% if not page.extra.hidden %}
+                {% include "partials/content-listing-item.html" %}
+            {% endif %}
+        {% endfor %}
+    </ul>
+</section>
+{% endblock %}
