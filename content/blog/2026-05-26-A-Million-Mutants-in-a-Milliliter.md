@@ -1,5 +1,5 @@
 +++
-title = "Every Possible Single Mutation in an Organism"
+title = "A Million Mutants in a Milliliter"
 date = 2026-05-26
 [taxonomies]
 tags = ["biology", "evolution", "BioBloom", "Pioneer Labs", "saturated mutagenesis", "library"]
