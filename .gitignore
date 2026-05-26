@@ -10,3 +10,7 @@ out_fastqs/
 
 # Backup directories
 templates_backup/
+
+# HEIC originals (JPG versions are tracked)
+*.heic
+*.HEIC
