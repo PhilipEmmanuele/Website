@@ -29,3 +29,48 @@
     margin-left: 0.5rem;
     padding: 0.5rem;
 }
+
+/* Email subscribe form */
+.subscribe-label {
+    margin-top: 2rem;
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+.subscribe-form {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.subscribe-form input[type="email"] {
+    flex: 1 1 auto;
+    min-width: 12rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: var(--bg, transparent);
+    color: var(--text);
+}
+
+.subscribe-form button {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--accent);
+    border-radius: 4px;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+}
+
+.subscribe-form .subscribe-status {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.subscribe-honeypot {
+    position: absolute;
+    left: -9999px;
+}

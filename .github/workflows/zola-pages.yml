@@ -42,3 +42,16 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Checkout (for new-post detection)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Email subscribers about new posts
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_AUDIENCE_ID: "bc13dad3-f1eb-49f3-a44f-915cdf0c6541"
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: python3 .github/scripts/notify_new_posts.py

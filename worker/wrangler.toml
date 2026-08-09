@@ -1,0 +1,10 @@
+name = "blog-subscribe"
+main = "src/index.js"
+compatibility_date = "2026-08-01"
+
+[vars]
+RESEND_AUDIENCE_ID = "bc13dad3-f1eb-49f3-a44f-915cdf0c6541"
+ALLOWED_ORIGIN = "https://www.philip-emmanuele.com"
+
+# RESEND_API_KEY is a secret, not a var — set it with:
+#   wrangler secret put RESEND_API_KEY

@@ -40,3 +40,6 @@ header_nav = [
 
 author = "Philip Emmanuele"
 
+# Cloudflare Worker URL that proxies email signups to Resend (set after deploying worker/)
+subscribe_endpoint = "https://blog-subscribe.philip-emmanue.workers.dev"
+

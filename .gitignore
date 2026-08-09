@@ -14,3 +14,11 @@ templates_backup/
 # HEIC originals (JPG versions are tracked)
 *.heic
 *.HEIC
+
+# Worker tooling
+worker/node_modules/
+worker/.wrangler/
+
+# Python bytecode
+__pycache__/
+*.pyc

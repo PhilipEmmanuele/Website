@@ -1,6 +1,7 @@
 +++
 title = "Synthetic Biology Blog"
 sort_by = "date"
+generate_feeds = true
 +++
 
 ## Hello, welcome to my blog.
