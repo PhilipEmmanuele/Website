@@ -10,8 +10,8 @@ title = "Philip's Blog"
 description = "A blog about cutting edge synthetic biology research."
 
 # Feeds
-generate_feed = true
-feed_filename = "rss.xml"
+generate_feeds = true
+feed_filenames = ["rss.xml"]
 
 # Taxonomies
 taxonomies = [

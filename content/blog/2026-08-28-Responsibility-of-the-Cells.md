@@ -14,7 +14,6 @@ Do you ever feel the responsibility of your cells? Trillions of cells. Each of t
 &nbsp;&nbsp;&nbsp;&nbsp;
 Your heart flutters as your work crush walks past your desk. All the cells in your heart could beat on their own, but instead they band together. Billions of cells waiting for each other’s cues to fire in synchrony, sixty to eighty to a hundred twenty times every minute. A hundred thousand times, yesterday, today, tomorrow, every day of your life until you die. “Maybe tomorrow,” you think, as your crush turns the corner. 
 
-
 &nbsp;&nbsp;&nbsp;&nbsp;
 When you drink, a little part of you dies. Code red ensues on the cellular level. Your hepatocytes fight like hell to break down the ethanol in your blood. Some of them will die, and that is a sacrifice you are willing to make. You take another swig and laugh with your friends.
 
