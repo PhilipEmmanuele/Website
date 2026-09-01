@@ -9,8 +9,9 @@ build_search_index = false
 title = "Philip's Blog"
 description = "A blog about cutting edge synthetic biology research."
 
-# Feeds (rename from `generate_feed`)
-generate_feeds = true
+# Feeds
+generate_feed = true
+feed_filename = "rss.xml"
 
 # Taxonomies
 taxonomies = [
