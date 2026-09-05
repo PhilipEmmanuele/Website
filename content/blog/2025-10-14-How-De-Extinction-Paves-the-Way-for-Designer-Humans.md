@@ -1,5 +1,6 @@
 +++
 title = "How De-Extinction Paves the Way for Designer Humans"
+description = "Colossal Biosciences says it's bringing back the woolly mammoth. I think the real long-term business case is something much closer to home — here's my hypothesized roadmap."
 [taxonomies]
 tags = [ "Colossal", "De-extinction", "Gene editing"]
 +++

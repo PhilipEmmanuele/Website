@@ -1,5 +1,6 @@
 +++
 title = "A Weekend Camping in Santa Barbara Frontcountry"
+description = "A solo camping and hiking trip to Santa Barbara, timed to catch a SpaceX return-to-pad launch light up the night from Jalama Beach."
 date = 2026-01-21
 [taxonomies]
 tags = ["camping", "hiking", "travel", "Santa Barbara", "rocket launch"]

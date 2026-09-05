@@ -10,7 +10,11 @@ title = "Philip's Blog"
 description = "A blog about cutting edge synthetic biology research."
 
 # Feeds
-generate_feeds = true
+# generate_feeds controls the site-wide feed at /rss.xml (would pull in every
+# page on the site, e.g. /about/, /scihub/ — not wanted). The blog's own feed
+# at /blog/rss.xml is enabled independently via generate_feeds in
+# content/blog/_index.md, and that's the one linked from <head>.
+generate_feeds = false
 feed_filenames = ["rss.xml"]
 
 # Taxonomies

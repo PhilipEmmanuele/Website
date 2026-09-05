@@ -1,5 +1,6 @@
 +++
 title = "My first blog post"
+description = "An introduction to me — a UCSD bioengineering student — and what this blog is about: informal breakdowns of synthetic biology papers (and the occasional detour)."
 [taxonomies]
 tags = [ "first", "blog", "post", "my" ]
 +++

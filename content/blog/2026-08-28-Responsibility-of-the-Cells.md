@@ -1,5 +1,6 @@
 +++
 title = "The Responsibility of the Cells"
+description = "A meditation on the trillions of cells working together every day just to keep you alive: your heart, your liver, your neurons, and you."
 date = 2026-08-28
 [taxonomies]
 tags = [ "thoughts", "biology", "mortality"]

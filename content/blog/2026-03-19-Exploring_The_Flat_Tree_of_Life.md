@@ -1,5 +1,6 @@
 +++
 title = "Exploring The Flat Tree of Life"
+description = "An interactive 3D toy for exploring the 10-dimensional 'flat' tree of life that Goodfire AI found hidden inside a DNA foundation model - follow up on 'From Darwin to Deep Learning'."
 date = 2026-03-19
 [taxonomies]
 tags = ["biology", "evolution", "machine-learning", "interactive"]

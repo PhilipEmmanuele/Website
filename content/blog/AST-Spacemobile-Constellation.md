@@ -1,5 +1,6 @@
 +++
 title = "AST SpaceMobile Constellation Tracker"
+description = "A live 3D tracker for AST SpaceMobile's growing satellite constellation."
 date = 2026-02-22
 [taxonomies]
 tags = ["AST Spacemobile", "Space", "Satellite", "Constellation", "BlueBird"]

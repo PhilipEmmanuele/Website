@@ -1,5 +1,6 @@
 +++
 title = "How I use AI"
+description = "Why I don't hide my AI use: how I lean on LLMs to expand what I know while keeping my own critical thinking driving the final call."
 [taxonomies]
 tags = [ "AI", "ChatGPT", "LLM"]
 

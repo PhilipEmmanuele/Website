@@ -1,5 +1,6 @@
 +++
 title = "Closest Common Clade"
+description = "A quick trivia game: given two animals, can you name the closest shared branch on the tree of life?"
 date = 2026-02-13
 [taxonomies]
 tags = ["games", "biology", "evolution"]

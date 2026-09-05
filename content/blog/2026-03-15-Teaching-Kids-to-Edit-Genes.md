@@ -1,5 +1,6 @@
 +++
 title = "Teaching Kids to Edit Genes"
+description = "How BEGS' CRISPR lab pairs a hands-on gene-editing experiment — turning E. coli motile — with a bioethics discussion for local high schoolers, and why it's one of my favorite outreach programs."
 date = 2026-03-15
 [taxonomies]
 tags = ["CRISPR", "outreach", "teaching", "STEM", "education", "volunteering"]

@@ -1,5 +1,6 @@
 +++
 title = "From Darwin to Deep Learning"
+description = "Does a DNA foundation model trained on genomes learn the tree of life on its own? A look at Goodfire AI's work finding phylogeny hidden inside Evo 2."
 [taxonomies]
 tags = [ "AI", "Phylogeny", "Evo 2"]
 +++

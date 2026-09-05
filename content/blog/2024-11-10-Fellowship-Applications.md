@@ -1,5 +1,6 @@
 +++
 title = "NSF GRFP and NDSEG Application Guide"
+description = "A guide to the NSF GRFP and NDSEG fellowship applications — materials, tips, and what I learned applying to both during the 2024 cycle."
 [taxonomies]
 tags = [ "Fellowship", "Ph.D.", "DoD", "NSF" ]
 +++

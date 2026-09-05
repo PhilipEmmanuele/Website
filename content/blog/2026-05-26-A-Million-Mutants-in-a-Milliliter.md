@@ -1,5 +1,6 @@
 +++
 title = "A Million Mutants in a Milliliter"
+description = "How do you cram a saturating mutagenesis library covering every possible genome mutation into a single milliliter? A look at Pioneer Labs' BioBloom method."
 date = 2026-05-26
 [taxonomies]
 tags = ["biology", "evolution", "BioBloom", "Pioneer Labs", "saturated mutagenesis", "library"]

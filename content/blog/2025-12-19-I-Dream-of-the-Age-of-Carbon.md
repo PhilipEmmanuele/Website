@@ -1,5 +1,6 @@
 +++
 title = "I Dream of the Age of Carbon"
+description = "Silicon had its era. I make the case that carbon, enabled by synthetic biology, is next, and in 50 years it'll touch nearly everything you build, eat, wear, and are."
 [taxonomies]
 tags = [ "synthetic biology", "bioproduction", "Gene editing"]
 +++

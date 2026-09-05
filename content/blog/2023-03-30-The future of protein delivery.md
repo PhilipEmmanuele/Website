@@ -1,5 +1,6 @@
 +++
 title = "The future of protein delivery"
+description = "Feng Zhang's lab just published a bacterial contractile injection system that delivers proteins into human cells at near-100% efficiency. Here's how the machinery, borrowed from a nematode-symbiotic bacterium, works and why it matters for drug and CRISPR delivery."
 [taxonomies]
 tags = [ "Feng", "Zhang", "delivery", "bacteria", "protein" ]
 +++
