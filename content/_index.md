@@ -5,7 +5,7 @@ sort_by = "date"
 
 ## Hello, welcome to my blog.
 
-My name is Philip and I am a bioengineering nerd. Learn about cutting edge biotechnology/synthetic biology research (or anyhting else cool and fun I run across) and my Ph.D. journey through my blog posts. Connect with me using the links below!
+My name is Philip and I am a bioengineering nerd. Learn about cutting edge biotechnology/synthetic biology research (or anything else cool and fun I run across) and my Ph.D. journey through my blog posts. Connect with me using the links below!
 
 [Twitter](https://www.twitter.com/philemmanuele)
 
