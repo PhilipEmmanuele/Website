@@ -554,6 +554,114 @@ body {
   .species-card { width: 100%; }
   .score-bar { gap: 0.7rem; font-size: 0.7rem; }
 }
+
+:root { --text-dim: #a2b8ac; --text-faint: #8aa496; }
+button { font: inherit; color: inherit; }
+button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+button:disabled { cursor: default; opacity: .55; }
+.mode-card { width: 100%; color: var(--text); }
+.welcome-note { padding: 1.25rem; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); line-height: 1.7; margin: 0 0 1.5rem; text-align: left; font-size: .9rem; }
+.welcome-note span { color: var(--text-dim); display: inline-block; margin-top: .7rem; }
+.welcome-note h2 { margin-bottom: .5rem; }
+.welcome-note .btn { margin-top: .8rem; }
+.mode-badge { border: 1px solid var(--border); padding: .4rem .65rem; }
+progress { width: 100%; height: 6px; accent-color: var(--accent); margin-bottom: 1.5rem; }
+.round-prompt { text-align: center; margin-bottom: 1rem; line-height: 1.5; }
+.attempts { color: var(--text-dim); font-size: .8rem; margin-bottom: .8rem; }
+.choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-bottom: 1rem; }
+.choice { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; text-align: left; min-height: 86px; cursor: pointer; }
+.choice:not(:disabled):hover { background: var(--surface2); border-color: var(--accent); }
+.choice strong { display: block; font-size: .9rem; line-height: 1.4; }
+.choice span { display: block; color: var(--text-dim); font-style: italic; font-size: .8rem; margin-top: .35rem; }
+.reference-tree { margin-bottom: 1.25rem; color: var(--text-dim); font-size: .85rem; }
+.reference-tree summary { cursor: pointer; padding: .6rem 0; }
+.reference-tree p { margin: .5rem 0; }
+.vtree-row { background: transparent; width: 100%; text-align: left; color: var(--text); font-family: inherit; }
+.guess-label { display: block; line-height: 1.5; }
+.taxonomy-note { max-width: 680px; padding: 1rem 1.5rem 2rem; margin: auto; color: var(--text-dim); font-size: .78rem; line-height: 1.7; }
+.taxonomy-note summary { cursor: pointer; }
+.taxonomy-note p { margin-top: .75rem; }
+.taxonomy-note a { color: var(--blue); }
+body { min-height: 0; }
+.species-card { min-width: 0; }
+@media (max-width: 550px) {
+  .matchup { flex-direction: row; align-items: stretch; gap: .5rem; }
+  .species-card { flex: 1; width: auto; padding: 1rem .5rem; }
+  .species-emoji { font-size: 2.5rem; }
+  .species-name { font-size: .95rem; }
+  .species-taxon { font-size: .65rem; overflow-wrap: anywhere; }
+  .vs-badge { align-self: center; }
+  .choice { padding: .8rem; }
+  .game-screen { padding-bottom: 1rem; }
+  .ac-item { flex-wrap: wrap; }
+  .ac-item .ac-desc { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+.study-screen { max-width: 680px; margin: auto; padding: 1.5rem; }
+[hidden] { display: none !important; }
+.mode-card.study { border-color: #466d83; }
+.mode-card.study .mode-diff { background: var(--blue-dim); color: var(--blue); }
+.study-menu { flex: 0 0 auto; }
+.study-intro { color: var(--text-dim); line-height: 1.6; margin-bottom: 1rem; }
+.study-card { border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem; background: var(--surface); margin-bottom: 1.25rem; }
+.study-card h2 { font-size: 1.65rem; margin-bottom: .4rem; overflow-wrap: anywhere; }
+.study-card p { line-height: 1.65; margin-bottom: 1rem; }
+.study-card .study-eyebrow { font: .75rem 'DM Mono', monospace; color: var(--blue); text-transform: uppercase; letter-spacing: .08em; }
+.study-description { color: var(--accent); }
+.study-lineage { color: var(--text-dim); font-size: .85rem; }
+.study-matchup { margin: 1rem 0; }
+.study-takeaway { border-left: 3px solid var(--accent); padding-left: 1rem; }
+.study-actions { margin-top: .8rem; flex-wrap: wrap; }
+.study-hint { color: var(--warm); font-size: .85rem; }
+.study-back { border: 0; background: none; color: var(--text-dim); text-decoration: underline; cursor: pointer; padding: .5rem 0; }
+.study-library label { margin: 1rem 0 .5rem; }
+.study-library-list { max-height: 340px; overflow: auto; margin-top: 1rem; }
+.library-entry { border-bottom: 1px solid var(--border); padding: .7rem 0; }
+.library-entry p, .library-entry small { color: var(--text-dim); font-size: .85rem; line-height: 1.6; }
+.choice strong { font-size: 1rem; }
+@media(max-width: 550px) { .study-screen { padding: 1rem .8rem; } .study-card { padding: 1rem; } }
+
+.relationship-map { margin-top: 1rem; border: 1px solid var(--border); border-radius: 12px; padding: .75rem; background: var(--bg); color: var(--text); overflow: hidden; }
+.map-toolbar,.map-zoom { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .75rem; }
+.map-toolbar button,.map-toolbar select,.map-zoom button { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: .5rem .65rem; cursor: pointer; min-height: 36px; }
+.map-toolbar label,.map-zoom span { font-size: .8rem; color: var(--text-dim); }
+.map-breadcrumbs { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem; margin-bottom: .6rem; }
+.map-breadcrumbs button { background: none; border: 0; color: var(--blue); cursor: pointer; padding: .2rem; font-size: .75rem; }
+.map-breadcrumbs [aria-current] { color: var(--accent); font-weight: 700; }
+.map-instructions { font-size: .75rem; color: var(--text-dim); line-height: 1.6; }
+.map-viewport { overflow: auto; max-height: 430px; height: 375px; border: 1px solid var(--border); border-radius: 8px; background: radial-gradient(circle, #283b33 1px, transparent 1px) 0 0 / 20px 20px; cursor: grab; overscroll-behavior: contain; }
+.map-viewport.dragging { cursor: grabbing; user-select: none; }
+.map-canvas { position: relative; transform-origin: 0 0; }
+.map-links { position: absolute; inset: 0; pointer-events: none; }
+.map-links path { fill: none; stroke: #638b78; stroke-width: 2; }
+.map-node { position: absolute; border: 1.5px solid #456253; border-radius: 10px; background: var(--surface); color: var(--text); cursor: pointer; padding: .45rem .5rem; text-align: center; display: flex; flex-direction: column; justify-content: center; gap: .2rem; }
+.map-node strong { font-size: .78rem; }
+.map-node span { font-size: .64rem; color: var(--text-dim); line-height: 1.3; }
+.map-node small { font-size: .65rem; color: var(--blue); }
+.map-node:hover,.map-node.selected { border-color: var(--accent); background: var(--surface2); }
+.map-node:focus-visible { outline-offset: -5px; }
+.map-inspector { padding: 1rem .25rem .25rem; }
+.map-inspector h3 { color: var(--accent); font-size: 1rem; margin-bottom: .35rem; }
+.map-inspector p { font-size: .85rem; line-height: 1.6; }
+.map-inspector dt { font-size: .72rem; color: var(--text-dim); margin: .75rem 0 .35rem; }
+.map-inspector dd { margin: 0; display: flex; flex-wrap: wrap; gap: .35rem; }
+.map-chip { background: var(--surface2); color: var(--blue); border: 1px solid var(--border); border-radius: 6px; padding: .4rem .55rem; cursor: pointer; font-size: .75rem; }
+.map-muted { color: var(--text-dim); font-size: .75rem; }
+.map-examples { margin: 1rem 0; font-size: .8rem; color: var(--text-dim); }
+.map-examples summary { cursor: pointer; }
+.map-inspector .btn-row { margin: 1rem 0 0; flex-wrap: wrap; }
+.map-search-results { max-height: 180px; overflow: auto; margin-bottom: .6rem; }
+.map-search-results .map-chip { margin: .2rem; }
+.study-library-map { margin-top: .5rem; }
+@media(max-width:550px) { .relationship-map { padding: .5rem; } .map-viewport { height: 330px; } .map-inspector .btn { flex-basis: 100%; } }
+
+.map-node:disabled { opacity: 1; cursor: default; border-color: var(--border); background: var(--surface); }
+.map-node:disabled:hover { border-color: var(--border); background: var(--surface); }
+.map-node:disabled small,.map-terminal { color: var(--text-dim); }
+.map-terminal { cursor: default; display: inline-block; }
 </style>
 </head>
 <body>
@@ -561,56 +669,80 @@ body {
 <!-- ═══ MODE SELECT ═══ -->
 <div class="mode-screen" id="modeScreen">
   <h1>Closest Common Clade</h1>
-  <p class="tagline">Two animals. One shared clade. How well do you know the tree of life?</p>
+  <p class="tagline">Find the branch that brings two animals together.</p>
+  <div class="welcome-note"><strong>A clade is an ancestor and all its descendants.</strong><br>For a cat and a dog, mammals fits—but Carnivora is closer. Choose the smallest shared group <em>in this game’s tree</em>.<br><span>10 rounds · 4 guesses per round · No timer</span></div>
   <div class="mode-cards">
-    <div class="mode-card easy" onclick="startGame('easy')">
+    <button type="button" class="mode-card study" onclick="startStudy()">
+      <span class="mode-icon">📖</span>
+      <span class="mode-info">
+        <span class="mode-diff">Learn &amp; practice</span>
+        <h2>Branch by Branch</h2>
+        <p>Learn eight useful groups, then recall each name with a new pair. Hints on demand, no score.</p>
+      </span>
+    </button>
+    <button type="button" class="mode-card easy" onclick="startGame('easy')">
       <div class="mode-icon">🌿</div>
-      <div class="mode-info">
+      <span class="mode-info">
         <span class="mode-diff">Easy</span>
-        <h2>Tree Explorer</h2>
-        <p>Browse the full tree of life and click where you think the two animals share a clade.</p>
-      </div>
-    </div>
-    <div class="mode-card medium" onclick="startGame('medium')">
+        <h2>Pick a Branch</h2>
+        <p>Choose from four groups with plain-language clues. Use both animals to find the shared branch.</p>
+      </span>
+    </button>
+    <button type="button" class="mode-card medium" onclick="startGame('medium')">
       <div class="mode-icon">🔬</div>
-      <div class="mode-info">
+      <span class="mode-info">
         <span class="mode-diff">Medium</span>
         <h2>Guided Search</h2>
-        <p>Type to search with autocomplete suggestions. Directional hints guide you when wrong.</p>
-      </div>
-    </div>
-    <div class="mode-card expert" onclick="startGame('expert')">
+        <p>Search scientific or common names. Get a hint after each guess.</p>
+      </span>
+    </button>
+    <button type="button" class="mode-card expert" onclick="startGame('expert')">
       <div class="mode-icon">🧬</div>
-      <div class="mode-info">
+      <span class="mode-info">
         <span class="mode-diff">Expert</span>
         <h2>From Memory</h2>
-        <p>No tree, no suggestions, no hints. Just you and your knowledge of taxonomy.</p>
-      </div>
-    </div>
+        <p>Name the group from memory. Scientific names and supported common names work.</p>
+      </span>
+    </button>
   </div>
 </div>
+
+<section id="studyScreen" class="study-screen" hidden aria-label="Study mode">
+  <div class="game-header"><span class="game-title">Branch by Branch</span><button class="btn btn-secondary study-menu" onclick="goToModeSelect()">All modes</button></div>
+  <p class="study-intro">Learn the name. Follow the branches. Try a new pair from memory.</p>
+  <p id="studyProgressText" class="attempts"></p>
+  <progress id="studyProgress" max="8" value="0" aria-label="Study lessons completed"></progress>
+  <div id="studyContent"></div>
+  <details class="info-panel study-library"><summary>Clade reference · browse all groups</summary>
+    <label class="guess-label" for="studySearch">Search a name or description</label>
+    <input id="studySearch" class="guess-input" type="search" placeholder="Try mammals, birds, or Caniformia…" oninput="renderStudyLibrary(this.value)">
+    <div id="studyLibrary" class="study-library-map"></div>
+  </details>
+</section>
 
 <!-- ═══ GAME SCREEN ═══ -->
 <div class="game-screen" id="gameScreen">
   <div class="game-header">
     <div>
       <span class="game-title">Closest Common Clade</span>
-      <span class="mode-badge" id="modeBadge" onclick="goToModeSelect()"></span>
+      <button type="button" class="mode-badge" id="modeBadge" onclick="goToModeSelect()" aria-label="Change game mode"></button>
     </div>
     <div class="score-bar">
-      <span>Rd <span class="val" id="round">1</span></span>
+      <span>Round <span class="val" id="round">1</span> / 10</span>
       <span>Score <span class="val" id="score">0</span></span>
       <span>Streak <span class="val" id="streak">0</span></span>
     </div>
   </div>
 
+  <progress id="roundProgress" max="10" value="0" aria-label="Rounds completed"></progress>
+  <p class="round-prompt">What is their closest shared group in this tree?</p>
   <div class="matchup">
     <div class="species-card">
       <span class="species-emoji" id="emoji1"></span>
       <div class="species-name" id="name1"></div>
       <div class="species-taxon" id="taxon1"></div>
     </div>
-    <div class="vs-badge">vs</div>
+    <div class="vs-badge" aria-hidden="true">&amp;</div>
     <div class="species-card">
       <span class="species-emoji" id="emoji2"></span>
       <div class="species-name" id="name2"></div>
@@ -618,9 +750,10 @@ body {
     </div>
   </div>
 
+  <p id="attempts" class="attempts" aria-live="polite"></p>
   <div id="guessAreaWrap"></div>
 
-  <div class="feedback" id="feedback">
+  <div class="feedback" id="feedback" role="status" aria-live="polite" aria-atomic="true">
     <div class="fb-title" id="fbTitle"></div>
     <div id="fbText"></div>
   </div>
@@ -631,7 +764,7 @@ body {
   </div>
 
   <div class="tree-reveal" id="treeReveal">
-    <h3>Shared Taxonomy</h3>
+    <h3>Where their branches meet</h3>
     <div class="tree-subtitle" id="treeSubtitle"></div>
     <div class="tree-svg-wrap" id="treeSvgWrap"></div>
   </div>
@@ -640,6 +773,7 @@ body {
     <button class="btn btn-primary" id="nextBtn" onclick="nextRound()">Next Round →</button>
   </div>
 
+  <section id="sessionSummary" class="welcome-note" hidden></section>
   <details class="info-panel">
     <summary>How to play</summary>
     <div class="info-body" id="howToPlayText"></div>
@@ -662,16 +796,16 @@ const ANCESTORS = {
   "Arthropoda":      { parent: "Ecdysozoa",      depth: 4,  desc: "Insects, spiders, crabs" },
   "Ecdysozoa":       { parent: "Protostomia",    depth: 3,  desc: "Molting animals" },
   "Spiralia":        { parent: "Protostomia",    depth: 3,  desc: "Mollusks, worms & allies" },
-  "Mollusca":        { parent: "Spiralia",       depth: 4,  desc: "Snails, octopuses, clams" },
-  "Annelida":        { parent: "Spiralia",       depth: 4,  desc: "Segmented worms" },
+  "Mollusca":        { parent: "Lophotrochozoa",       depth: 4,  desc: "Snails, octopuses, clams" },
+  "Annelida":        { parent: "Lophotrochozoa",       depth: 4,  desc: "Segmented worms" },
   "Vertebrata":      { parent: "Chordata",       depth: 4,  desc: "Animals with backbones" },
   "Gnathostomata":   { parent: "Vertebrata",     depth: 5,  desc: "Jawed vertebrates" },
   "Osteichthyes":    { parent: "Gnathostomata",  depth: 6,  desc: "Bony fish & descendants" },
   "Chondrichthyes":  { parent: "Gnathostomata",  depth: 6,  desc: "Sharks & rays" },
   "Tetrapoda":       { parent: "Osteichthyes",   depth: 7,  desc: "Four-limbed vertebrates" },
   "Actinopterygii":  { parent: "Osteichthyes",   depth: 7,  desc: "Ray-finned fishes" },
-  "Amniota":         { parent: "Tetrapoda",      depth: 8,  desc: "Land egg-layers & descendants" },
-  "Amphibia":        { parent: "Tetrapoda",      depth: 8,  desc: "Frogs, salamanders" },
+  "Amniota":         { parent: "Tetrapoda",      depth: 8,  desc: "Mammals, reptiles & birds" },
+  "Amphibia":        { parent: "Tetrapoda",      depth: 8,  desc: "Frogs, salamanders & caecilians" },
   "Mammalia":        { parent: "Amniota",        depth: 9,  desc: "Mammals" },
   "Reptilia":        { parent: "Amniota",        depth: 9,  desc: "Reptiles & birds" },
   "Theria":          { parent: "Mammalia",       depth: 10, desc: "Marsupials & placentals" },
@@ -697,27 +831,69 @@ const ANCESTORS = {
   "Primates":        { parent: "Euarchontoglires", depth: 14, desc: "Primates" },
   "Rodentia":        { parent: "Glires",          depth: 15, desc: "Rodents" },
   "Lagomorpha":      { parent: "Glires",          depth: 15, desc: "Rabbits & hares" },
-  "Hominidae":       { parent: "Primates",       depth: 15, desc: "Great apes" },
-  "Cercopithecidae": { parent: "Primates",       depth: 15, desc: "Old World monkeys" },
+  "Hominidae":       { parent: "Hominoidea",       depth: 15, desc: "Great apes" },
+  "Cercopithecidae": { parent: "Catarrhini",       depth: 15, desc: "Old World monkeys" },
   "Felidae":         { parent: "Carnivora",      depth: 15, desc: "Cat family" },
-  "Canidae":         { parent: "Carnivora",      depth: 15, desc: "Dog family" },
-  "Ursidae":         { parent: "Carnivora",      depth: 15, desc: "Bear family" },
-  "Bovidae":         { parent: "Artiodactyla",   depth: 15, desc: "Cattle, goats, sheep" },
-  "Cervidae":        { parent: "Artiodactyla",   depth: 15, desc: "Deer family" },
-  "Cetacea":         { parent: "Artiodactyla",   depth: 15, desc: "Whales & dolphins" },
+  "Canidae":         { parent: "Caniformia",      depth: 15, desc: "Dog family" },
+  "Ursidae":         { parent: "Caniformia",      depth: 15, desc: "Bear family" },
+  "Bovidae":         { parent: "Pecora",   depth: 15, desc: "Cattle, goats, sheep" },
+  "Cervidae":        { parent: "Pecora",   depth: 15, desc: "Deer family" },
+  "Cetacea":         { parent: "Cetruminantia",   depth: 15, desc: "Whales & dolphins" },
   "Suidae":          { parent: "Artiodactyla",   depth: 15, desc: "Pig family" },
   "Insecta":         { parent: "Pancrustacea",   depth: 6,  desc: "Insects" },
   "Arachnida":       { parent: "Arthropoda",     depth: 5,  desc: "Spiders, scorpions, ticks" },
   "Pancrustacea":    { parent: "Arthropoda",     depth: 5,  desc: "Insects & crustaceans" },
-  "Crustacea":       { parent: "Pancrustacea",   depth: 6,  desc: "Crabs, lobsters, shrimp" },
-  "Cephalopoda":     { parent: "Mollusca",       depth: 5,  desc: "Octopuses, squid" },
-  "Gastropoda":      { parent: "Mollusca",       depth: 5,  desc: "Snails & slugs" },
-  "Bivalvia":        { parent: "Mollusca",       depth: 5,  desc: "Clams, mussels, oysters" },
-  "Hymenoptera":     { parent: "Insecta",        depth: 7,  desc: "Ants, bees, wasps" },
-  "Lepidoptera":     { parent: "Insecta",        depth: 7,  desc: "Butterflies & moths" },
-  "Coleoptera":      { parent: "Insecta",        depth: 7,  desc: "Beetles" },
-  "Diptera":         { parent: "Insecta",        depth: 7,  desc: "Flies & mosquitoes" },
+  "Decapoda":       { parent: "Pancrustacea",   depth: 6,  desc: "Crabs, lobsters & other decapods" },
+  "Cephalopoda":     { parent: "Conchifera",       depth: 5,  desc: "Octopuses, squid" },
+  "Gastropoda":      { parent: "Conchifera",       depth: 5,  desc: "Snails & slugs" },
+  "Bivalvia":        { parent: "Conchifera",       depth: 5,  desc: "Clams, mussels, oysters" },
+  "Hymenoptera":     { parent: "Holometabola",        depth: 7,  desc: "Ants, bees, wasps" },
+  "Lepidoptera":     { parent: "Mecopterida",        depth: 7,  desc: "Butterflies & moths" },
+  "Coleoptera":      { parent: "Boreopterida",        depth: 7,  desc: "Beetles" },
+  "Diptera":         { parent: "Mecopterida",        depth: 7,  desc: "Flies & mosquitoes" },
+  "Apocrita": { parent: "Hymenoptera", desc: "Wasps, ants & bees" },
+  "Aculeata": { parent: "Apocrita", desc: "Stinging wasps, ants & bees" },
+  "Catarrhini": { parent: "Primates", desc: "Old World monkeys & apes" },
+  "Hominoidea": { parent: "Catarrhini", desc: "Apes, including humans" },
+  "Homininae": { parent: "Hominidae", desc: "African great apes" },
+  "Hominini": { parent: "Homininae", desc: "Humans & chimpanzees" },
+  "Caniformia": { parent: "Carnivora", desc: "Dog-like carnivorans, including bears" },
+  "Panthera": { parent: "Felidae", desc: "Lions, tigers & other big cats" },
+  "Canis": { parent: "Canidae", desc: "Dogs, wolves & close relatives" },
+  "Ursus": { parent: "Ursidae", desc: "Brown bears, polar bears & relatives" },
+  "Cetruminantia": { parent: "Artiodactyla", desc: "Ruminants, hippos & whales" },
+  "Ruminantia": { parent: "Cetruminantia", desc: "Ruminants" },
+  "Pecora": { parent: "Ruminantia", desc: "Cattle, deer & other pecorans" },
+  "Caprinae": { parent: "Bovidae", desc: "Goats, sheep & relatives" },
+  "Squamata": { parent: "Lepidosauria", desc: "Lizards & snakes" },
+  "Neognathae": { parent: "Aves", desc: "Modern birds other than palaeognaths" },
+  "Neoaves": { parent: "Neognathae", desc: "Most modern birds, excluding fowl" },
+  "Lophotrochozoa": { parent: "Spiralia", desc: "Mollusks, annelids & relatives" },
+  "Holometabola": { parent: "Insecta", desc: "Insects with complete metamorphosis" },
+  "Boreopterida": { parent: "Holometabola", desc: "Beetles, flies, butterflies & relatives" },
+  "Mecopterida": { parent: "Boreopterida", desc: "Flies, butterflies & relatives" },
+  "Murinae": { parent: "Rodentia", desc: "Mice, rats & relatives" },
+  "Diprotodontia": { parent: "Marsupialia", desc: "Kangaroos, koalas & relatives" },
+  "Teleostei": { parent: "Actinopterygii", desc: "Teleost fishes" },
+  "Clupeocephala": { parent: "Teleostei", desc: "Most teleost fishes" },
+  "Acanthomorphata": { parent: "Clupeocephala", desc: "Spiny-rayed fishes & relatives" },
+  "Conchifera": { parent: "Mollusca", desc: "Shell-bearing mollusks & descendants" },
 };
+
+// This is a pruned educational tree, not an exhaustive phylogeny.
+// Every edge means "descends from"; omitted nodes are not claimed to be absent.
+for (const key of Object.keys(ANCESTORS)) {
+  const visited = new Set();
+  let current = key, depth = 0;
+  while (ANCESTORS[current].parent) {
+    if (visited.has(current)) throw new Error('Taxonomy cycle: ' + key);
+    visited.add(current);
+    current = ANCESTORS[current].parent;
+    if (!ANCESTORS[current]) throw new Error('Unknown parent: ' + current);
+    depth++;
+  }
+  ANCESTORS[key].depth = depth;
+}
 
 const ALIASES = {};
 Object.keys(ANCESTORS).forEach(k => { ALIASES[k.toLowerCase()] = k; });
@@ -725,125 +901,124 @@ Object.keys(ANCESTORS).forEach(k => { ALIASES[k.toLowerCase()] = k; });
 const EXTRA_ALIASES = {
   "animals":"Metazoa","animal":"Metazoa","metazoans":"Metazoa",
   "bilateral":"Bilateria","bilaterians":"Bilateria",
-  "jellyfish":"Cnidaria","corals":"Cnidaria","cnidarians":"Cnidaria",
+  "cnidarians":"Cnidaria",
   "deuterostomes":"Deuterostomia","protostomes":"Protostomia",
   "chordates":"Chordata",
-  "starfish":"Echinodermata","sea urchins":"Echinodermata","echinoderms":"Echinodermata",
-  "arthropods":"Arthropoda","bugs":"Arthropoda",
+  "echinoderms":"Echinodermata",
+  "arthropods":"Arthropoda",
   "ecdysozoans":"Ecdysozoa","ecdysozoa":"Ecdysozoa","molting animals":"Ecdysozoa",
-  "spiralians":"Spiralia","spiralia":"Spiralia","lophotrochozoa":"Spiralia","lophotrochozoans":"Spiralia",
+  "spiralians":"Spiralia","spiralia":"Spiralia",
   "archelosauria":"Archelosauria","archelosaurs":"Archelosauria","turtles and archosaurs":"Archelosauria",
   "mollusks":"Mollusca","molluscs":"Mollusca",
-  "worms":"Annelida","segmented worms":"Annelida","annelids":"Annelida",
+  "segmented worms":"Annelida","annelids":"Annelida",
   "vertebrates":"Vertebrata",
-  "jawed vertebrates":"Gnathostomata","jawed fish":"Gnathostomata",
+  "jawed vertebrates":"Gnathostomata",
   "bony fish":"Osteichthyes","bony fishes":"Osteichthyes",
-  "sharks":"Chondrichthyes","rays":"Chondrichthyes","cartilaginous fish":"Chondrichthyes",
+  "cartilaginous fish":"Chondrichthyes",
   "tetrapods":"Tetrapoda",
-  "ray-finned fish":"Actinopterygii","ray-finned fishes":"Actinopterygii","fish":"Actinopterygii",
-  "amniotes":"Amniota","amphibians":"Amphibia","frogs":"Amphibia",
+  "ray-finned fish":"Actinopterygii","ray-finned fishes":"Actinopterygii",
+  "amniotes":"Amniota","amphibians":"Amphibia",
   "mammals":"Mammalia","reptiles":"Reptilia",
   "therians":"Theria","monotremes":"Monotremata","egg-laying mammals":"Monotremata",
   "placental mammals":"Placentalia","placentals":"Placentalia",
   "marsupials":"Marsupialia","archosaurs":"Archosauria",
-  "lizards":"Lepidosauria","snakes":"Lepidosauria",
+
   "turtles":"Testudines","tortoises":"Testudines",
   "birds":"Aves","crocodilians":"Crocodilia","crocodiles":"Crocodilia","alligators":"Crocodilia",
-  "elephants":"Afrotheria","sloths":"Xenarthra","armadillos":"Xenarthra",
-  "carnivores":"Carnivora",
-  "odd-toed ungulates":"Perissodactyla","horses":"Perissodactyla",
-  "even-toed ungulates":"Artiodactyla","ungulates":"Artiodactyla",
-  "bats":"Chiroptera","primates":"Primates","monkeys":"Primates",
-  "rodents":"Rodentia","rodents and rabbits":"Glires","glires":"Glires","rabbits":"Lagomorpha","hares":"Lagomorpha",
-  "great apes":"Hominidae","apes":"Hominidae",
+
+  "carnivorans":"Carnivora",
+  "odd-toed ungulates":"Perissodactyla",
+  "even-toed ungulates":"Artiodactyla",
+  "bats":"Chiroptera","primates":"Primates",
+  "rodents":"Rodentia","rodents and rabbits":"Glires","glires":"Glires",
+  "great apes":"Hominidae","apes":"Hominoidea","sauropsida":"Reptilia","cetartiodactyla":"Artiodactyla","decapods":"Decapoda","lophotrochozoans":"Lophotrochozoa","squamates":"Squamata","caniforms":"Caniformia","catarrhines":"Catarrhini","ruminants":"Ruminantia","pecorans":"Pecora","hominins":"Hominini","caprines":"Caprinae","teleosts":"Teleostei","bony vertebrates":"Osteichthyes","dog-like carnivorans":"Caniformia","complete metamorphosis":"Holometabola","aculeates":"Aculeata","stinging wasps ants and bees":"Aculeata",
   "old world monkeys":"Cercopithecidae",
-  "cats":"Felidae","felines":"Felidae",
-  "dogs":"Canidae","canines":"Canidae","wolves":"Canidae",
+  "cats":"Felidae",
+  "dogs":"Canidae",
   "bears":"Ursidae",
-  "cattle":"Bovidae","cows":"Bovidae","goats":"Bovidae","sheep":"Bovidae","bovids":"Bovidae",
-  "deer":"Cervidae","whales":"Cetacea","dolphins":"Cetacea","cetaceans":"Cetacea",
-  "pigs":"Suidae",
-  "insects":"Insecta","pancrustacea":"Pancrustacea","insects and crustaceans":"Pancrustacea","spiders":"Arachnida","scorpions":"Arachnida","arachnids":"Arachnida",
-  "crabs":"Crustacea","lobsters":"Crustacea","shrimp":"Crustacea","crustaceans":"Crustacea",
-  "octopuses":"Cephalopoda","squid":"Cephalopoda","cephalopods":"Cephalopoda",
-  "snails":"Gastropoda","slugs":"Gastropoda","gastropods":"Gastropoda",
-  "clams":"Bivalvia","mussels":"Bivalvia","oysters":"Bivalvia","bivalves":"Bivalvia",
-  "ants":"Hymenoptera","bees":"Hymenoptera","wasps":"Hymenoptera",
-  "butterflies":"Lepidoptera","moths":"Lepidoptera",
-  "beetles":"Coleoptera","flies":"Diptera","mosquitoes":"Diptera",
+  "bovids":"Bovidae",
+  "deer":"Cervidae","whales":"Cetacea","cetaceans":"Cetacea",
+
+  "insects":"Insecta","pancrustacea":"Pancrustacea","insects and crustaceans":"Pancrustacea","arachnids":"Arachnida",
+
+  "cephalopods":"Cephalopoda",
+  "gastropods":"Gastropoda",
+  "bivalves":"Bivalvia",
+
+  "beetles":"Coleoptera",
 };
 Object.entries(EXTRA_ALIASES).forEach(([k,v]) => { ALIASES[k.toLowerCase()] = v; });
 
 const SPECIES = [
-  { name:"Human",emoji:"🧑",taxon:"Homo sapiens",clade:"Hominidae" },
-  { name:"Chimpanzee",emoji:"🦧",taxon:"Pan troglodytes",clade:"Hominidae" },
-  { name:"Gorilla",emoji:"🦍",taxon:"Gorilla gorilla",clade:"Hominidae" },
+  { name:"Human",emoji:"🧑",taxon:"Homo sapiens",clade:"Hominini" },
+  { name:"Chimpanzee",emoji:"🐒",taxon:"Pan troglodytes",clade:"Hominini" },
+  { name:"Gorilla",emoji:"🦍",taxon:"Gorilla gorilla",clade:"Homininae" },
   { name:"Baboon",emoji:"🐒",taxon:"Papio hamadryas",clade:"Cercopithecidae" },
   { name:"House Cat",emoji:"🐱",taxon:"Felis catus",clade:"Felidae" },
-  { name:"Lion",emoji:"🦁",taxon:"Panthera leo",clade:"Felidae" },
-  { name:"Tiger",emoji:"🐯",taxon:"Panthera tigris",clade:"Felidae" },
-  { name:"Dog",emoji:"🐕",taxon:"Canis familiaris",clade:"Canidae" },
-  { name:"Wolf",emoji:"🐺",taxon:"Canis lupus",clade:"Canidae" },
+  { name:"Lion",emoji:"🦁",taxon:"Panthera leo",clade:"Panthera" },
+  { name:"Tiger",emoji:"🐯",taxon:"Panthera tigris",clade:"Panthera" },
+  { name:"Dog",emoji:"🐕",taxon:"Canis lupus familiaris",clade:"Canis" },
+  { name:"Wolf",emoji:"🐺",taxon:"Canis lupus",clade:"Canis" },
   { name:"Fox",emoji:"🦊",taxon:"Vulpes vulpes",clade:"Canidae" },
-  { name:"Grizzly Bear",emoji:"🐻",taxon:"Ursus arctos",clade:"Ursidae" },
-  { name:"Polar Bear",emoji:"🐻‍❄️",taxon:"Ursus maritimus",clade:"Ursidae" },
+  { name:"Grizzly Bear",emoji:"🐻",taxon:"Ursus arctos horribilis",clade:"Ursus" },
+  { name:"Polar Bear",emoji:"🐻‍❄️",taxon:"Ursus maritimus",clade:"Ursus" },
   { name:"Horse",emoji:"🐴",taxon:"Equus caballus",clade:"Perissodactyla" },
-  { name:"Rhinoceros",emoji:"🦏",taxon:"Ceratotherium simum",clade:"Perissodactyla" },
+  { name:"White Rhinoceros",emoji:"🦏",taxon:"Ceratotherium simum",clade:"Perissodactyla" },
   { name:"Cow",emoji:"🐄",taxon:"Bos taurus",clade:"Bovidae" },
-  { name:"Goat",emoji:"🐐",taxon:"Capra aegagrus",clade:"Bovidae" },
-  { name:"Sheep",emoji:"🐑",taxon:"Ovis aries",clade:"Bovidae" },
-  { name:"Deer",emoji:"🦌",taxon:"Cervus elaphus",clade:"Cervidae" },
+  { name:"Goat",emoji:"🐐",taxon:"Capra hircus",clade:"Caprinae" },
+  { name:"Sheep",emoji:"🐑",taxon:"Ovis aries",clade:"Caprinae" },
+  { name:"Red Deer",emoji:"🦌",taxon:"Cervus elaphus",clade:"Cervidae" },
   { name:"Pig",emoji:"🐖",taxon:"Sus scrofa",clade:"Suidae" },
-  { name:"Dolphin",emoji:"🐬",taxon:"Tursiops truncatus",clade:"Cetacea" },
+  { name:"Bottlenose Dolphin",emoji:"🐬",taxon:"Tursiops truncatus",clade:"Cetacea" },
   { name:"Blue Whale",emoji:"🐋",taxon:"Balaenoptera musculus",clade:"Cetacea" },
-  { name:"Bat",emoji:"🦇",taxon:"Chiroptera sp.",clade:"Chiroptera" },
-  { name:"Elephant",emoji:"🐘",taxon:"Loxodonta africana",clade:"Afrotheria" },
-  { name:"Mouse",emoji:"🐭",taxon:"Mus musculus",clade:"Rodentia" },
-  { name:"Rat",emoji:"🐀",taxon:"Rattus norvegicus",clade:"Rodentia" },
+  { name:"Common Pipistrelle",emoji:"🦇",taxon:"Pipistrellus pipistrellus",clade:"Chiroptera" },
+  { name:"African Savanna Elephant",emoji:"🐘",taxon:"Loxodonta africana",clade:"Afrotheria" },
+  { name:"Mouse",emoji:"🐭",taxon:"Mus musculus",clade:"Murinae" },
+  { name:"Rat",emoji:"🐀",taxon:"Rattus norvegicus",clade:"Murinae" },
   { name:"Beaver",emoji:"🦫",taxon:"Castor canadensis",clade:"Rodentia" },
   { name:"Rabbit",emoji:"🐇",taxon:"Oryctolagus cuniculus",clade:"Lagomorpha" },
-  { name:"Kangaroo",emoji:"🦘",taxon:"Macropus rufus",clade:"Marsupialia" },
-  { name:"Koala",emoji:"🐨",taxon:"Phascolarctos cinereus",clade:"Marsupialia" },
+  { name:"Red Kangaroo",emoji:"🦘",taxon:"Osphranter rufus",clade:"Diprotodontia" },
+  { name:"Koala",emoji:"🐨",taxon:"Phascolarctos cinereus",clade:"Diprotodontia" },
   { name:"Platypus",emoji:"🦆",taxon:"Ornithorhynchus anatinus",clade:"Monotremata" },
   { name:"Sloth",emoji:"🦥",taxon:"Bradypus variegatus",clade:"Xenarthra" },
-  { name:"Chicken",emoji:"🐔",taxon:"Gallus gallus",clade:"Aves" },
-  { name:"Eagle",emoji:"🦅",taxon:"Aquila chrysaetos",clade:"Aves" },
-  { name:"Penguin",emoji:"🐧",taxon:"Aptenodytes forsteri",clade:"Aves" },
-  { name:"Parrot",emoji:"🦜",taxon:"Psittacus erithacus",clade:"Aves" },
-  { name:"Owl",emoji:"🦉",taxon:"Bubo bubo",clade:"Aves" },
+  { name:"Chicken",emoji:"🐔",taxon:"Gallus gallus",clade:"Neognathae" },
+  { name:"Golden Eagle",emoji:"🦅",taxon:"Aquila chrysaetos",clade:"Neoaves" },
+  { name:"Emperor Penguin",emoji:"🐧",taxon:"Aptenodytes forsteri",clade:"Neoaves" },
+  { name:"Grey Parrot",emoji:"🦜",taxon:"Psittacus erithacus",clade:"Neoaves" },
+  { name:"Eurasian Eagle-Owl",emoji:"🦉",taxon:"Bubo bubo",clade:"Neoaves" },
   { name:"Crocodile",emoji:"🐊",taxon:"Crocodylus niloticus",clade:"Crocodilia" },
-  { name:"Komodo Dragon",emoji:"🦎",taxon:"Varanus komodoensis",clade:"Lepidosauria" },
-  { name:"Snake",emoji:"🐍",taxon:"Serpentes sp.",clade:"Lepidosauria" },
-  { name:"Gecko",emoji:"🦎",taxon:"Gekko gecko",clade:"Lepidosauria" },
-  { name:"Sea Turtle",emoji:"🐢",taxon:"Chelonia mydas",clade:"Testudines" },
-  { name:"Tortoise",emoji:"🐢",taxon:"Testudo graeca",clade:"Testudines" },
-  { name:"Frog",emoji:"🐸",taxon:"Rana temporaria",clade:"Amphibia" },
-  { name:"Salamander",emoji:"🦎",taxon:"Salamandra salamandra",clade:"Amphibia" },
-  { name:"Salmon",emoji:"🐟",taxon:"Salmo salar",clade:"Actinopterygii" },
-  { name:"Clownfish",emoji:"🐠",taxon:"Amphiprion ocellaris",clade:"Actinopterygii" },
-  { name:"Tuna",emoji:"🐟",taxon:"Thunnus thynnus",clade:"Actinopterygii" },
+  { name:"Komodo Dragon",emoji:"🦎",taxon:"Varanus komodoensis",clade:"Squamata" },
+  { name:"Ball Python",emoji:"🐍",taxon:"Python regius",clade:"Squamata" },
+  { name:"Gecko",emoji:"🦎",taxon:"Gekko gecko",clade:"Squamata" },
+  { name:"Green Sea Turtle",emoji:"🐢",taxon:"Chelonia mydas",clade:"Testudines" },
+  { name:"Greek Tortoise",emoji:"🐢",taxon:"Testudo graeca",clade:"Testudines" },
+  { name:"Common Frog",emoji:"🐸",taxon:"Rana temporaria",clade:"Amphibia" },
+  { name:"Fire Salamander",emoji:"🦎",taxon:"Salamandra salamandra",clade:"Amphibia" },
+  { name:"Atlantic Salmon",emoji:"🐟",taxon:"Salmo salar",clade:"Clupeocephala" },
+  { name:"Clownfish",emoji:"🐠",taxon:"Amphiprion ocellaris",clade:"Acanthomorphata" },
+  { name:"Atlantic Bluefin Tuna",emoji:"🐟",taxon:"Thunnus thynnus",clade:"Acanthomorphata" },
   { name:"Great White Shark",emoji:"🦈",taxon:"Carcharodon carcharias",clade:"Chondrichthyes" },
-  { name:"Manta Ray",emoji:"🦈",taxon:"Mobula birostris",clade:"Chondrichthyes" },
-  { name:"Starfish",emoji:"⭐",taxon:"Asterias rubens",clade:"Echinodermata" },
+  { name:"Giant Manta Ray",emoji:"🦈",taxon:"Mobula birostris",clade:"Chondrichthyes" },
+  { name:"Common Sea Star",emoji:"⭐",taxon:"Asterias rubens",clade:"Echinodermata" },
   { name:"Sea Urchin",emoji:"🟤",taxon:"Paracentrotus lividus",clade:"Echinodermata" },
   { name:"Octopus",emoji:"🐙",taxon:"Octopus vulgaris",clade:"Cephalopoda" },
-  { name:"Squid",emoji:"🦑",taxon:"Loligo vulgaris",clade:"Cephalopoda" },
+  { name:"European Squid",emoji:"🦑",taxon:"Loligo vulgaris",clade:"Cephalopoda" },
   { name:"Garden Snail",emoji:"🐌",taxon:"Cornu aspersum",clade:"Gastropoda" },
-  { name:"Clam",emoji:"🐚",taxon:"Mercenaria mercenaria",clade:"Bivalvia" },
-  { name:"Oyster",emoji:"🦪",taxon:"Crassostrea gigas",clade:"Bivalvia" },
+  { name:"Hard Clam",emoji:"🐚",taxon:"Mercenaria mercenaria",clade:"Bivalvia" },
+  { name:"Pacific Oyster",emoji:"🦪",taxon:"Magallana gigas",clade:"Bivalvia" },
   { name:"Earthworm",emoji:"🪱",taxon:"Lumbricus terrestris",clade:"Annelida" },
-  { name:"Honeybee",emoji:"🐝",taxon:"Apis mellifera",clade:"Hymenoptera" },
-  { name:"Ant",emoji:"🐜",taxon:"Formicidae sp.",clade:"Hymenoptera" },
-  { name:"Butterfly",emoji:"🦋",taxon:"Vanessa cardui",clade:"Lepidoptera" },
+  { name:"Honeybee",emoji:"🐝",taxon:"Apis mellifera",clade:"Aculeata" },
+  { name:"Red Wood Ant",emoji:"🐜",taxon:"Formica rufa",clade:"Aculeata" },
+  { name:"Painted Lady",emoji:"🦋",taxon:"Vanessa cardui",clade:"Lepidoptera" },
   { name:"Ladybug",emoji:"🐞",taxon:"Coccinella septempunctata",clade:"Coleoptera" },
   { name:"Housefly",emoji:"🪰",taxon:"Musca domestica",clade:"Diptera" },
   { name:"Mosquito",emoji:"🦟",taxon:"Aedes aegypti",clade:"Diptera" },
-  { name:"Spider",emoji:"🕷️",taxon:"Araneae sp.",clade:"Arachnida" },
-  { name:"Scorpion",emoji:"🦂",taxon:"Scorpiones sp.",clade:"Arachnida" },
-  { name:"Lobster",emoji:"🦞",taxon:"Homarus americanus",clade:"Crustacea" },
-  { name:"Crab",emoji:"🦀",taxon:"Cancer pagurus",clade:"Crustacea" },
-  { name:"Jellyfish",emoji:"🪼",taxon:"Aurelia aurita",clade:"Cnidaria" },
-  { name:"Coral",emoji:"🪸",taxon:"Acropora millepora",clade:"Cnidaria" },
+  { name:"Cross Orbweaver",emoji:"🕷️",taxon:"Araneus diadematus",clade:"Arachnida" },
+  { name:"Emperor Scorpion",emoji:"🦂",taxon:"Pandinus imperator",clade:"Arachnida" },
+  { name:"Lobster",emoji:"🦞",taxon:"Homarus americanus",clade:"Decapoda" },
+  { name:"Crab",emoji:"🦀",taxon:"Cancer pagurus",clade:"Decapoda" },
+  { name:"Moon Jellyfish",emoji:"🪼",taxon:"Aurelia aurita",clade:"Cnidaria" },
+  { name:"Stony Coral",emoji:"🪸",taxon:"Acropora millepora",clade:"Cnidaria" },
 ];
 
 // ═══════════════════════════════════════════
@@ -882,8 +1057,6 @@ function getChildrenOf(key) {
 // GAME STATE & FLOW
 // ═══════════════════════════════════════════
 
-const TEMPERATURES = { easy: 3.0, medium: 1.5, expert: 1.5 };
-
 // Precompute all valid pairs with phylogenetic distances
 let ALL_PAIRS = null;
 
@@ -893,7 +1066,7 @@ function precomputePairs() {
   for (let i = 0; i < SPECIES.length; i++) {
     for (let j = i + 1; j < SPECIES.length; j++) {
       const s1 = SPECIES[i], s2 = SPECIES[j];
-      if (s1.clade === s2.clade) continue; // skip same-family
+
       const lca = findLCA(s1, s2);
       const d1 = ANCESTORS[s1.clade].depth - ANCESTORS[lca].depth;
       const d2 = ANCESTORS[s2.clade].depth - ANCESTORS[lca].depth;
@@ -903,12 +1076,42 @@ function precomputePairs() {
   }
 }
 
+// Easy keeps useful plain-language clues, but avoids answers that list both animals.
+// Match whole common-name words, including irregular plurals and compound names.
+const EASY_DESCRIPTIONS = {
+  Arthropoda: 'Jointed limbs and an external skeleton',
+  Chordata: 'Animals with a notochord during development',
+  Tetrapoda: 'Four-limbed vertebrates and their descendants',
+  Amniota: 'Vertebrates with an amniotic membrane during development',
+  Theria: 'Live-bearing mammals',
+  Archosauria: 'The archosaur branch of reptiles',
+  Pancrustacea: 'The crustacean lineage, including insects',
+  Holometabola: 'Insects with a complete metamorphosis',
+  Squamata: 'Scaled reptiles, excluding turtles and crocodilians'
+};
+function easyDescription(key) { return EASY_DESCRIPTIONS[key] || ANCESTORS[key].desc; }
+function animalNamedInDescription(animal, description) {
+  const text = new Set(description.toLowerCase().match(/[a-z]+/g) || []);
+  const ignored = new Set(['common','house','great','white','red','wood','green','sea','african','savanna','atlantic','bluefin','giant','european','emperor','grey','eurasian','golden','grizzly','polar','stony','greek','garden','hard','fire','painted','cross']);
+  const words = (animal.name.toLowerCase().match(/[a-z]+/g) || []).filter(w => !ignored.has(w));
+  const variants = {mouse:['mice'],wolf:['wolves'],fox:['foxes'],cow:['cattle'],honeybee:['bee','bees'],housefly:['fly','flies'],butterfly:['butterflies'],ladybug:['ladybird','ladybirds'],human:['humans','people'],chimpanzee:['chimp','chimps'],jellyfish:['jellyfish','jellies']};
+  return words.some(word => [word, word+'s', ...(variants[word] || [])].some(v => text.has(v)));
+}
+function easyDescriptionFits(key, a, b) {
+  const description = easyDescription(key);
+  return !(animalNamedInDescription(a, description) && animalNamedInDescription(b, description));
+}
+function eligiblePairs(mode) {
+  precomputePairs();
+  return mode === 'easy' ? ALL_PAIRS.filter(p => easyDescriptionFits(p.lca, SPECIES[p.i], SPECIES[p.j])) : ALL_PAIRS;
+}
+
 function pickPair() {
   precomputePairs();
-  const temp = TEMPERATURES[state.mode] || 1.5;
 
-  // Filter out used pairs
-  let available = ALL_PAIRS.filter(p => {
+  const eligible = eligiblePairs(state.mode);
+  // Filter out used pairs while preserving the mode’s eligibility rules.
+  let available = eligible.filter(p => {
     const pk = [SPECIES[p.i].name, SPECIES[p.j].name].sort().join("|");
     return !state.usedPairs.has(pk);
   });
@@ -916,23 +1119,17 @@ function pickPair() {
   // Reset if exhausted
   if (available.length === 0) {
     state.usedPairs.clear();
-    available = ALL_PAIRS;
+    available = eligible;
   }
 
-  // Compute softmax weights: weight = exp(-distance / temperature)
-  // Use negative distance so closer pairs get higher weight
-  const logits = available.map(p => -p.dist / temp);
-  const maxLogit = Math.max(...logits);
-  const expWeights = logits.map(l => Math.exp(l - maxLogit)); // subtract max for numerical stability
-  const sumWeights = expWeights.reduce((a, b) => a + b, 0);
-
-  // Weighted random sample
-  let r = Math.random() * sumWeights;
-  let chosen = available[available.length - 1];
-  for (let k = 0; k < available.length; k++) {
-    r -= expWeights[k];
-    if (r <= 0) { chosen = available[k]; break; }
-  }
+  const groups = [...new Set(available.map(p => p.lca))];
+  const recent = state.recentAnswers || [];
+  const fresh = groups.filter(k => !recent.slice(-3).includes(k));
+  const pool = fresh.length ? fresh : groups;
+  const answer = pool[Math.floor(Math.random() * pool.length)];
+  const pairs = available.filter(p => p.lca === answer);
+  const chosen = pairs[Math.floor(Math.random() * pairs.length)];
+  state.recentAnswers = [...recent, answer];
 
   const sp1 = SPECIES[chosen.i], sp2 = SPECIES[chosen.j];
   const pk = [sp1.name, sp2.name].sort().join("|");
@@ -945,8 +1142,10 @@ let state = { mode:null, round:1, score:0, streak:0, sp1:null, sp2:null, correct
 let selectedGuess = null;
 
 function startGame(mode) {
+  document.getElementById("studyScreen").hidden = true;
   state.mode = mode;
   state.round = 1; state.score = 0; state.streak = 0;
+  state.solved = 0; state.recentAnswers = [];
   state.usedPairs.clear();
 
   document.getElementById("modeScreen").style.display = "none";
@@ -958,14 +1157,14 @@ function startGame(mode) {
   badge.className = "mode-badge " + mode;
 
   const h = document.getElementById("howToPlayText");
-  if (mode==="easy") h.innerHTML = `See the full <strong>tree of life</strong> and click the clade you think both animals share. Hover for descriptions. Nodes light up with feedback: <strong style="color:var(--accent)">green</strong> = correct, <strong style="color:var(--warm)">gold</strong> = too far back, <strong style="color:var(--red)">red</strong> = too close to one animal or wrong. 3 pts first try, 2 second, 1 third. 4 guesses max.`;
-  else if (mode==="medium") h.innerHTML = `Type to search with autocomplete. Name the <strong>closest shared clade</strong>. Hints tell you if you're <strong>too close</strong> to one animal or <strong>too far back</strong> in the tree. 3 pts first try, 2 second, 1 third. 4 guesses max.`;
-  else h.innerHTML = `No tree. No suggestions. No directional hints. Type the exact clade name from memory. Both scientific names (Mammalia) and common names (mammals) work. You only learn if you're <strong>right or wrong</strong>. 3 pts first try, 2 second, 1 third. 4 guesses max.`;
+  h.innerHTML = `Choose the closest group <strong>included in this curated tree</strong>, not just any group that contains both animals. ${mode === 'easy' ? 'Pick one of four answers. You can also browse the reference tree.' : mode === 'medium' ? 'Search a scientific or common name, select a suggestion, then submit.' : 'Type a scientific name or a supported common name. Feedback is right or wrong.'} You have four different guesses. Earn 3 points on your first try, 2 on your second, and 1 on your third or fourth. Reveal the answer whenever you want. There is no timer.`;
 
+  document.getElementById('sessionSummary').hidden = true;
   startRound();
 }
 
 function goToModeSelect() {
+  document.getElementById("studyScreen").hidden = true;
   document.getElementById("gameScreen").style.display = "none";
   document.getElementById("modeScreen").style.display = "block";
 }
@@ -989,7 +1188,10 @@ function startRound() {
   document.getElementById("treeReveal").className="tree-reveal";
   document.getElementById("nextRow").style.display="none";
 
+  document.getElementById('nextBtn').textContent = state.round === 10 ? 'See results →' : 'Next round →';
+  document.getElementById('roundProgress').value = state.round - 1;
   renderGuessArea();
+  updateAttempts();
 }
 
 function updateScores() {
@@ -998,10 +1200,30 @@ function updateScores() {
   document.getElementById("streak").textContent=state.streak;
 }
 
-function nextRound() { state.round++; startRound(); }
+function updateAttempts() {
+  document.getElementById('attempts').textContent = state.resolved ? 'Round complete' : `${state.maxGuesses - state.guesses.length} guesses left · ${state.guesses.length === 0 ? 3 : state.guesses.length === 1 ? 2 : 1} points available`;
+}
+function nextRound() {
+  if (state.round < 10) { state.round++; startRound(); return; }
+  document.getElementById('guessAreaWrap').innerHTML = '';
+  document.getElementById('nextRow').style.display = 'none';
+  document.getElementById('treeReveal').className = 'tree-reveal';
+  document.getElementById('roundProgress').value = 10;
+  const summary = document.getElementById('sessionSummary');
+  summary.hidden = false;
+  summary.innerHTML = `<h2>That’s a wrap!</h2><p>${state.solved} of 10 pairs solved · <strong>${state.score} / 30 points</strong></p><p>Every shared branch tells a story. Try another set?</p><button class="btn btn-primary" onclick="startGame('${state.mode}')">Play again</button> <button class="btn btn-secondary" onclick="goToModeSelect()">Change mode</button>`;
+  summary.scrollIntoView({block: 'nearest', behavior: 'smooth'});
+  summary.querySelector('button').focus({preventScroll: true});
+}
 
 function submitGuess(guessKey) {
-  if (state.resolved) return;
+  if (state.resolved || !ANCESTORS[guessKey]) return;
+  if (state.guesses.some(g => g.key === guessKey)) {
+    document.getElementById('feedback').className = 'feedback close-guess show';
+    document.getElementById('fbTitle').textContent = 'Already tried';
+    document.getElementById('fbText').textContent = 'Try a different group. No guess used.';
+    return;
+  }
   const result = evaluateGuess(guessKey, state.correctLCA, state.sp1, state.sp2);
   state.guesses.push({ key:guessKey, result });
 
@@ -1023,7 +1245,7 @@ function submitGuess(guessKey) {
     fb.className = "feedback correct show";
     fbTitle.textContent = "🎯 Correct!";
     const pts = state.guesses.length===1?3:state.guesses.length===2?2:1;
-    state.score += pts; state.streak++;
+    state.score += pts; state.streak++; state.solved++;
     fbText.textContent = `${guessKey} — ${desc}. +${pts} point${pts>1?'s':''}!`;
     hi.innerHTML = `<span>✅</span> ${guessKey} — Correct!`;
     endRound();
@@ -1035,12 +1257,12 @@ function submitGuess(guessKey) {
     hi.innerHTML = `<span>❌</span> ${guessKey}`;
   } else if (result.result === "too_far_back") {
     fb.className = "feedback close-guess show";
-    fbTitle.textContent = "🔵 Too far back!";
+    fbTitle.textContent = "Go more specific";
     fbText.textContent = `${guessKey} (${desc}) includes both animals, but their closest shared clade is more specific.`;
     hi.innerHTML = `<span>🔵</span> ${guessKey} — Too far back`;
   } else if (result.result === "too_close") {
     fb.className = "feedback wrong show";
-    fbTitle.textContent = `🔶 Too close to ${result.toward}!`;
+    fbTitle.textContent = `Only includes ${result.toward}`;
     fbText.textContent = `${guessKey} (${desc}) only covers the ${result.toward} side. You need a clade that includes both.`;
     hi.innerHTML = `<span>🔶</span> ${guessKey} — Too close to ${result.toward}`;
   } else {
@@ -1052,18 +1274,6 @@ function submitGuess(guessKey) {
 
   histList.appendChild(hi);
 
-  // Color easy-mode tree node
-  if (state.mode === "easy") {
-    const row = document.querySelector(`.vtree-row[data-key="${guessKey}"]`);
-    if (row) {
-      const cls = result.result==="correct"?"guessed-correct"
-        :result.result==="too_far_back"?"guessed-toofar"
-        :result.result==="too_close"?"guessed-tooclose"
-        :"guessed-wrong";
-      row.classList.add(cls);
-      row.scrollIntoView({ behavior:"smooth", block:"center" });
-    }
-  }
 
   if (result.result !== "correct" && state.guesses.length >= state.maxGuesses) {
     state.streak = 0;
@@ -1074,40 +1284,47 @@ function submitGuess(guessKey) {
   }
 
   updateScores();
+  updateAttempts();
+  if (state.mode === "easy" && relationshipMaps.explore) renderMapInspector("explore");
+  document.querySelectorAll(".choice").forEach(el => { el.disabled = state.resolved || state.guesses.some(g => g.key === el.dataset.key); });
   if (state.mode !== "easy" && !state.resolved) {
     const inp = document.getElementById("guessInput");
     if (inp) { inp.value=""; selectedGuess=null; }
     const btn = document.getElementById("submitBtn");
-    if (btn) btn.disabled = true;
+    if (btn) btn.disabled = state.mode === "medium";
   }
 }
 
 function endRound() {
   state.resolved = true;
-  document.getElementById("nextRow").style.display = "flex";
-
-  if (state.mode === "easy") {
-    document.querySelectorAll(".vtree-row").forEach(el => el.classList.add("disabled"));
-    const ans = document.querySelector(`.vtree-row[data-key="${state.correctLCA}"]`);
-    if (ans && !ans.classList.contains("guessed-correct")) {
-      ans.classList.add("answer-reveal");
-      ans.scrollIntoView({ behavior:"smooth", block:"center" });
-    }
-  } else {
-    const inp = document.getElementById("guessInput");
-    if (inp) inp.disabled = true;
-    document.getElementById("treeReveal").className = "tree-reveal show";
-    document.getElementById("treeSubtitle").textContent =
-      `${state.sp1.emoji} ${state.sp1.name}  ↔  ${state.sp2.name} ${state.sp2.emoji}`;
-    renderRevealTree(state.sp1, state.sp2, state.correctLCA);
+  updateAttempts();
+  const action = document.getElementById('roundAction');
+  if (action) {
+    action.textContent = state.round === 10 ? 'See results →' : 'Next round →';
+    action.className = 'btn btn-primary';
+    action.onclick = nextRound;
   }
+  document.getElementById("nextRow").style.display = action ? "none" : "flex";
+
+  document.querySelectorAll('.choice').forEach(el => { el.disabled = true; });
+  if (state.mode === 'easy' && relationshipMaps.explore) renderRelationshipMap('explore');
+  const inp = document.getElementById('guessInput');
+  if (inp) inp.disabled = true;
+  const submit = document.getElementById('submitBtn');
+  if (submit) submit.disabled = true;
+  const ac = document.getElementById('autocomplete');
+  if (ac) ac.className = 'autocomplete';
+  document.getElementById('treeReveal').className = 'tree-reveal show';
+  document.getElementById('treeSubtitle').textContent = `${state.sp1.name} + ${state.sp2.name}: ${state.correctLCA} (${ANCESTORS[state.correctLCA].desc}). Read from the shared ancestor down to each animal.`;
+  renderRevealTree(state.sp1, state.sp2, state.correctLCA);
+  (action || document.getElementById('nextBtn')).focus({preventScroll: true});
 }
 
 function skipRound() {
   if (state.resolved) return;
   state.streak = 0;
   document.getElementById("feedback").className = "feedback close-guess show";
-  document.getElementById("fbTitle").textContent = "Skipped!";
+  document.getElementById("fbTitle").textContent = "Answer revealed";
   document.getElementById("fbText").textContent = `The answer was ${state.correctLCA} — ${ANCESTORS[state.correctLCA].desc}.`;
   updateScores();
   endRound();
@@ -1117,45 +1334,65 @@ function skipRound() {
 // RENDER GUESS AREA
 // ═══════════════════════════════════════════
 
+function shuffle(values) {
+  const result = [...values];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+function easyChoices(answer, sp1, sp2) {
+    const relatives = [...new Set([
+      ANCESTORS[answer].parent,
+      ...getChildrenOf(answer),
+      ANCESTORS[sp1.clade].parent,
+      sp1.clade, sp2.clade,
+      ...Object.keys(ANCESTORS).filter(k => ANCESTORS[k].depth === ANCESTORS[answer].depth)
+    ])].filter(k => k && k !== answer && easyDescriptionFits(k, sp1, sp2));
+    const nearby = relatives.filter(k => getAncestorChain(k).includes(answer) || getAncestorChain(answer).includes(k));
+    const wrong = shuffle(nearby).slice(0, 2);
+    const fallback = shuffle([...relatives, ...Object.keys(ANCESTORS)]).filter(k => k !== answer && !wrong.includes(k) && easyDescriptionFits(k, sp1, sp2));
+    for (const k of fallback) { if (wrong.length === 3) break; if (!wrong.includes(k)) wrong.push(k); }
+    return shuffle([answer, ...wrong]);
+}
 function renderGuessArea() {
   const wrap = document.getElementById("guessAreaWrap");
 
   if (state.mode === "easy") {
-    wrap.innerHTML = `
-      <div class="guess-label">Click the closest shared clade on the tree</div>
-      <div class="vtree-wrap" id="vtreeWrap"></div>
-      <div class="btn-row">
-        <button class="btn btn-secondary" onclick="skipRound()">Skip</button>
-      </div>`;
+    const choices = easyChoices(state.correctLCA, state.sp1, state.sp2);
+    wrap.innerHTML = `<div class="choice-grid">${choices.map(k => `<button class="choice" data-key="${k}" onclick="submitGuess('${k}')"><strong>${easyDescription(k)}</strong><span>${k}</span></button>`).join('')}</div>
+      <div class="btn-row"><button class="btn btn-secondary" id="roundAction" onclick="skipRound()">Reveal answer</button></div>
+      <details class="reference-tree"><summary>Need help? Explore the game’s tree</summary><p>Follow branches downward from broader to more specific groups. Click a group to inspect it, then explore its branch.</p><label for="exploreSearch" class="guess-label">Find a group</label><input id="exploreSearch" class="guess-input" type="search" placeholder="Search a clade or common name…" oninput="searchRelationshipMap('explore',this.value)"><div id="exploreMap"></div></details>`;
     renderVerticalTree();
 
   } else if (state.mode === "medium") {
     wrap.innerHTML = `
       <div class="guess-area">
-        <div class="guess-label">What is their closest common clade?</div>
+        <label class="guess-label" for="guessInput">Name the closest shared group in this tree</label>
         <div class="guess-input-wrap">
-          <input type="text" class="guess-input" id="guessInput" placeholder="Type a clade..." autocomplete="off">
-          <div class="autocomplete" id="autocomplete"></div>
+          <input type="text" class="guess-input" id="guessInput" placeholder="Try mammals or Mammalia…" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-controls="autocomplete" aria-expanded="false">
+          <div class="autocomplete" id="autocomplete" role="listbox" aria-label="Matching groups"></div>
         </div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="submitBtn" disabled onclick="onMediumSubmit()">Submit Guess</button>
-        <button class="btn btn-secondary" onclick="skipRound()">Skip</button>
+        <button class="btn btn-secondary" id="roundAction" onclick="skipRound()">Reveal answer</button>
       </div>`;
     setupMediumMode();
 
   } else {
     wrap.innerHTML = `
       <div class="guess-area">
-        <div class="guess-label">What is their closest common clade?</div>
+        <label class="guess-label" for="guessInput">Name the closest shared group in this tree</label>
         <div class="guess-input-wrap">
-          <input type="text" class="guess-input" id="guessInput" placeholder="Type the exact clade name..." autocomplete="off">
+          <input type="text" class="guess-input" id="guessInput" placeholder="Scientific or common group name…" autocomplete="off" spellcheck="false" aria-describedby="noMatch">
         </div>
         <div class="no-match-msg" id="noMatch">No matching clade found. Check your spelling.</div>
       </div>
       <div class="btn-row">
         <button class="btn btn-primary" id="submitBtn" onclick="onExpertSubmit()">Submit Guess</button>
-        <button class="btn btn-secondary" onclick="skipRound()">Skip</button>
+        <button class="btn btn-secondary" id="roundAction" onclick="skipRound()">Reveal answer</button>
       </div>`;
     setupExpertMode();
   }
@@ -1166,30 +1403,7 @@ function renderGuessArea() {
 // ═══════════════════════════════════════════
 
 function renderVerticalTree() {
-  const container = document.getElementById("vtreeWrap");
-
-  function buildNode(key) {
-    const children = getChildrenOf(key);
-    const desc = ANCESTORS[key].desc;
-    let childrenHtml = "";
-    if (children.length > 0) {
-      childrenHtml = `<div class="vtree-children">${children.map(c => buildNode(c)).join("")}</div>`;
-    }
-    return `<div class="vtree-node">
-      <div class="vtree-row" data-key="${key}" onclick="onEasyClick('${key}')" title="${desc}">
-        <span>${key}</span>
-        <span class="vtree-desc">${desc}</span>
-      </div>
-      ${childrenHtml}
-    </div>`;
-  }
-
-  container.innerHTML = buildNode("Metazoa");
-}
-
-function onEasyClick(key) {
-  if (state.resolved) return;
-  submitGuess(key);
+  mountRelationshipMap('explore', 'exploreMap', 'Bilateria');
 }
 
 // ═══════════════════════════════════════════
@@ -1197,48 +1411,50 @@ function onEasyClick(key) {
 // ═══════════════════════════════════════════
 
 function setupMediumMode() {
-  const inp = document.getElementById("guessInput");
-  const ac = document.getElementById("autocomplete");
-  let acIdx = -1;
+  const inp = document.getElementById('guessInput');
+  const ac = document.getElementById('autocomplete');
+  let index = -1;
   selectedGuess = null;
-
-  inp.addEventListener("input", () => {
+  const close = () => { ac.className = 'autocomplete'; inp.setAttribute('aria-expanded', 'false'); inp.removeAttribute('aria-activedescendant'); };
+  const select = key => { selectedGuess = key; inp.value = key; document.getElementById('submitBtn').disabled = false; close(); };
+  inp.addEventListener('input', () => {
     const val = inp.value.trim().toLowerCase();
-    const matches = getMatchingClades(val);
-    acIdx = -1; selectedGuess = null;
-    document.getElementById("submitBtn").disabled = true;
-    if (!val || matches.length===0) { ac.className="autocomplete"; ac.innerHTML=""; return; }
-    ac.className = "autocomplete show";
-    ac.innerHTML = matches.map((m,i) => `<div class="ac-item" data-key="${m.key}" data-index="${i}">
-      <span class="ac-name">${m.key}</span><span class="ac-desc">${ANCESTORS[m.key].desc}</span>
-    </div>`).join("");
-    ac.querySelectorAll(".ac-item").forEach(el => {
-      el.addEventListener("mousedown", e => { e.preventDefault(); selectAc(el.dataset.key, inp, ac); });
+    const matches = getMatchingClades(val).filter(m => !state.guesses.some(g => g.key === m.key));
+    index = -1; selectedGuess = ALIASES[val] || null;
+    document.getElementById('submitBtn').disabled = !selectedGuess;
+    inp.removeAttribute('aria-activedescendant');
+    if (!val || !matches.length) { close(); return; }
+    ac.className = 'autocomplete show'; inp.setAttribute('aria-expanded', 'true');
+    ac.innerHTML = matches.map((m,i) => `<div class="ac-item" role="option" aria-selected="false" id="option-${i}" data-key="${m.key}"><span class="ac-name">${m.key}</span><span class="ac-desc">${ANCESTORS[m.key].desc}</span></div>`).join('');
+    ac.querySelectorAll('.ac-item').forEach(el => {
+      el.addEventListener('pointerdown', e => { e.preventDefault(); select(el.dataset.key); });
     });
   });
-
-  inp.addEventListener("keydown", e => {
-    const items = ac.querySelectorAll(".ac-item");
-    if (e.key==="ArrowDown") { e.preventDefault(); acIdx=Math.min(acIdx+1,items.length-1); highlightAc(items,acIdx,inp,ac); }
-    else if (e.key==="ArrowUp") { e.preventDefault(); acIdx=Math.max(acIdx-1,0); highlightAc(items,acIdx,inp,ac); }
-    else if (e.key==="Enter") { e.preventDefault(); if(selectedGuess&&!state.resolved) submitGuess(selectedGuess); else if(acIdx>=0&&items[acIdx]) selectAc(items[acIdx].dataset.key,inp,ac); }
+  inp.addEventListener('keydown', e => {
+    const items = ac.querySelectorAll('.ac-item');
+    if (e.key === 'Escape') { close(); return; }
+    if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && items.length && ac.classList.contains('show')) {
+      e.preventDefault();
+      index = e.key === 'ArrowDown' ? (index + 1) % items.length : (index <= 0 ? items.length - 1 : index - 1);
+      items.forEach((el,i) => { el.classList.toggle('active', i === index); el.setAttribute('aria-selected', String(i === index)); });
+      inp.setAttribute('aria-activedescendant', items[index].id);
+      items[index].scrollIntoView({block: 'nearest'});
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (index >= 0 && ac.classList.contains('show')) select(items[index].dataset.key);
+      else if (selectedGuess) { close(); submitGuess(selectedGuess); }
+    }
   });
-
-  inp.addEventListener("blur", () => { setTimeout(()=>{ac.className="autocomplete";},150); });
-  inp.focus();
+  inp.addEventListener('blur', close);
+  inp.focus({preventScroll: true});
 }
-
-function highlightAc(items, idx, inp, ac) {
-  items.forEach((el,i) => el.classList.toggle("active",i===idx));
-  if (idx>=0 && items[idx]) selectAc(items[idx].dataset.key, inp, ac);
+function onMediumSubmit() {
+  if (selectedGuess && !state.resolved) {
+    document.getElementById('autocomplete').className = 'autocomplete';
+    document.getElementById('guessInput').setAttribute('aria-expanded', 'false');
+    submitGuess(selectedGuess);
+  }
 }
-
-function selectAc(key, inp, ac) {
-  selectedGuess = key; inp.value = key; ac.className = "autocomplete";
-  document.getElementById("submitBtn").disabled = false;
-}
-
-function onMediumSubmit() { if (selectedGuess && !state.resolved) submitGuess(selectedGuess); }
 
 function getMatchingClades(q) {
   if (!q) return [];
@@ -1272,6 +1488,244 @@ function onExpertSubmit() {
   else { document.getElementById("noMatch").classList.add("show"); }
 }
 
+// Study lessons pair a worked example with a different transfer question.
+const STUDY_LESSONS = [
+  {key: 'Mammalia', example: ['Human', 'Platypus'], practice: ['House Cat', 'Platypus'], note: 'Egg-laying mammals are still mammals. Mammalia includes monotremes as well as marsupials and placentals.'},
+  {key: 'Amniota', example: ['House Cat', 'Chicken'], practice: ['Human', 'Green Sea Turtle'], note: 'Mammals and reptiles, including birds, meet at Amniota. Amphibians branch off outside this group.'},
+  {key: 'Carnivora', example: ['House Cat', 'Dog'], practice: ['Lion', 'Polar Bear'], note: 'Carnivora is a lineage, not a diet. It includes cats and dog-like carnivorans; an animal does not join it just by eating meat.'},
+  {key: 'Caniformia', example: ['Dog', 'Grizzly Bear'], practice: ['Fox', 'Polar Bear'], note: 'Dogs and bears share a closer group within Carnivora: Caniformia. Cats belong to a different branch.'},
+  {key: 'Glires', example: ['Mouse', 'Rabbit'], practice: ['Beaver', 'Rabbit'], note: 'Rabbits are lagomorphs, not rodents. Those two branches join at Glires.'},
+  {key: 'Archosauria', example: ['Chicken', 'Crocodile'], practice: ['Emperor Penguin', 'Crocodile'], note: 'Birds and crocodilians are archosaurs. This shared branch is more specific than Reptilia.'},
+  {key: 'Squamata', example: ['Komodo Dragon', 'Ball Python'], practice: ['Gecko', 'Ball Python'], note: 'Snakes are nested within the lizard radiation. These animals meet at Squamata in the game’s pruned tree; turtles belong elsewhere.'},
+  {key: 'Pancrustacea', example: ['Honeybee', 'Lobster'], practice: ['Painted Lady', 'Crab'], note: 'Insects are nested among crustacean lineages. Pancrustacea includes both insects and decapods, while Arthropoda is broader.'}
+];
+let study = {index: 0, phase: 'learn', hint: 0, solved: false, recalled: 0, assisted: false};
+function getStudyPair(names) {
+  return names.map(name => SPECIES.find(s => s.name === name));
+}
+function studyPairMarkup(names) {
+  return `<div class="matchup study-matchup">${getStudyPair(names).map(sp => `<div class="species-card"><span class="species-emoji" aria-hidden="true">${sp.emoji}</span><div class="species-name">${sp.name}</div><div class="species-taxon">${sp.taxon}</div></div>`).join('<span class="vs-badge" aria-hidden="true">&amp;</span>')}</div>`;
+}
+function startStudy() {
+  document.getElementById('modeScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'none';
+  document.getElementById('studyScreen').hidden = false;
+  study = {index: 0, phase: 'learn', hint: 0, solved: false, recalled: 0, assisted: false};
+  relationshipMaps.study?.observer?.disconnect();
+  delete relationshipMaps.study;
+  document.getElementById('studyLibrary').innerHTML = '';
+  document.getElementById('studySearch').value = '';
+  renderStudyLibrary('');
+  renderStudy();
+}
+function renderStudy() {
+  const container = document.getElementById('studyContent');
+  document.getElementById('studyProgress').value = study.index;
+  document.getElementById('studyProgressText').textContent = study.index < STUDY_LESSONS.length ? `Lesson ${study.index + 1} of ${STUDY_LESSONS.length} · ${study.phase === 'learn' ? 'Learn' : 'Recall'} · No timer or guess limit` : 'Eight branches explored';
+  if (study.index === STUDY_LESSONS.length) {
+    container.innerHTML = `<div class="study-card"><h2 tabindex="-1" id="studyHeading">Ready to search the tree?</h2><p>You recalled ${study.recalled} of 8 names without a hint or reveal. Revisit any lesson, or try Guided Search: type a name, choose a suggestion, and submit.</p><p>These eight groups are a starting point. Keep the clade reference below handy as you explore.</p><div class="btn-row"><button class="btn btn-primary" onclick="startGame('medium')">Try Guided Search →</button><button class="btn btn-secondary" onclick="startStudy()">Study again</button></div></div>`;
+  } else {
+    const lesson = STUDY_LESSONS[study.index];
+    if (study.phase === 'learn') {
+      const parent = ANCESTORS[lesson.key].parent;
+      container.innerHTML = `<div class="study-card"><p class="study-eyebrow">Meet the group</p><h2 tabindex="-1" id="studyHeading">${lesson.key}</h2><p class="study-description">${ANCESTORS[lesson.key].desc}</p><p class="study-lineage">${parent} → <strong>${lesson.key}</strong></p>${studyPairMarkup(lesson.example)}<p>${lesson.note}</p><p class="study-takeaway">For this pair, <strong>${lesson.key}</strong> is the closest shared group in the game’s tree. Say the name once, then try another pair.</p><button class="btn btn-primary" onclick="practiceStudy()">Got it · try a new pair →</button></div>`;
+    } else {
+      container.innerHTML = `<div class="study-card"><p class="study-eyebrow">Your turn · a new pair</p><h2 tabindex="-1" id="studyHeading">What name did you just learn?</h2>${studyPairMarkup(lesson.practice)}<form id="studyForm" onsubmit="event.preventDefault();checkStudyAnswer()"><label class="guess-label" for="studyAnswer">Type their closest shared group</label><input id="studyAnswer" class="guess-input" autocomplete="off" spellcheck="false" placeholder="Try the scientific name from memory…" aria-describedby="studyHint"><div class="btn-row study-actions"><button class="btn btn-primary" type="submit" id="studyCheck">Check answer</button><button class="btn btn-secondary" type="button" id="studyHintButton" onclick="giveStudyHint()">Give me a hint</button></div></form><p id="studyHint" class="study-hint"></p><div id="studyFeedback" class="feedback" role="status" aria-live="polite" aria-atomic="true"></div><div class="btn-row"><button class="btn btn-secondary" id="studyReveal" onclick="finishStudyRecall(false)">Show answer &amp; explanation</button><button class="btn btn-primary" id="studyNext" onclick="nextStudyLesson()" hidden>Next lesson →</button></div><button class="study-back" onclick="reviewStudyLesson()">← Review this lesson</button></div>`;
+    }
+  }
+  document.getElementById('studyHeading').focus({preventScroll: true});
+}
+function practiceStudy() {
+  study.phase = 'recall'; study.hint = 0; study.solved = false;
+  renderStudy();
+  document.getElementById('studyAnswer').focus({preventScroll: true});
+}
+function reviewStudyLesson() {
+  study.phase = 'learn'; study.assisted = true; renderStudy();
+}
+function giveStudyHint() {
+  if (study.solved) return;
+  const lesson = STUDY_LESSONS[study.index];
+  study.assisted = true; study.hint++;
+  const hint = document.getElementById('studyHint');
+  hint.setAttribute('role', 'status');
+  hint.textContent = study.hint === 1 ? `Starts with ${lesson.key[0]} · ${lesson.key.length} letters. This group sits inside ${ANCESTORS[lesson.key].parent}.` : `Meaning: ${ANCESTORS[lesson.key].desc}. Name: ${lesson.key.slice(0, Math.ceil(lesson.key.length / 2))}${'＿'.repeat(Math.floor(lesson.key.length / 2))}`;
+  document.getElementById('studyHintButton').disabled = study.hint >= 2;
+  document.getElementById('studyAnswer').focus({preventScroll: true});
+}
+function checkStudyAnswer() {
+  if (study.solved) return;
+  const value = document.getElementById('studyAnswer').value.trim().toLowerCase();
+  const feedback = document.getElementById('studyFeedback');
+  if (!value) {
+    feedback.className = 'feedback close-guess show'; feedback.textContent = 'Type a group name first, or ask for a hint.'; return;
+  }
+  const key = ALIASES[value];
+  const lesson = STUDY_LESSONS[study.index];
+  if (key === lesson.key) { finishStudyRecall(true); return; }
+  study.assisted = true;
+  feedback.className = 'feedback close-guess show';
+  if (!key) feedback.textContent = 'That name is not in the game’s vocabulary. Check the spelling, ask for a hint, or review the lesson. Keep trying—there’s no guess limit.';
+  else {
+    const [a,b] = getStudyPair(lesson.practice);
+    const result = evaluateGuess(key, lesson.key, a,b);
+    feedback.textContent = result.result === 'too_far_back' ? `${key} contains both, but there is a more specific shared group. Try the name from the lesson.` : result.result === 'too_close' ? `${key} only contains ${result.toward}. Find the group that contains both.` : `${key} is on a different branch. Try the group you just learned.`;
+  }
+  document.getElementById('studyAnswer').select();
+}
+function finishStudyRecall(correct) {
+  if (study.solved) return;
+  study.solved = true;
+  if (correct && !study.assisted) study.recalled++;
+  const lesson = STUDY_LESSONS[study.index];
+  const feedback = document.getElementById('studyFeedback');
+  feedback.className = `feedback ${correct ? 'correct' : 'close-guess'} show`;
+  feedback.innerHTML = `<strong>${correct ? 'You got it! ' : 'The answer is '}${lesson.key}</strong> — ${ANCESTORS[lesson.key].desc}.<p>${lesson.note}</p>`;
+  for (const id of ['studyAnswer','studyCheck','studyHintButton','studyReveal']) document.getElementById(id).disabled = true;
+  const next = document.getElementById('studyNext');
+  next.hidden = false; next.textContent = study.index === STUDY_LESSONS.length - 1 ? 'Finish studying →' : 'Next lesson →';
+  next.focus({preventScroll: true});
+}
+function nextStudyLesson() {
+  if (!study.solved) return;
+  study.index++; study.phase = 'learn'; study.hint = 0; study.solved = false; study.assisted = false;
+  renderStudy();
+}
+function renderStudyLibrary(query) {
+  if (!relationshipMaps.study) mountRelationshipMap('study', 'studyLibrary', 'Amniota');
+  else if (!document.getElementById('study-map')) mountRelationshipMap('study', 'studyLibrary', relationshipMaps.study.focus);
+  searchRelationshipMap('study', query);
+}
+
+// A bounded top-down cladogram. Explore one neighborhood at a time rather than
+// squeezing every lineage into a deep indented list or an unreadable full tree.
+const relationshipMaps = {};
+function relationshipLayout(root, levels = 2) {
+  const nodes = [], edges = [];
+  const width = 172, height = 76, gap = 24, row = 126;
+  function measure(key, depth) {
+    const children = depth < levels ? getChildrenOf(key).map(k => measure(k, depth + 1)) : [];
+    return {key, depth, children, span: Math.max(width, children.reduce((sum,n) => sum+n.span,0) + Math.max(0,children.length-1)*gap)};
+  }
+  const tree = measure(root, 0);
+  function place(node, left) {
+    const item = {key:node.key, x:left + node.span/2, y:24 + node.depth*row, width, height, more:getChildrenOf(node.key).length>0 && !node.children.length};
+    nodes.push(item);
+    let childLeft=left;
+    for (const child of node.children) {
+      const target=place(child,childLeft);
+      edges.push({from:item,to:target});
+      childLeft+=child.span+gap;
+    }
+    return item;
+  }
+  place(tree,24);
+  return {nodes,edges,width:tree.span+48,height:Math.max(...nodes.map(n=>n.y))+height+28};
+}
+function mountRelationshipMap(id, host, focus) {
+  relationshipMaps[id]?.observer?.disconnect();
+  relationshipMaps[id] = {focus, selected:focus, levels:2, zoom:1, host};
+  document.getElementById(host).innerHTML = `<section id="${id}-map" class="relationship-map" aria-label="Interactive clade relationships">
+    <div class="map-toolbar"><button type="button" onclick="mapUp('${id}')" id="${id}-up">↑ Broader group</button><button type="button" onclick="mapFocus('${id}','Metazoa')">All animals</button><label>Levels <select aria-label="Visible branch levels" onchange="mapLevels('${id}',this.value)"><option value="1">1</option><option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="all">All</option></select></label></div>
+    <nav class="map-breadcrumbs" id="${id}-crumbs" aria-label="Ancestry path"></nav>
+    <p class="map-instructions">Branches show ancestry, not time. Scroll or drag to pan. Click to inspect; double-click to make a branching group the top clade. Terminal groups are not clickable.</p>
+    <div class="map-search-results" id="${id}-search" aria-live="polite"></div>
+    <div class="map-zoom"><button type="button" aria-label="Zoom out" onclick="mapZoom('${id}',-.15)">−</button><span id="${id}-zoom-label">100%</span><button type="button" aria-label="Zoom in" onclick="mapZoom('${id}',.15)">+</button><button type="button" onclick="mapFit('${id}')">Fit branches</button></div>
+    <div class="map-viewport" id="${id}-viewport" tabindex="0" role="region" aria-label="Branching clade diagram; scroll to explore"><div id="${id}-space" class="map-space"><div id="${id}-canvas" class="map-canvas"></div></div></div>
+    <div id="${id}-inspector" class="map-inspector" aria-live="polite"></div>
+  </section>`;
+  const viewport = document.getElementById(id+'-viewport');
+  let drag;
+  viewport.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button')) return;
+    drag={x:e.clientX,y:e.clientY,left:viewport.scrollLeft,top:viewport.scrollTop};
+    viewport.setPointerCapture(e.pointerId); viewport.classList.add('dragging');
+  });
+  viewport.addEventListener('pointermove', e => {if(drag){viewport.scrollLeft=drag.left-(e.clientX-drag.x);viewport.scrollTop=drag.top-(e.clientY-drag.y);}});
+  const stop=()=>{drag=null;viewport.classList.remove('dragging');};
+  viewport.addEventListener('pointerup',stop);viewport.addEventListener('pointercancel',stop);
+  const observer = new ResizeObserver(() => {
+    if (viewport.clientWidth && relationshipMaps[id]?.layout) {
+      const current = relationshipMaps[id];
+      viewport.scrollLeft=Math.max(0,(current.layout.width*current.zoom-viewport.clientWidth)/2);
+    }
+  });
+  relationshipMaps[id].observer=observer;
+  observer.observe(viewport);
+  renderRelationshipMap(id);
+}
+function mapMembership(id,key) {
+  if(id!=='explore') return '';
+  return [state.sp1,state.sp2].filter(sp=>sp && getAncestorChain(sp.clade).includes(key)).map(sp=>sp.emoji).join(' ');
+}
+function renderRelationshipMap(id) {
+  const map=relationshipMaps[id], layout=relationshipLayout(map.focus,map.levels);
+  map.layout=layout;
+  const path=getAncestorChain(map.focus).reverse();
+  document.getElementById(id+'-crumbs').innerHTML=path.map((key,i)=>`<button type="button" ${i===path.length-1?'aria-current="location"':''} onclick="mapFocus('${id}','${key}')">${key}</button>`).join('<span aria-hidden="true"> › </span>');
+  document.getElementById(id+'-up').disabled=!ANCESTORS[map.focus].parent;
+  const svg=`<svg class="map-links" width="${layout.width}" height="${layout.height}" aria-hidden="true">${layout.edges.map(({from,to})=>`<path d="M ${from.x} ${from.y+from.height} V ${from.y+from.height+25} H ${to.x} V ${to.y}"/>`).join('')}</svg>`;
+  const cards=layout.nodes.map(n=>`<button type="button" class="map-node ${n.key===map.selected?'selected':''}" data-key="${n.key}" style="left:${n.x-n.width/2}px;top:${n.y}px;width:${n.width}px;height:${n.height}px" onclick="mapSelect('${id}','${n.key}')" ondblclick="mapFocus('${id}','${n.key}')" ${getChildrenOf(n.key).length ? '' : 'disabled title="Terminal group: no child clades in this game’s tree"'} aria-pressed="${n.key===map.selected}"><strong>${n.key}</strong><span>${ANCESTORS[n.key].desc}</span><small>${mapMembership(id,n.key)} ${n.more?'＋ '+getChildrenOf(n.key).length+' branches':getChildrenOf(n.key).length?'':'Terminal group'}</small></button>`).join('');
+  document.getElementById(id+'-canvas').innerHTML=svg+cards;
+  applyMapZoom(id);
+  renderMapInspector(id);
+  requestAnimationFrame(()=>{
+    const viewport=document.getElementById(id+'-viewport');
+    if(viewport) {viewport.scrollLeft=Math.max(0,(layout.width*map.zoom-viewport.clientWidth)/2);viewport.scrollTop=0;}
+  });
+}
+function mapFocus(id,key) {
+  if(!ANCESTORS[key] || !getChildrenOf(key).length)return;
+  const map=relationshipMaps[id];map.focus=key;map.selected=key;map.zoom=1;
+  renderRelationshipMap(id);
+  document.querySelector(`#${id}-canvas .map-node[data-key="${key}"]`)?.focus({preventScroll:true});
+}
+function mapSelect(id,key) {
+  if (!getChildrenOf(key).length) return;
+  const map=relationshipMaps[id];map.selected=key;
+  document.querySelectorAll(`#${id}-canvas .map-node`).forEach(el=>{el.classList.toggle('selected',el.dataset.key===key);el.setAttribute('aria-pressed',String(el.dataset.key===key));});
+  renderMapInspector(id);
+}
+function mapUp(id) {const parent=ANCESTORS[relationshipMaps[id].focus].parent;if(parent)mapFocus(id,parent);}
+function mapLevels(id,value) {
+  relationshipMaps[id].levels=value === 'all' ? Math.max(...Object.values(ANCESTORS).map(n=>n.depth)) : Number(value);
+  renderRelationshipMap(id);
+}
+function applyMapZoom(id) {
+  const map=relationshipMaps[id],canvas=document.getElementById(id+'-canvas'),space=document.getElementById(id+'-space');
+  canvas.style.width=map.layout.width+'px';canvas.style.height=map.layout.height+'px';canvas.style.transform=`scale(${map.zoom})`;
+  space.style.width=map.layout.width*map.zoom+'px';space.style.height=map.layout.height*map.zoom+'px';
+  document.getElementById(id+'-zoom-label').textContent=Math.round(map.zoom*100)+'%';
+}
+function mapZoom(id,delta) {
+  const map=relationshipMaps[id], viewport=document.getElementById(id+'-viewport');
+  const center=(viewport.scrollLeft+viewport.clientWidth/2)/map.zoom;
+  map.zoom=Math.max(.3,Math.min(1.6,map.zoom+delta));applyMapZoom(id);
+  viewport.scrollLeft=center*map.zoom-viewport.clientWidth/2;
+}
+function mapFit(id) {
+  const map=relationshipMaps[id],viewport=document.getElementById(id+'-viewport');
+  map.zoom=Math.max(.3,Math.min(1,viewport.clientWidth/map.layout.width));applyMapZoom(id);viewport.scrollLeft=0;
+}
+function mapRelationButtons(id,keys) {
+  return keys.length?keys.map(key=>getChildrenOf(key).length ? `<button type="button" class="map-chip" onclick="mapFocus('${id}','${key}')">${key}</button>` : `<span class="map-chip map-terminal" title="Terminal group: no child clades">${key}</span>`).join(''):'<span class="map-muted">None shown in this pruned tree.</span>';
+}
+function renderMapInspector(id) {
+  const map=relationshipMaps[id],key=map.selected,parent=ANCESTORS[key].parent;
+  const siblings=parent?getChildrenOf(parent).filter(k=>k!==key):[];
+  const animals=SPECIES.filter(sp=>getAncestorChain(sp.clade).includes(key));
+  document.getElementById(id+'-inspector').innerHTML=`<h3>${key}</h3><p>${ANCESTORS[key].desc}</p>
+    <dl><dt>Within this broader group</dt><dd>${mapRelationButtons(id,parent?[parent]:[])}</dd><dt>Sibling branches · same parent</dt><dd>${mapRelationButtons(id,siblings)}</dd><dt>Branches inside this group</dt><dd>${mapRelationButtons(id,getChildrenOf(key))}</dd></dl>
+    <details class="map-examples"><summary>${animals.length} game animals in this group</summary><p>${animals.map(sp=>`${sp.emoji} ${sp.name}`).join(' · ')||'No game animals on this branch.'}</p></details>
+    <div class="btn-row"><button type="button" class="btn btn-primary" onclick="mapFocus('${id}','${key}')"${getChildrenOf(key).length?'':'disabled'}>Explore this branch ↓</button>${id==='explore'?`<button type="button" class="btn btn-secondary" onclick="submitGuess('${key}')" ${state.resolved||state.guesses.some(g=>g.key===key)?'disabled':''}>Guess ${key}</button>`:''}</div>`;
+}
+function searchRelationshipMap(id,query) {
+  const q=query.trim().toLowerCase(), output=document.getElementById(id+'-search');
+  if(!q){output.innerHTML='';return;}
+  const keys=Object.keys(ANCESTORS).filter(key=>key.toLowerCase().includes(q)||ANCESTORS[key].desc.toLowerCase().includes(q));
+  output.innerHTML=keys.length?`<p>${keys.length} matching group${keys.length===1?'':'s'} · choose one to locate its branch</p>`+mapRelationButtons(id,keys):'<p>No matching groups. Try a broader name.</p>';
+}
+
 // ═══════════════════════════════════════════
 // REVEAL TREE (medium/expert post-round)
 // ═══════════════════════════════════════════
@@ -1299,7 +1753,7 @@ function renderRevealTree(sp1, sp2, lca) {
 
   function cYs(nodes,sy){const p=[];let y=sy;for(const n of nodes){const h=nH(!!n.desc);p.push({cy:y+h/2,h});y+=h+nG;}return p;}
 
-  const sR=[...shared].reverse();
+  const sR=[...shared].slice(0, 3).reverse();
   const tN=sR.map(k=>({key:k,label:k,desc:ANCESTORS[k]?.desc||"",type:k===lca?"lca":"shared"}));
   const tY=cYs(tN,10);
   const lBot=tY[tY.length-1].cy+tY[tY.length-1].h/2;
@@ -1338,8 +1792,22 @@ function renderRevealTree(sp1, sp2, lca) {
   if(b1.length){aL(cX,lcCy+lcH/2,lX,b1Y[0].cy-b1Y[0].h/2,ad,"#22633d");ad+=ds;for(let i=0;i<b1.length;i++){aN(lX,b1Y[i].cy,b1[i].label,b1[i].type,ad,b1[i].desc);ad+=ds;if(i>0)aL(lX,b1Y[i-1].cy+b1Y[i-1].h/2,lX,b1Y[i].cy-b1Y[i].h/2,ad-ds*1.5);}}
   if(b2.length){aL(cX,lcCy+lcH/2,rX,b2Y[0].cy-b2Y[0].h/2,ad,"#22633d");ad+=ds;for(let i=0;i<b2.length;i++){aN(rX,b2Y[i].cy,b2[i].label,b2[i].type,ad,b2[i].desc);ad+=ds;if(i>0)aL(rX,b2Y[i-1].cy+b2Y[i-1].h/2,rX,b2Y[i].cy-b2Y[i].h/2,ad-ds*1.5);}}
 
-  document.getElementById("treeSvgWrap").innerHTML=`<svg width="${totW}" height="${svgH}" viewBox="0 0 ${totW} ${svgH}" xmlns="http://www.w3.org/2000/svg">${ls.join("")}${ns.join("")}</svg>`;
+  document.getElementById("treeSvgWrap").innerHTML=`<svg width="${totW}" height="${svgH}" viewBox="0 0 ${totW} ${svgH}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Shared ancestry of ${sp1.name} and ${sp2.name}, meeting at ${lca}">${ls.join("")}${ns.join("")}</svg>`;
 }
+// Keep the embedded page sized to its content, including menus and reveals.
+let resizeFrame;
+new ResizeObserver(() => {
+  cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    if (window.parent !== window) window.parent.postMessage({type: 'clade-game-resize', height: document.body.scrollHeight}, window.location.origin);
+  });
+}).observe(document.body);
 </script>
+<footer class="taxonomy-note">
+  <details><summary>About the tree &amp; sources · reviewed October 2026</summary>
+  <p>This is a curated, pruned animal tree. Answers are the closest named group <strong>included here</strong>; real lineages often have intermediate clades. Branch lengths do not represent time. Some deep relationships remain debated, including the root of placental mammals and relationships within Neoaves and Arachnida. Multifurcations here represent omitted or unresolved branches, not simultaneous splits.</p>
+  <p>Classification cross-checks: <a href="https://www.ncbi.nlm.nih.gov/taxonomy">NCBI Taxonomy</a>, <a href="https://www.mammaldiversity.org/taxon/1000292/">Mammal Diversity Database</a>, <a href="https://www.marinespecies.org/aphia.php?id=836033&amp;p=taxdetails">WoRMS</a>, and <a href="https://ncbiinsights.ncbi.nlm.nih.gov/2024/07/31/ncbi-taxonomy-updates-birds/">NCBI bird classification update</a>. Names and classifications can change; this is a reviewed snapshot, not a live database.</p>
+  </details>
+</footer>
 </body>
 </html>
