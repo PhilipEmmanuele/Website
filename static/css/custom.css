@@ -1,3 +1,38 @@
+/* About page */
+.about-profile {
+    display: grid;
+    grid-template-columns: 310px minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
+    margin-top: 1.5rem;
+}
+
+.about-portrait {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center 38%;
+    border-radius: 8px;
+    margin: 0;
+}
+
+.about-bio > :first-child {
+    margin-top: 0;
+}
+
+@media (max-width: 640px) {
+    .about-profile {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+    }
+
+    .about-portrait {
+        max-width: 310px;
+    }
+}
+
 /* Navigation Buttons */
 #nav-bar {
     align-items: center;
